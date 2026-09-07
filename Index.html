@@ -139,7 +139,7 @@
                         <button type="button" onclick="switchAuthTab('forgot')" class="hover:text-primary transition">Lupa Password?</button>
                     </div>
                     
-                    <button onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-lg transition hover:scale-[1.02]">
+                    <button id="btnLoginBtn" onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-lg transition hover:scale-[1.02] flex items-center justify-center gap-2">
                         <i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk Cloud
                     </button>
 
@@ -1081,6 +1081,7 @@
                 }
             } catch(error) {
                 window.alert("Gagal Login via Google: " + error.message);
+            } finally {
                 btnGoogle.innerHTML = originalText;
                 btnGoogle.disabled = false;
             }
@@ -1135,16 +1136,35 @@
             } catch (error) { window.alert("Gagal Registrasi: " + error.message); }
         };
 
+        // PROSES LOGIN ANTI-MACET DENGAN FINALLY BLOCK & AUTO-RESET
         window.processLogin = async function() {
             const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
             const passIn = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('btnLoginBtn');
+            
             if(!emailInput || !passIn) return window.alert("Isi Email dan Password!");
+            
+            let originalText = '<i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk Cloud';
+            if(btn) {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memeriksa...';
+                btn.disabled = true;
+            }
+
             try {
                 await setPersistence(auth, browserLocalPersistence);
                 await signInWithEmailAndPassword(auth, emailInput, passIn);
                 window.showToast("Login Berhasil!");
             } catch (error) { 
-                window.alert("Login Gagal: Silakan periksa kembali email dan password Anda."); 
+                let msg = error.message;
+                if(msg.includes('invalid-credential') || msg.includes('user-not-found') || msg.includes('wrong-password')) {
+                    msg = "Email atau Password yang Anda masukkan salah.";
+                }
+                window.alert("Login Gagal: " + msg); 
+            } finally {
+                if(btn) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
             }
         };
 
