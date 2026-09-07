@@ -1494,10 +1494,17 @@
             try { await updateDoc(doc(db, "orders", docId), { status: newStatus }); window.showToast(`Status diset ke ${newStatus}`); } catch (e) { window.alert("Gagal: " + e.message); }
         };
 
+        // FUNGSI UTAMA: CHECKOUT FIREBASE (BUG FIXED)
         window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
             const userData = window.currentUserData;
+            
+            // Validasi Data Pengguna
+            if (!userData) return { success: false, message: "Sesi login tidak valid atau belum termuat. Silakan refresh halaman." };
+            if (isNaN(totalHarga) || totalHarga < 0) return { success: false, message: "Total harga tidak valid!" };
+
             try {
                 let statusOrder = 'Belum Proses';
+                
                 if(paymentMethod === 'Saldo Akun') {
                     if((userData.balance || 0) < totalHarga) return { success: false, message: `Maaf, Saldo tidak mencukupi!` };
                     await updateDoc(doc(db, "users", userData.uid), { balance: increment(-totalHarga), totalSpent: increment(totalHarga) });
@@ -1507,17 +1514,29 @@
                     if(typeof confetti === 'function') { confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#38BDF8', '#0EA5E9', '#F59E0B'] }); }
                 }
                 
+                // Mencegah nilai undefined masuk ke Firebase
                 const orderData = { 
-                    code: orderCode, date: new Date().toLocaleString('id-ID'), uid: userData.uid, 
-                    username: userData.username, items: itemsText, total: totalHarga, payment: paymentMethod, 
-                    status: statusOrder, createdAt: Date.now() 
+                    code: orderCode || `KATH-${Date.now().toString().slice(-6)}`, 
+                    date: new Date().toLocaleString('id-ID'), 
+                    uid: userData.uid || 'unknown', 
+                    username: userData.username || userData.name || 'User', 
+                    items: itemsText || 'Layanan Digital', 
+                    total: Number(totalHarga) || 0, 
+                    payment: paymentMethod || 'Sistem', 
+                    status: statusOrder, 
+                    createdAt: Date.now() 
                 };
+                
                 await addDoc(collection(db, "orders"), orderData);
                 return { success: true, status: statusOrder };
-            } catch (e) { return { success: false, message: "Koneksi terputus. Gagal memproses." }; }
+                
+            } catch (e) { 
+                console.error("Firebase Order Error:", e);
+                // Ubah agar menampilkan string error asli agar tidak bingung
+                return { success: false, message: `Firebase Error: ${e.message}` }; 
+            }
         };
 
-        // FUNGSI REQUEST REFILL KE FIREBASE
         window.requestRefill = async function(docId, orderCode) {
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
@@ -1844,6 +1863,12 @@
             const target = document.getElementById('mainTargetInput').value.trim(); 
             const quantity = parseInt(document.getElementById('mainQuantityInput').value); 
             if (target === "") return window.alert("Mohon isi Target Pesanan!"); 
+            
+            // FIX: Validasi Quantity
+            if (isNaN(quantity) || quantity < selectedProduct.min || quantity > selectedProduct.max) {
+                return window.alert(`Jumlah pesanan harus antara ${window.formatRupiah(selectedProduct.min)} - ${window.formatRupiah(selectedProduct.max)}!`);
+            }
+
             let calculatedTotal = selectedProduct.unit.includes('/1K') ? Math.round((quantity / 1000) * selectedProduct.price) : Math.round(quantity * selectedProduct.price); 
             cart.push({ productName: selectedProduct.name, category: selectedProduct.category, price: selectedProduct.price, quantity: quantity, target: target, total: calculatedTotal, unit: selectedProduct.unit }); 
             localStorage.setItem('katech_cart', JSON.stringify(cart)); 
@@ -1884,12 +1909,18 @@
             else { modal.classList.add('hidden'); modal.classList.remove('flex'); } 
         };
 
+        // FIX: Tambah Spinner & Validasi Ketat Single Order
         window.processDirectOrder = async function() {
             if (!selectedProduct) return window.alert("Pilih layanan terlebih dahulu!");
             const target = document.getElementById('mainTargetInput').value.trim(); 
             const quantity = parseInt(document.getElementById('mainQuantityInput').value); 
             const paymentMethod = document.getElementById('mainPaymentSelect').value;
+            
             if (target === "") return window.alert("Mohon isi Target Pesanan terlebih dahulu!");
+            if (isNaN(quantity) || quantity < selectedProduct.min || quantity > selectedProduct.max) {
+                return window.alert(`Jumlah pesanan harus antara ${window.formatRupiah(selectedProduct.min)} - ${window.formatRupiah(selectedProduct.max)}!`);
+            }
+
             let calculatedTotal = selectedProduct.unit.includes('/1K') ? Math.round((quantity / 1000) * selectedProduct.price) : Math.round(quantity * selectedProduct.price);
             
             if (typeof Swal !== 'undefined') {
@@ -1910,6 +1941,11 @@
                 });
 
                 if(resultConfirm.isConfirmed) {
+                    Swal.fire({
+                        title: 'Memproses...', text: 'Menyambungkan ke Server...', allowOutsideClick: false,
+                        background: '#0F172A', color: '#F8FAFC', didOpen: () => { Swal.showLoading(); }
+                    });
+
                     const orderCode = `KATH-${Date.now().toString().slice(-6)}`; 
                     const itemsText = `${window.formatRupiah(quantity)}x ${selectedProduct.name} (${target})`;
 
@@ -1921,6 +1957,7 @@
                             Swal.fire({ title: 'Berhasil!', text: 'Pesanan sukses diproses!', icon: 'success', background: '#0F172A', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
                             document.getElementById('mainTargetInput').value = ''; window.openProfileDashboard(); 
                         } else { 
+                            Swal.close();
                             const message = `Halo Admin KA TECH HUB 👋\n\nPesanan Baru:\n🆔 *Kode:* #${orderCode}\n📦 *Produk:* ${selectedProduct.name}\n🎯 *Target:* ${target}\n🔢 *Jumlah:* ${window.formatRupiah(quantity)}\n💳 *Total:* Rp ${window.formatRupiah(calculatedTotal)}\n💰 *Via:* ${paymentMethod}`; 
                             window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); window.openProfileDashboard(); 
                         }
@@ -1929,6 +1966,7 @@
             }
         };
 
+        // FIX: Tambah Spinner & Keamanan Cart Checkout
         window.processCartCheckout = async function() {
             if(cart.length === 0) return window.alert("Keranjang masih kosong!");
             const paymentMethod = document.getElementById('paymentMethod').value; const orderCode = `KATH-${Date.now().toString().slice(-6)}`; 
@@ -1940,13 +1978,21 @@
             }).join('\n\n');
             
             if(window.checkoutWithFirebase) {
+                Swal.fire({
+                    title: 'Memproses...', text: 'Tunggu sebentar...', allowOutsideClick: false,
+                    background: '#0F172A', color: '#F8FAFC', didOpen: () => { Swal.showLoading(); }
+                });
+
                 const result = await window.checkoutWithFirebase(orderCode, itemSummary.join(' | '), grandTotal, paymentMethod); 
                 if(!result.success) return window.alert(result.message);
                 
                 cart = []; localStorage.setItem('katech_cart', JSON.stringify(cart)); window.updateCartUI(); window.toggleCartModal();
                 
-                if(paymentMethod === 'Saldo Akun') { window.alert('Pembayaran Keranjang via Saldo sukses!'); window.openProfileDashboard(); } 
-                else { 
+                if(paymentMethod === 'Saldo Akun') { 
+                    Swal.fire({ title: 'Berhasil!', text: 'Pembayaran Keranjang via Saldo sukses!', icon: 'success', background: '#0F172A', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
+                    window.openProfileDashboard(); 
+                } else { 
+                    Swal.close();
                     const message = `Halo Admin KA TECH HUB 👋\n\nCheckout KERANJANG:\n\n🆔 *Pesanan:* #${orderCode}\n\n${orderDetails}\n\n💳 *TOTAL:* Rp ${window.formatRupiah(grandTotal)}\n💰 *VIA:* ${paymentMethod}`; 
                     window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); window.openProfileDashboard(); 
                 }
