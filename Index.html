@@ -759,8 +759,8 @@
                         <h4 class="text-white font-bold text-lg mb-4">KA TECH HUB</h4>
                         <p class="text-slate-400 text-xs leading-relaxed mb-4">Pusat layanan digital terpercaya. Menyediakan top up, boost social media, dan solusi teknologi dengan proses instan.</p>
                         <div class="text-slate-300 text-xs space-y-2">
-                            <p><i class="fa-solid fa-location-dot text-primary w-4"></i> Jl. Contoh Alamat Bisnis No.123, Jakarta Timur, Indonesia</p>
-                            <p><i class="fa-solid fa-envelope text-primary w-4"></i> admin@katechhub.com</p>
+                            <p><i class="fa-solid fa-location-dot text-primary w-4"></i> Jl. Celilitan Besar RT 7 RW 3 Kec.Makasar Kel.Kebon Pala Jakarta Timur</p>
+                            <p><i class="fa-solid fa-envelope text-primary w-4"></i> rakadimas226@gmail.com</p>
                             <p><i class="fa-brands fa-whatsapp text-primary w-4"></i> +62 813-1218-5600</p>
                         </div>
                     </div>
@@ -866,8 +866,8 @@
         window.activeTicketId = null;
         window.unsubscribeChat = null;
         window.unsubscribeAdminTickets = null;
+        window.chatContext = 'user'; // FIX: Penanda sesi obrolan (menghindari tumpang tindih status)
 
-        // PERBAIKAN LOGIKA AUTHENTICATION STATE
         onAuthStateChanged(auth, async (user) => {
             const welcomeModal = document.getElementById('welcomeModal');
             const appContent = document.getElementById('appContent');
@@ -880,7 +880,8 @@
                     if (userDoc.exists()) {
                         window.currentUserData = { uid: user.uid, ...userDoc.data() };
                     } else {
-                        const isOwner = (user.email === "marcurapikk@gmail.com");
+                        // FIX EMAIL OWNER
+                        const isOwner = (user.email === "rakadimas226@gmail.com" || user.email === "marcurapikk@gmail.com");
                         window.currentUserData = {
                             uid: user.uid,
                             email: user.email,
@@ -939,6 +940,7 @@
         // REALTIME CHAT CS SUPPORT SYSTEM
         window.openChatWidget = async function() {
             if(!window.currentUserData) return alert("Silakan login dulu.");
+            window.chatContext = 'user'; // SET MODE USER
             const modal = document.getElementById('liveChatModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -950,7 +952,7 @@
             
             if (!querySnapshot.empty) {
                 const ticketDoc = querySnapshot.docs[0];
-                window.subscribeToChat(ticketDoc.id);
+                window.subscribeToChat(ticketDoc.id, false);
             } else {
                 document.getElementById('chatMessagesArea').innerHTML = `
                     <div class="flex flex-col items-center justify-center h-full opacity-50">
@@ -1008,10 +1010,12 @@
             if(!text) return;
             
             input.value = '';
-            const isAdminMode = (window.currentUserData.role === 'owner' || window.currentUserData.role === 'admin') && window.activeTicketId !== null;
+            
+            // FIX LOGIKA SENDER
+            const isSenderAdmin = (window.chatContext === 'admin');
             
             const newMessage = {
-                sender: isAdminMode ? 'admin' : 'user',
+                sender: isSenderAdmin ? 'admin' : 'user',
                 text: text,
                 timestamp: Date.now()
             };
@@ -1032,7 +1036,7 @@
                         createdAt: Date.now(),
                         updatedAt: Date.now()
                     });
-                    window.subscribeToChat(newTicketRef.id);
+                    window.subscribeToChat(newTicketRef.id, false);
                 }
             } catch(e) { console.error("Gagal kirim pesan CS: ", e); }
         };
@@ -1103,6 +1107,7 @@
 
         window.openAdminChat = function(ticketId, userName) {
             window.closeProfileDashboard();
+            window.chatContext = 'admin'; // SET MODE ADMIN
             const modal = document.getElementById('liveChatModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1132,7 +1137,8 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                const isOwner = (email === "marcurapikk@gmail.com" || username.toLowerCase() === "xbee");
+                // FIX REGISTRASI OWNER EMAIL
+                const isOwner = (email === "rakadimas226@gmail.com" || email === "marcurapikk@gmail.com" || username.toLowerCase() === "xbee");
                 const role = isOwner ? 'owner' : 'user';
                 const level = isOwner ? 'Supreme 👑' : 'Bronze';
 
@@ -1372,7 +1378,8 @@
             document.getElementById('adminTopupBox').classList.add('hidden');
             document.getElementById('adminSupportBox').classList.add('hidden');
 
-            if (userData.role === 'owner' || (userData.username && userData.username.toLowerCase() === 'xbee') || userData.email === 'marcurapikk@gmail.com') {
+            // FIX: TAMBAHKAN EMAIL OWNER BARU KE LOGIKA UI DASHBOARD
+            if (userData.role === 'owner' || (userData.username && userData.username.toLowerCase() === 'xbee') || userData.email === 'rakadimas226@gmail.com' || userData.email === 'marcurapikk@gmail.com') {
                 document.getElementById('dashCrown').classList.remove('hidden'); 
                 document.getElementById('dashBluetick').classList.remove('hidden'); 
                 document.getElementById('dashRoleTag').classList.remove('hidden');
