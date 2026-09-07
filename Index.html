@@ -2,7 +2,8 @@
 <html lang="id" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Diperbarui: Mencegah zoom paksa di iPhone/Android dan membuat ukuran pas 100% -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KA TECH HUB — Premium Digital & SMM Panel</title>
     
     <meta name="description" content="Pusat layanan digital dan otomatisasi SMM nomor #1 di Indonesia. Proses instan 24/7.">
@@ -38,7 +39,7 @@
     </script>
 
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; transition: background-color 0.3s ease; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s ease; }
         
         /* Custom Scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -86,7 +87,8 @@
         .chat-bubble-admin { background: #13233F; border: 1px solid #1E3A5F; color: #E2E8F0; border-radius: 16px 16px 16px 0; margin-right: auto; max-width: 85%; }
     </style>
 </head>
-<body class="antialiased selection:bg-primary selection:text-white relative show-recaptcha bg-lightbg dark:bg-darkbg text-slate-800 dark:text-slate-200">
+<!-- Diperbarui: h-[100dvh] untuk mencegah layar tertelan di browser mobile -->
+<body class="antialiased selection:bg-primary selection:text-white relative show-recaptcha bg-lightbg dark:bg-darkbg text-slate-800 dark:text-slate-200 h-[100dvh] overflow-hidden">
 
     <!-- Notifikasi Sound & Toasts -->
     <audio id="csNotifSound" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg"></audio>
@@ -168,10 +170,11 @@
     </div>
 
     <!-- ==================== MAIN DASHBOARD APP ==================== -->
-    <div id="appContent" class="hidden h-screen w-full flex bg-lightbg dark:bg-darkbg">
+    <div id="appContent" class="hidden h-[100dvh] w-full flex bg-lightbg dark:bg-darkbg relative overflow-hidden">
         
         <!-- ==================== SIDEBAR KIRI ==================== -->
-        <aside id="sidebarMenu" class="fixed md:static inset-y-0 left-0 z-[100] w-72 bg-white dark:bg-[#0B1528] border-r border-slate-200 dark:border-slate-800 transform -translate-x-full md:translate-x-0 transition-all duration-300 flex flex-col h-full overflow-y-auto no-scrollbar shadow-2xl md:shadow-none">
+        <!-- Diperbarui: Lebar di mobile dikecilkan sedikit (w-[260px]) agar HP kecil lebih aman -->
+        <aside id="sidebarMenu" class="fixed md:static inset-y-0 left-0 z-[100] w-[260px] md:w-72 bg-white dark:bg-[#0B1528] border-r border-slate-200 dark:border-slate-800 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col h-[100dvh] overflow-y-auto no-scrollbar shadow-2xl md:shadow-none">
             
             <!-- Logo Header -->
             <div class="p-5 flex items-center justify-between sticky top-0 bg-white dark:bg-[#0B1528] z-20 border-b border-slate-200 dark:border-slate-800">
@@ -198,42 +201,43 @@
                     <div><span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] px-3 py-1 rounded-full inline-flex items-center gap-1 border border-slate-200 dark:border-slate-700"><i class="fa-solid fa-star text-yellow-500"></i> <span id="sbLevel">Bronze</span></span></div>
                 </div>
 
+                <!-- Diperbarui: Menghapus href="#" agar layar tidak tertelan di HP saat diklik -->
                 <!-- Navigasi Menu 1: Dashboard -->
                 <div class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase px-3 py-2">Dashboard</div>
-                    <a href="#" onclick="switchView('view-home')" id="nav-view-home" class="menu-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-robot w-5 text-center text-lg"></i> Halaman Utama</a>
+                    <a onclick="switchView('view-home')" id="nav-view-home" class="menu-item cursor-pointer active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-robot w-5 text-center text-lg"></i> Halaman Utama</a>
                 </div>
 
                 <!-- Navigasi Menu 2: Orders -->
                 <div class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase px-3 py-2">Orders</div>
-                    <a href="#" onclick="switchView('view-order')" id="nav-view-order" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-cart-plus w-5 text-center text-lg"></i> Pesanan Lama (Massal)</a>
-                    <a href="#" onclick="switchView('view-history')" id="nav-view-history" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-clock-rotate-left w-5 text-center text-lg"></i> Riwayat Order</a>
-                    <a href="#" onclick="switchView('view-track')" id="nav-view-track" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-magnifying-glass w-5 text-center text-lg"></i> Lacak Status</a>
+                    <a onclick="switchView('view-order')" id="nav-view-order" class="menu-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-cart-plus w-5 text-center text-lg"></i> Pesanan Lama (Massal)</a>
+                    <a onclick="switchView('view-history')" id="nav-view-history" class="menu-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-clock-rotate-left w-5 text-center text-lg"></i> Riwayat Order</a>
+                    <a onclick="switchView('view-track')" id="nav-view-track" class="menu-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-magnifying-glass w-5 text-center text-lg"></i> Lacak Status</a>
                 </div>
 
                 <!-- Navigasi Menu 3: Payment & Affiliate -->
                 <div class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase px-3 py-2">Payment & Affiliate</div>
-                    <a href="#" onclick="switchView('view-deposit')" id="nav-view-deposit" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-money-bill-transfer w-5 text-center text-lg"></i> Isi Saldo</a>
-                    <a href="#" onclick="switchView('view-referral')" id="nav-view-referral" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-users w-5 text-center text-lg"></i> Program Referral</a>
+                    <a onclick="switchView('view-deposit')" id="nav-view-deposit" class="menu-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-money-bill-transfer w-5 text-center text-lg"></i> Isi Saldo</a>
+                    <a onclick="switchView('view-referral')" id="nav-view-referral" class="menu-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-users w-5 text-center text-lg"></i> Program Referral</a>
                 </div>
 
                 <!-- Navigasi Menu 4: Support -->
                 <div class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase px-3 py-2">Support & Request</div>
-                    <a href="#" onclick="openChatWidget()" class="menu-item flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300">
+                    <a onclick="openChatWidget()" class="menu-item cursor-pointer flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300">
                         <div class="flex items-center gap-3"><i class="fa-solid fa-headset w-5 text-center text-lg"></i> Tiket Bantuan</div>
                         <span id="globalChatBadge" class="bg-orangeapp text-white text-[9px] font-bold px-1.5 py-0.5 rounded hidden">BARU</span>
                     </a>
-                    <a href="#" onclick="processFloatingWA()" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-brands fa-whatsapp w-5 text-center text-lg text-green-500 dark:text-green-400"></i> WhatsApp</a>
+                    <a onclick="processFloatingWA()" class="menu-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-brands fa-whatsapp w-5 text-center text-lg text-green-500 dark:text-green-400"></i> WhatsApp</a>
                 </div>
 
-                <!-- Navigasi Menu 5: Admin Area (Hidden by default) -->
+                <!-- Navigasi Menu 5: Admin Area -->
                 <div id="adminMenuBox" class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 hidden shadow-sm">
                     <div class="text-[10px] font-bold text-yellow-600 dark:text-yellow-500 uppercase px-3 py-2">Owner Features</div>
-                    <a href="#" onclick="switchView('view-admin')" id="nav-view-admin" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-chart-line w-5 text-center text-lg"></i> Panel Admin</a>
-                    <a href="#" onclick="openApiDocs()" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-code w-5 text-center text-lg"></i> API Dokumentasi</a>
+                    <a onclick="switchView('view-admin')" id="nav-view-admin" class="menu-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-chart-line w-5 text-center text-lg"></i> Panel Admin</a>
+                    <a onclick="openApiDocs()" class="menu-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-code w-5 text-center text-lg"></i> API Dokumentasi</a>
                 </div>
 
                 <div class="pb-10 text-center text-[9px] text-slate-400 dark:text-slate-500 pt-4">
@@ -246,10 +250,11 @@
         <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-[90] hidden md:hidden backdrop-blur-sm" onclick="toggleSidebar()"></div>
 
         <!-- ==================== AREA KONTEN UTAMA KANAN ==================== -->
-        <div class="flex-1 flex flex-col h-screen overflow-hidden relative w-full">
+        <!-- Diperbarui: Flexbox menggunakan ukuran layar absolut agar Header (Garis Tiga) tidak pernah tertelan naik -->
+        <div class="flex-1 flex flex-col h-[100dvh] overflow-hidden relative w-full">
             
-            <!-- Header Nav Kanan Atas -->
-            <header class="bg-white/95 dark:bg-[#0B1528]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-4 sm:px-6 z-40 flex-shrink-0 transition-colors">
+            <!-- Header Nav Kanan Atas (Garis Tiga dll) -->
+            <header class="bg-white/95 dark:bg-[#0B1528]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-4 sm:px-6 z-50 flex-shrink-0 transition-colors w-full">
                 <div class="flex items-center gap-3">
                     <button onclick="toggleSidebar()" class="md:hidden text-slate-600 dark:text-slate-300 hover:text-primary p-1"><i class="fa-solid fa-bars text-xl"></i></button>
                     <span id="headerTitle" class="text-slate-800 dark:text-white font-bold text-lg hidden sm:block">Halaman Utama</span>
@@ -275,7 +280,7 @@
             </header>
 
             <!-- Marquee Running Text Premium (Iklan Berjalan) -->
-            <div class="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border-b border-primary/20 text-primary flex items-center h-8 flex-shrink-0 relative overflow-hidden">
+            <div class="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border-b border-primary/20 text-primary flex items-center h-8 flex-shrink-0 relative overflow-hidden w-full">
                 <div class="bg-primary text-white text-[10px] font-bold px-3 h-full flex items-center z-10 shadow-md whitespace-nowrap absolute left-0 top-0"><i class="fa-solid fa-bullhorn mr-1.5"></i> INFO PUSAT</div>
                 <div class="marquee-container h-full flex items-center text-[10px] font-bold tracking-wide pl-24">
                     <div class="marquee-content">🚀 PROMO SUPER: Diskon Reseller up to 50% untuk layanan TikTok & Instagram minggu ini! | 💎 Fitur API H2H Aktif 24 Jam Non-Stop | 💸 Dapatkan komisi Rp 2.000 dengan invite teman!</div>
@@ -283,7 +288,8 @@
             </div>
 
             <!-- Kontainer Seluruh View (Halaman) -->
-            <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-4 sm:p-6 pb-24 md:pb-6 scroll-smooth w-full relative">
+            <!-- Diperbarui: overflow-y-auto dan pb-24 pas untuk layar HP mungil -->
+            <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-3 sm:p-6 pb-24 md:pb-6 scroll-smooth w-full relative">
                 
                 <!-- ==================== VIEW 1: HOME (DASHBOARD DJURAGAN) ==================== -->
                 <div id="view-home" class="view-section block animate-[slideIn_0.3s_ease]">
@@ -336,7 +342,7 @@
                             </div>
                         </div>
 
-                        <!-- Grid Kategori & Slide Down Quick Order (Konsep One-Page Action) -->
+                        <!-- Grid Kategori & Slide Down Quick Order -->
                         <div class="bg-lightcard dark:bg-[#13233F] border border-slate-200 dark:border-slate-700 rounded-2xl p-5 sm:p-6 mb-6 shadow-sm">
                             <h3 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2"><i class="fa-solid fa-layer-group text-primary"></i> Pilih Kategori</h3>
                             
@@ -449,7 +455,6 @@
                 </div>
 
                 <!-- ==================== VIEW 2: ORDER TRADISIONAL (BUAT MASSAL) ==================== -->
-                <!-- Ini tetap dipertahankan untuk fitur pesanan massal yang tidak ada di Quick Order -->
                 <div id="view-order" class="view-section hidden animate-[slideIn_0.3s_ease]">
                     <div class="max-w-4xl mx-auto">
                         <div class="flex bg-lightcard dark:bg-darkcard p-1 rounded-xl mb-6 shadow-inner border border-slate-200 dark:border-slate-700">
@@ -507,7 +512,7 @@
                                     <select id="mainPaymentSelect" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary text-sm cursor-pointer shadow-inner">
                                         <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis H2H)</option>
                                         <option value="QRIS (Minta via WA)">QRIS (Minta Barcode via WA)</option>
-                                        <option value="Bank Mandiri (1290013795022)">Bank Mandiri (1290013795022)</option>
+                                        <option value="Bank Mandiri">Bank Mandiri (1290013795022)</option>
                                     </select>
                                 </div>
 
@@ -836,7 +841,6 @@
     <div id="qrisModal" class="fixed inset-0 z-[950] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
         <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 max-w-sm w-full p-6 text-center relative rounded-2xl shadow-glow-strong">
             <button onclick="closeQrisModal()" class="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <!-- Pastikan file gambar ini ada di root folder Github Bosku jika ingin tampil -->
             <div class="inline-block p-2 bg-white rounded-xl mb-4 shadow-lg"><img src="ReactNative-snapshot-image316319566030730119.png" class="w-56 h-56 rounded object-cover" onerror="this.src='https://via.placeholder.com/256'"></div>
             <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1">QRIS All Payment</h3>
             <button onclick="copyToClipboard('081312185600', 'Nomor E-Wallet')" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white rounded-lg text-xs font-bold transition mb-2">Salin Nomor Manual</button>
@@ -895,7 +899,6 @@
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
         
-        // Buat objek database & auth bisa diakses secara global oleh fungsi vanilla JS
         window.db = db;
         window.auth = auth;
         window.currentUserData = null;
@@ -904,7 +907,6 @@
         window.chatContext = 'user';
         let userSnapshotUnsubscribe = null;
 
-        // FITUR JAM REALTIME UNTUK DASHBOARD HOME
         setInterval(() => {
             const now = new Date();
             const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -915,12 +917,11 @@
             if(homeDate) homeDate.innerText = dateStr;
         }, 1000);
 
-        // DETEKSI URL UNTUK REFERRAL (Jika ada yang klik link invite)
         const urlParams = new URLSearchParams(window.location.search);
         const refParam = urlParams.get('ref');
         if (refParam) { 
             localStorage.setItem('katech_ref', refParam.toLowerCase()); 
-            window.history.replaceState({}, document.title, window.location.pathname); // Bersihkan URL bar
+            window.history.replaceState({}, document.title, window.location.pathname); 
         }
         
         const savedRef = localStorage.getItem('katech_ref');
@@ -932,13 +933,11 @@
             } 
         }
 
-        // FUNGSI PLAY SOUND (Klakson CS Live Chat)
         window.playNotifSound = function() { 
             const audio = document.getElementById('csNotifSound'); 
             if(audio) audio.play().catch(e => console.log('Autoplay browser dicegah')); 
         };
 
-        // KENDALI PENUH STATUS LOGIN USER (Auth State Listener)
         onAuthStateChanged(auth, async (user) => {
             const welcomeModal = document.getElementById('welcomeModal');
             const appContent = document.getElementById('appContent');
@@ -946,13 +945,12 @@
             const authFormArea = document.getElementById('authFormArea');
 
             if (user) {
-                document.body.classList.remove('show-recaptcha'); // Sembunyikan reCAPTCHA google
+                document.body.classList.remove('show-recaptcha');
                 
                 try {
                     const userRef = doc(db, "users", user.uid);
                     let userDoc = await getDoc(userRef);
                     
-                    // Jika login pertama kali (belum ada data di Firestore)
                     if (!userDoc.exists()) {
                         const isOwner = (user.email === "marcurapikk@gmail.com");
                         const cleanUsername = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -972,7 +970,6 @@
                         });
                     }
 
-                    // Dengarkan perubahan data saldo dll secara Realtime (Auto Update)
                     if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
                     
                     userSnapshotUnsubscribe = onSnapshot(userRef, (docSnap) => {
@@ -980,7 +977,6 @@
                             window.currentUserData = { uid: user.uid, ...docSnap.data() };
                             const d = window.currentUserData;
                             
-                            // 1. Suntik Data ke SIDEBAR KIRI
                             document.getElementById('sbUsername').innerHTML = `${d.name} <i class="fa-solid fa-circle-check text-blue-500 text-[10px] ${d.role === 'owner' ? '' : 'hidden'}"></i> <i class="fa-solid fa-pen-to-square text-[10px] text-slate-500 ml-1"></i>`;
                             document.getElementById('sbBalance').innerText = `Rp ${window.formatRupiah(d.balance)}`;
                             document.getElementById('sbLevel').innerText = d.level;
@@ -994,7 +990,6 @@
                                 avatarEl.style.backgroundImage = 'none'; 
                             }
 
-                            // 2. Suntik Data ke HALAMAN UTAMA (Home)
                             const homeName = document.getElementById('dashHomeName');
                             if(homeName) homeName.innerText = d.name.split(' ')[0]; 
                             
@@ -1010,18 +1005,15 @@
                             const homeRef = document.getElementById('dashHomeRef');
                             if(homeRef) homeRef.innerText = `Rp ${window.formatRupiah(d.refEarnings || 0)}`;
 
-                            // 3. Update text di Menu Referral
                             document.getElementById('refLinkText').innerText = `https://katechhub.netlify.app/?ref=${d.username}`;
                             document.getElementById('viewRefCount').innerText = d.refCount || 0;
                             document.getElementById('viewRefEarnings').innerText = `Rp ${window.formatRupiah(d.refEarnings || 0)}`;
 
-                            // 4. Logika Buka Kunci Menu Admin Area (Owner)
                             if(d.role === 'owner' || d.role === 'admin') {
                                 document.getElementById('adminMenuBox').classList.remove('hidden');
                                 document.getElementById('dashOwnerIncome').innerText = `Rp ${window.formatRupiah(d.income || 89574843)}`;
                                 document.getElementById('dashOwnerCashout').innerText = `Rp ${window.formatRupiah(d.cashout || 12500000)}`;
                                 
-                                // Setup Chart Grafik Pendapatan Admin
                                 if(!window.revenueChartInstance && document.getElementById('revenueChart')) {
                                     const ctx = document.getElementById('revenueChart').getContext('2d');
                                     window.revenueChartInstance = new Chart(ctx, {
@@ -1043,12 +1035,10 @@
                         }
                     });
 
-                    // Muat riwayat transaksi jika fungsi sudah ada
                     if(typeof window.renderDashboardHistory === 'function') {
                         window.renderDashboardHistory();
                     }
 
-                    // Tutup modal loading, tampilkan dashboard
                     welcomeModal.classList.add('hidden'); 
                     welcomeModal.classList.remove('flex');
                     appContent.classList.remove('hidden');
@@ -1059,7 +1049,6 @@
                 }
 
             } else {
-                // JIKA BELUM LOGIN / LOGOUT
                 document.body.classList.add('show-recaptcha');
                 window.currentUserData = null; 
                 
@@ -1074,7 +1063,6 @@
             }
         });
 
-        // ================= KUMPULAN FUNGSI LOGIN & DAFTAR (TIDAK DIPENDEKKAN) =================
         window.processGoogleLogin = async function() {
             const btn = document.getElementById('btnGoogleLogin'); 
             const ori = btn.innerHTML;
@@ -1089,7 +1077,6 @@
                 const userDocRef = doc(db, "users", user.uid); 
                 const userDoc = await getDoc(userDocRef);
                 
-                // Jika baru pertama kali login Google, buat data di database
                 if(!userDoc.exists()) {
                     const isOwner = (user.email === "marcurapikk@gmail.com"); 
                     const cleanUsername = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1098,7 +1085,6 @@
                     let bal = isOwner ? 999999999 : 0; 
                     let isReferral = false;
                     
-                    // Beri bonus 1.000 jika mendaftar lewat link teman
                     if (!isOwner && refCode && refCode !== cleanUsername) { 
                         bal += 1000; 
                         isReferral = true; 
@@ -1119,11 +1105,10 @@
                         refEarnings: 0 
                     });
                     
-                    // Beri komisi ke yang mengundang
                     if(isReferral) {
                         await window.processReferrerBonus(refCode, cleanUsername); 
                     }
-                    localStorage.removeItem('katech_ref'); // Hapus jejak
+                    localStorage.removeItem('katech_ref');
                 }
             } catch(e) { 
                 window.alert("Gagal Login Google: " + e.message); 
@@ -1148,18 +1133,15 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mendaftarkan Akun...'; 
             btn.disabled = true;
             
-            // Verifikasi Google reCAPTCHA v3 untuk mencegah bot spam daftar
             grecaptcha.ready(async function() {
                 try {
                     const token = await grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', {action: 'register'}); 
                     if(!token) throw new Error("Aktivitas bot terdeteksi!");
                     
-                    // Cek apakah username sudah dipakai orang lain
                     const q = query(collection(db, "users"), where("username", "==", uname)); 
                     const snapshot = await getDocs(q); 
                     if(!snapshot.empty) return window.alert("Username sudah digunakan orang lain!");
                     
-                    // Buat Akun Auth Firebase
                     const credential = await createUserWithEmailAndPassword(auth, email, pass); 
                     const user = credential.user;
                     
@@ -1173,7 +1155,6 @@
                         isReferral = true; 
                     }
                     
-                    // Simpan data pendaftaran ke Database Firestore
                     await setDoc(doc(db, "users", user.uid), { 
                         name: name, 
                         username: uname, 
@@ -1251,14 +1232,12 @@
                 
                 if (!snapshot.empty) { 
                     const id = snapshot.docs[0].id; 
-                    // Tambah saldo si pengundang 2000 perak
                     await updateDoc(doc(db, "users", id), { 
                         balance: increment(2000), 
                         refCount: increment(1), 
                         refEarnings: increment(2000) 
                     });
                     
-                    // Catat ke riwayat transaksinya sebagai bukti komisi
                     await addDoc(collection(db, "orders"), { 
                         code: `REF-${Date.now().toString().slice(-5)}`, 
                         date: new Date().toLocaleString('id-ID'), 
@@ -1277,7 +1256,6 @@
             }
         };
 
-        // ================= FITUR UBAH PROFIL & KONTROL ADMIN (OWNER) =================
         window.handleAvatarUpload = async function(event) {
             const file = event.target.files[0]; 
             if(!file) return;
@@ -1292,7 +1270,7 @@
                     window.alert("Gagal menyimpan foto. File mungkin terlalu besar.");
                 }
             }; 
-            reader.readAsDataURL(file); // Konversi gambar jadi teks (Base64) agar ringan di database
+            reader.readAsDataURL(file);
         };
 
         window.editUserName = async function() {
@@ -1311,7 +1289,6 @@
             }
         };
 
-        // Fungsi Admin: Isi saldo manual ke member
         window.adminAddBalance = async function() {
             const email = document.getElementById('topupUserEmail').value.toLowerCase();
             const amount = parseInt(document.getElementById('topupUserAmount').value);
@@ -1326,7 +1303,6 @@
             for(let d of snapshot.docs) { 
                 await updateDoc(doc(db, "users", d.id), { balance: increment(amount) }); 
                 
-                // Tambahkan riwayat deposit ke akun user
                 await addDoc(collection(db, "orders"), { 
                     code: `DEP-${Date.now().toString().slice(-5)}`, 
                     date: new Date().toLocaleString('id-ID'), 
@@ -1347,7 +1323,6 @@
             document.getElementById('topupUserEmail').value = '';
         };
         
-        // Fungsi Admin: Tarik tunai virtual (mengurangi angka Income)
         window.processCashout = async function() {
             const amount = parseInt(document.getElementById('cashoutAmount').value);
             const bank = document.getElementById('cashoutBank').value;
@@ -1364,9 +1339,6 @@
             document.getElementById('cashoutAmount').value = '';
         };
 
-        // ================= TRANSAKSI & RIWAYAT (FIREBASE ORDERS) =================
-        
-        // Jantung Pemrosesan Order Pembelian Saldo
         window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
             const userData = window.currentUserData; 
             if (!userData) return { success: false, message: "Akses ditolak. Silakan login." };
@@ -1374,7 +1346,6 @@
             try {
                 let statusOrder = 'Belum Proses';
                 
-                // Transaksi Aman (Jika gagal di tengah jalan, saldo tidak akan kepotong)
                 await runTransaction(db, async (transaction) => {
                     const userDocRef = doc(db, "users", userData.uid); 
                     const userSnapshot = await transaction.get(userDocRef);
@@ -1383,15 +1354,13 @@
                         if (userSnapshot.data().balance < totalHarga) {
                             throw new Error("Maaf, Saldo akun Anda tidak mencukupi untuk transaksi ini.");
                         }
-                        // Kurangi Saldo, Tambah Angka Pengeluaran Total User
                         transaction.update(userDocRef, { 
                             balance: increment(-totalHarga), 
                             totalSpent: increment(totalHarga) 
                         }); 
-                        statusOrder = 'Diproses'; // Otomatis diproses jika pakai saldo
+                        statusOrder = 'Diproses';
                     }
                     
-                    // Simpan data order
                     const newOrderRef = doc(collection(db, "orders"));
                     transaction.set(newOrderRef, { 
                         code: orderCode, 
@@ -1399,12 +1368,9 @@
                         uid: userData.uid, 
                         username: userData.username, 
                         items: itemsText, 
-                        
-                        // Menangkap target dari form mana yang dipakai (Traditional atau Quick Order)
                         target: (document.getElementById('targetInputQuick') && document.getElementById('targetInputQuick').value !== "") 
                                 ? document.getElementById('targetInputQuick').value 
                                 : (document.getElementById('mainTargetInput') ? document.getElementById('mainTargetInput').value : '-'), 
-                        
                         total: Number(totalHarga), 
                         payment: paymentMethod, 
                         status: statusOrder, 
@@ -1419,7 +1385,6 @@
             }
         };
 
-        // Fungsi Render List HTML Riwayat di View-History
         window.renderDashboardHistory = async function() {
             const userData = window.currentUserData; 
             if(!userData) return;
@@ -1427,7 +1392,6 @@
             const container = document.getElementById('dashboardHistoryItems');
             
             try {
-                // Admin bisa lihat riwayat seluruh user, User biasa hanya riwayat dirinya (Max 50)
                 let queryOrders = (userData.role === 'owner' || userData.role === 'admin') 
                     ? query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(50)) 
                     : query(collection(db, "orders"), where("uid", "==", userData.uid), orderBy("createdAt", "desc"), limit(30));
@@ -1439,7 +1403,6 @@
                     ordersArray.push({ id: doc.id, ...doc.data() }); 
                 });
                 
-                // Update angka jumlah order di Halaman Riwayat & Halaman Home Utama
                 document.getElementById('dashTotalOrders').innerText = `${ordersArray.length} Transaksi`; 
                 const homeOrderCount = document.getElementById('dashHomeOrderCount');
                 if(homeOrderCount) homeOrderCount.innerText = ordersArray.length;
@@ -1452,12 +1415,10 @@
                 }
 
                 ordersArray.forEach(order => {
-                    // Penentuan warna label status
                     let colorClass = order.status === 'Diproses' ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400' 
                                    : (order.status === 'Selesai' || order.status === 'Berhasil' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' 
                                    : 'bg-slate-200 text-slate-600 dark:bg-slate-500/20 dark:text-slate-400');
                     
-                    // Admin bisa ubah status, User cuma bisa lihat text mati
                     let statusElement = (order.payment === 'Sistem Bonus' || order.payment === 'Manual Admin' || userData.role === 'user') 
                         ? `<span class="px-2 py-0.5 rounded text-[9px] font-bold ${colorClass}">${order.status}</span>` 
                         : `<select onchange="updateOrderStatusFirebase('${order.id}', this.value)" class="bg-white dark:bg-[#070D19] border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white rounded text-[9px] px-1 py-0.5 shadow-sm">
@@ -1466,7 +1427,6 @@
                             <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
                            </select>`;
                            
-                    // Tombol cetak Struk (Invoice) jika bukan Bonus
                     let invoiceButton = `<button onclick="openInvoice('${order.code}','${order.date}','${order.username}','${order.status}','${order.payment}','${order.items}',${order.total})" class="text-[9px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded hover:bg-primary/20 transition ml-2"><i class="fa-solid fa-print"></i> Struk</button>`;
                     
                     container.innerHTML += `
@@ -1492,7 +1452,6 @@
             }
         };
 
-        // Fungsi API ganti status dari Dropdown Admin
         window.updateOrderStatusFirebase = async function(docId, newStatus) { 
             try {
                 await updateDoc(doc(db, "orders", docId), { status: newStatus }); 
@@ -1500,26 +1459,20 @@
             } catch(e) { window.alert("Gagal update status"); }
         };
 
-        // ================= FITUR LIVE CHAT CS (REALTIME FIREBASE) =================
         window.openChatWidget = async function() {
             if(!window.currentUserData) return window.alert("Silakan login."); 
             
-            // Sembunyikan badge jika ada
             document.getElementById('globalChatBadge').classList.add('hidden');
-            
-            // Set konteks kita yang membalas adalah "user"
             window.chatContext = 'user'; 
             
             const modal = document.getElementById('liveChatModal'); 
             modal.classList.remove('hidden'); 
             modal.classList.add('flex');
             
-            // Cek apakah user sudah pernah buka tiket bantuan sebelumnya
             const q = query(collection(db, "tickets"), where("uid", "==", window.currentUserData.uid)); 
             const snapshot = await getDocs(q);
             
             if (!snapshot.empty) {
-                // Jika sudah punya tiket, subscribe agar pesannya muncul
                 window.subscribeToChat(snapshot.docs[0].id, false);
             }
         };
@@ -1528,24 +1481,20 @@
             const modal = document.getElementById('liveChatModal');
             modal.classList.add('hidden'); 
             modal.classList.remove('flex'); 
-            // Matikan proses mendengarkan database untuk hemat data
             if(window.unsubscribeChat) window.unsubscribeChat(); 
         };
         
-        // Jantung sinkronisasi Chat antar Hp
         window.subscribeToChat = function(ticketId, isAdminMode = false) {
             window.activeTicketId = ticketId; 
             const chatArea = document.getElementById('chatMessagesArea'); 
             
             if(window.unsubscribeChat) window.unsubscribeChat();
             
-            // Fungsi onSnapshot akan ter-trigger 0.1 detik setiap ada pesan baru di Database
             window.unsubscribeChat = onSnapshot(doc(db, "tickets", ticketId), (docSnapshot) => {
                 if (docSnapshot.exists()) {
                     const data = docSnapshot.data(); 
                     chatArea.innerHTML = '';
                     
-                    // Ganti judul modal jika admin yang balas
                     if (isAdminMode) {
                         document.getElementById('chatHeaderTitle').innerText = `Membantu: ${data.userName}`;
                     }
@@ -1556,14 +1505,10 @@
                     }
                     
                     data.messages.forEach(msg => {
-                        // Tentukan apakah bubble chat di kanan (Saya) atau kiri (Lawan bicara)
                         const isMe = isAdminMode ? msg.sender === 'admin' : msg.sender === 'user';
-                        
-                        // Konversi timestamp chat
                         const timeStr = new Date(msg.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
                         if(isMe) {
-                            // Bubble Kanan (Pesan Saya)
                             chatArea.innerHTML += `
                                 <div class="w-full flex justify-end">
                                     <div class="chat-bubble-user p-2.5 shadow-md">
@@ -1572,7 +1517,6 @@
                                     </div>
                                 </div>`;
                         } else {
-                            // Bubble Kiri (Balasan)
                             chatArea.innerHTML += `
                                 <div class="w-full flex justify-start">
                                     <div class="chat-bubble-admin p-2.5 shadow-md">
@@ -1584,7 +1528,6 @@
                         }
                     }); 
                     
-                    // Auto scroll layar chat ke paling bawah
                     chatArea.scrollTop = chatArea.scrollHeight;
                 }
             });
@@ -1595,7 +1538,7 @@
             const text = inputEl.value.trim(); 
             if(!text) return; 
             
-            inputEl.value = ''; // Kosongkan box ketik
+            inputEl.value = ''; 
             
             const newMessage = { 
                 sender: window.chatContext === 'admin' ? 'admin' : 'user', 
@@ -1604,13 +1547,11 @@
             };
             
             if (window.activeTicketId) {
-                // Tiket sudah ada, tinggal tambah array ke dalamnya (arrayUnion)
                 await updateDoc(doc(db, "tickets", window.activeTicketId), { 
                     messages: arrayUnion(newMessage), 
                     updatedAt: Date.now() 
                 });
             } else { 
-                // Tiket belum ada (Pertama kali chat), buat data Dokumen Baru di Firebase
                 const newTicket = await addDoc(collection(db, "tickets"), { 
                     uid: window.currentUserData.uid, 
                     userName: window.currentUserData.name, 
@@ -1619,7 +1560,6 @@
                     createdAt: Date.now(), 
                     updatedAt: Date.now() 
                 }); 
-                // Langsung nyalakan fungsi sinkronisasi (Dengar chat masuk)
                 window.subscribeToChat(newTicket.id, false); 
             }
         };
@@ -1634,7 +1574,6 @@
         let selectedProduct = null; 
         let products = []; 
 
-        // Fungsi Global
         window.formatRupiah = function(num) { return new Intl.NumberFormat('id-ID').format(num || 0); };
         window.alert = function(msg) { 
             Swal.fire({ 
@@ -1653,7 +1592,6 @@
             setTimeout(() => toast.remove(), 4000); 
         };
         
-        // --- FITUR DARK MODE / LIGHT MODE ---
         window.toggleTheme = function() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
@@ -1669,22 +1607,18 @@
             }
         }
         
-        // Otomatis terapkan tema yang tersimpan di HP User saat web dibuka
         if (localStorage.getItem('theme') === 'light') { 
             document.documentElement.classList.remove('dark'); 
             document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun'); 
         }
 
-        // --- SISTEM SEDOT API DJURAGAN (H2H) ---
         window.fetchSMMProducts = async function() {
             try {
-                // Tembak request ke Backend Server Netlify yang telah kita buat (v1.js atau api.js)
                 const res = await fetch('/.netlify/functions/api', { 
                     method: 'POST', 
                     body: JSON.stringify({ action: 'services' }) 
                 });
                 
-                // Jika API belum siap atau error limit, fallback otomatis ke Data Dummy
                 if(!res.ok) throw new Error("API Backend belum siap atau error");
                 
                 const data = await res.json();
@@ -1692,7 +1626,6 @@
                 if(Array.isArray(data) && data.length > 0) {
                     products = data.map(i => {
                         let hargaPusat = parseFloat(i.rate); 
-                        // Sistem Markup Keuntungan Dinamis
                         let markup = 0;
                         if(hargaPusat < 50000) markup = 5000;
                         else if(hargaPusat < 200000) markup = 10000;
@@ -1716,7 +1649,6 @@
                 }
             } catch(e) { 
                 console.warn("Menggunakan Data Backup Layanan (Server API Netlify offline)", e); 
-                // Dummy Data agar web tetap cantik terlihat dan bisa ditest
                 products = [
                     { id: 1, name: "Instagram Followers [High Quality] - Instan", category: "Instagram", price: 15000, unit: "/1K", min: 100, max: 10000, desc: "Followers real aktif, proses cepat 5 menit masuk. Garansi 30 Hari." },
                     { id: 2, name: "Instagram Likes VIP [Real Indonesia]", category: "Instagram", price: 8000, unit: "/1K", min: 50, max: 5000, desc: "Like murni akun Indonesia." },
@@ -1726,18 +1658,15 @@
                 ];
             }
             
-            // Re-inisialisasi semua dropdown form
             window.initCategoryDropdown(); 
         };
 
-        // --- SISTEM PENCARIAN (SEARCH BAR PREMIUM DI HOME) ---
         window.searchServices = function(keyword) {
-            if(keyword.length < 2) return; // Syarat mencari harus 2 huruf minimal
+            if(keyword.length < 2) return; 
             
             const section = document.getElementById('quickOrderSection');
             document.getElementById('quickOrderTitle').innerText = `Pencarian: "${keyword}"`;
             
-            // Animasi turun form order
             section.classList.add('active');
             
             const filtered = products.filter(p => p.name.toLowerCase().includes(keyword.toLowerCase())); 
@@ -1751,19 +1680,15 @@
             
             document.getElementById('servListQuick').innerHTML = filtered.length > 0 ? listHtml : `<div class="p-4 text-xs text-slate-500 text-center font-bold">Layanan tidak ditemukan.</div>`;
             
-            // Auto click layanan pertama
             if(filtered.length > 0) window.selectServiceQuick(filtered[0].id);
         };
 
-        // --- LOGIKA QUICK ORDER SLIDE-DOWN (DI HALAMAN UTAMA) ---
         window.openQuickOrder = function(categoryName) {
             const section = document.getElementById('quickOrderSection');
             document.getElementById('quickOrderTitle').innerText = categoryName;
             
-            // Buka area menu order
             section.classList.add('active');
             
-            // Scroll otomatis biar layarnya pas di tengah user (halus)
             setTimeout(() => { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
 
             const filtered = products.filter(p => p.category.toLowerCase().includes(categoryName.toLowerCase())); 
@@ -1786,7 +1711,7 @@
 
         window.closeQuickOrder = function() {
             document.getElementById('quickOrderSection').classList.remove('active');
-            document.getElementById('searchServiceInput').value = ''; // Reset Search bar
+            document.getElementById('searchServiceInput').value = ''; 
         };
 
         window.toggleCustomSelect = function(id, e) { 
@@ -1794,14 +1719,12 @@
             document.getElementById(id).classList.toggle('hidden'); 
         };
         
-        // Klik sembarang untuk menutup Dropdown
         document.addEventListener('click', () => { 
             if(document.getElementById('servListQuick')) document.getElementById('servListQuick').classList.add('hidden'); 
             if(document.getElementById('catList')) document.getElementById('catList').classList.add('hidden'); 
             if(document.getElementById('servList')) document.getElementById('servList').classList.add('hidden'); 
         });
 
-        // Event saat List Quick Order diklik
         window.selectServiceQuick = function(id) { 
             selectedProduct = products.find(p => p.id == id); 
             if (selectedProduct) { 
@@ -1814,7 +1737,6 @@
             } 
         };
 
-        // Event Realtime Hitung Harga (Quick Order)
         window.calculateTotalQuick = function() { 
             if (!selectedProduct) return; 
             const q = parseFloat(document.getElementById('qtyInputQuick').value) || 0; 
@@ -1822,7 +1744,6 @@
             document.getElementById('totalCalcQuick').innerText = `Rp ${window.formatRupiah(Math.round(total))}`; 
         };
 
-        // PROSES PESAN LANGSUNG DARI HALAMAN HOME
         window.processQuickOrder = async function() {
             if (!selectedProduct) return window.alert("Pilih layanan terlebih dahulu!");
             
@@ -1855,19 +1776,16 @@
             });
             
             if(conf.isConfirmed) {
-                // Tampilkan Loading
                 Swal.fire({ title: 'Menyambungkan ke Server...', allowOutsideClick: false, background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', color: document.documentElement.classList.contains('dark') ? '#fff' : '#000', didOpen: () => { Swal.showLoading(); } });
                 
                 const code = `KATH-${Date.now().toString().slice(-6)}`; 
                 const itemTxt = `${window.formatRupiah(qty)}x ${selectedProduct.name}`;
                 
-                // Gunakan fungsi Database Firebase
                 const res = await window.checkoutWithFirebase(code, itemTxt, total, pay); 
                 
                 if(!res.success) return window.alert("Transaksi Ditolak: " + res.message);
                 
                 if(pay === 'Saldo Akun') { 
-                    // Tembak API aslinya ke backend jika pakai saldo (opsional)
                     try { fetch('/.netlify/functions/api', { method: 'POST', body: JSON.stringify({ action: 'add', service: selectedProduct.id, link: target, quantity: qty }) }).catch(e=>{}); } catch(e){}
                     
                     Swal.fire({ title: 'Berhasil!', text: 'Order instan otomatis dikirim ke Provider Pusat.', icon: 'success', background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', color: document.documentElement.classList.contains('dark') ? '#fff' : '#000' }); 
@@ -1885,8 +1803,6 @@
             }
         };
 
-        // --- SISTEM ORDER TRADISIONAL (VIEW-ORDER LAMA & MASSAL) ---
-        // (Tetap dipertahankan agar fungsi Mass Order tidak hilang)
         window.initCategoryDropdown = function() { 
             const cat = [...new Set(products.map(p => p.category))]; 
             const cL = document.getElementById('catList'); 
@@ -1959,7 +1875,6 @@
             }
         };
 
-        // --- SISTEM KERANJANG BELANJA (CART) FULL ---
         window.toggleCartModal = function() {
             const modal = document.getElementById('cartModal');
             if(modal.classList.contains('hidden')) {
@@ -1996,7 +1911,7 @@
             window.showToast("Berhasil dimasukkan ke Keranjang Belanja!"); 
             window.updateCartBadge();
             
-            document.getElementById('targetInputQuick').value = ''; // Reset
+            document.getElementById('targetInputQuick').value = ''; 
         };
         
         window.addMainToCart = function() {
@@ -2058,7 +1973,6 @@
             
             if(!res.success) return window.alert(res.message);
             
-            // Hapus isi keranjang setelah sukses dibayar
             cart = []; 
             localStorage.setItem('katech_cart', JSON.stringify(cart)); 
             window.updateCartBadge(); 
@@ -2075,14 +1989,12 @@
             }
         };
 
-        // --- SISTEM LACAK PESANAN ---
         window.trackOrderReal = async function() {
             const inp = document.getElementById('trackInput').value.trim().toUpperCase();
             if(!inp) return;
             const resDiv = document.getElementById('trackResult');
             
             try {
-                // Cari di Firebase
                 const q = query(collection(window.db, "orders"), where("code", "==", inp));
                 const snap = await getDocs(q);
                 if(snap.empty) {
@@ -2108,7 +2020,6 @@
             } catch(e) { window.alert("Gagal melacak, periksa koneksi."); }
         };
 
-        // --- UTILITAS UI LAINNYA ---
         window.shareReferralLink = function() { navigator.clipboard.writeText(document.getElementById('refLinkText').innerText); window.showToast("Link Referal Disalin!"); };
         window.openQrisModal = () => { document.getElementById('qrisModal').classList.remove('hidden'); document.getElementById('qrisModal').classList.add('flex'); };
         window.closeQrisModal = () => { document.getElementById('qrisModal').classList.add('hidden'); document.getElementById('qrisModal').classList.remove('flex'); };
@@ -2142,7 +2053,6 @@
             }); 
         };
 
-        // --- Navigasi Sidebar Pindah Layar (Single Page App) ---
         window.toggleSidebar = function() { 
             const sb = document.getElementById('sidebarMenu'); 
             const ov = document.getElementById('sidebarOverlay'); 
@@ -2153,40 +2063,41 @@
             } 
         };
         
+        // Diperbarui: Logic Switch View yang sudah diperhalus anti-jumping
         window.switchView = function(viewId) {
-            // Sembunyikan semua konten section
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             
-            // Munculkan yang dipilih
             const target = document.getElementById(viewId); 
             if(target) target.classList.remove('hidden');
             
-            // Pindahkan CSS penanda warna aktif di Menu Sidebar
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
             const activeMenu = document.getElementById('nav-' + viewId); 
             if(activeMenu) activeMenu.classList.add('active');
             
-            // Auto ubah nama judul bar di atas
             const titles = { 
                 'view-home': 'Halaman Utama', 
                 'view-order': 'Pesanan Lama (Massal)', 
                 'view-history': 'Riwayat Order', 
-                'view-track': 'Lacak Pesanan', 
+                'view-track': 'Lacak Status', 
                 'view-deposit': 'Isi Saldo', 
                 'view-referral': 'Program Referral', 
-                'view-admin': 'Admin Area' 
+                'view-admin': 'Panel Admin' 
             };
             document.getElementById('headerTitle').innerText = titles[viewId] || 'KA TECH HUB';
             
-            // Tutup sidebar (jika di hp) dan tutup Quick order form saat pindah halaman
             if(window.innerWidth < 768) window.toggleSidebar();
             window.closeQuickOrder(); 
+
+            // Scroll otomatis mulus ke bagian atas layar halaman tersebut saat baru diklik
+            const mainContent = document.getElementById('mainContainer');
+            if(mainContent) {
+                mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         };
 
-        // --- SISTEM OTOMATIS START (ONLOAD) ---
         window.onload = function() { 
-            window.fetchSMMProducts(); // Download harga dari pusat
-            window.updateCartBadge(); // Render icon keranjang (Cart)
+            window.fetchSMMProducts();
+            window.updateCartBadge(); 
         };
     </script>
 </body>
