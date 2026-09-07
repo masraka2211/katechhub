@@ -64,7 +64,6 @@
         div::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
         div::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 4px; }
         
-        /* Toast Animations */
         .toast-slide { animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, fadeOut 0.4s 3.6s forwards; }
         @keyframes slideIn { from { transform: translateY(-100%) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
@@ -78,39 +77,35 @@
         .faq-icon { transition: transform 0.3s ease; }
         .faq-btn.active .faq-icon { transform: rotate(180deg); color: #38BDF8; }
         
-        /* Chat UI Styles */
         .chat-bubble-user { background: linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%); color: white; border-radius: 16px 16px 0 16px; margin-left: auto; max-width: 85%; }
         .chat-bubble-admin { background: #1E293B; border: 1px solid #334155; color: #E2E8F0; border-radius: 16px 16px 16px 0; margin-right: auto; max-width: 85%; }
     </style>
 </head>
-<body class="antialiased selection:bg-primary selection:text-white pb-32 md:pb-12 relative pt-8">
+<body class="antialiased selection:bg-primary selection:text-white relative bg-[#070C18]">
 
-    <!-- RUNNING TEXT PROMO -->
-    <div class="fixed top-0 w-full z-[70] bg-primary text-[#070C18] text-[10px] sm:text-xs font-bold py-1.5 overflow-hidden flex items-center border-b border-white/20 shadow-[0_0_15px_rgba(56,189,248,0.5)]">
-        <div class="whitespace-nowrap animate-marquee flex items-center gap-8">
-            <span>🚀 PROMO: Diskon 20% untuk layanan YouTube Watchtime minggu ini!</span>
-            <span>💥 FLASH SALE: Instagram Followers Turun Harga Pukul 20:00 WIB!</span>
-            <span>💎 JOIN VIP: Akumulasi belanja 1 Juta dapatkan Level Master (Prioritas Proses)!</span>
-            <span>💳 QRIS ALL PAYMENT AKTIF: Support DANA, OVO, GoPay & M-Banking.</span>
-        </div>
-    </div>
-
-    <!-- TOAST & SOCIAL PROOF CONTAINERS -->
+    <!-- TOAST CONTAINER (GLOBAL) -->
     <div id="toastContainer" class="fixed top-24 right-5 z-[400] flex flex-col gap-3 pointer-events-none"></div>
-    <div id="socialProofContainer" class="fixed bottom-24 md:bottom-8 left-4 sm:left-6 z-[150] pointer-events-none flex flex-col gap-3"></div>
 
-    <!-- WELCOME & AUTH MODAL -->
-    <div id="welcomeModal" class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4 transition-all duration-300">
-        <div class="glass-card max-w-md w-full p-6 sm:p-8 relative border-primary/30 shadow-glow-strong transform scale-100 transition-transform overflow-hidden">
-            <button onclick="closeWelcomeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center bg-slate-800 rounded-full z-10">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+    <!-- ========================================== -->
+    <!-- AUTHENTICATION GATE (FORCED LOGIN SCREEN)  -->
+    <!-- ========================================== -->
+    <div id="welcomeModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-[#070C18] overflow-hidden transition-all duration-500">
+        
+        <!-- Glowing Background Effects -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div class="absolute top-[-10%] left-[-10%] w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-primary/20 rounded-full blur-[100px] md:blur-[140px]"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-accent/20 rounded-full blur-[100px] md:blur-[140px]"></div>
+        </div>
+
+        <div class="glass-card max-w-md w-full p-6 sm:p-8 relative border-primary/30 shadow-glow-strong transform scale-100 transition-transform overflow-hidden z-10 mx-4">
+            
             <div class="text-center mb-6 mt-2">
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mx-auto mb-4 shadow-glow border border-white/20">
                     <i class="fa-solid fa-shield-halved text-white text-3xl"></i>
                 </div>
                 <h2 class="text-2xl font-extrabold text-white tracking-tight">KA TECH HUB</h2>
-                <p class="text-slate-400 text-xs mt-1">Silakan masuk untuk mengakses layanan.</p>
+                <p class="text-primary font-bold text-xs mt-1 bg-primary/10 inline-block px-3 py-1 rounded-full border border-primary/20">Private Access</p>
+                <p class="text-slate-400 text-[11px] mt-3">Sistem terkunci. Silakan masuk atau daftar untuk mengakses layanan digital kami.</p>
             </div>
 
             <!-- FORM LOGIN -->
@@ -184,672 +179,680 @@
             </div>
         </div>
     </div>
+    <!-- ========================================== -->
 
-    <!-- USER PROFILE DASHBOARD MODAL -->
-    <div id="profileDashboardModal" class="fixed inset-0 z-[250] hidden items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 transition-all">
-        <div class="glass-card w-full max-w-4xl h-full max-h-[96vh] sm:max-h-[90vh] flex flex-col relative border-slate-700 shadow-2xl overflow-hidden my-auto">
-            
-            <div class="flex-shrink-0 bg-slate-900/50">
-                <div class="h-20 sm:h-28 bg-gradient-to-r from-slate-900 via-primary/20 to-slate-900 relative">
-                    <button onclick="closeProfileDashboard()" class="absolute top-3 right-3 text-white hover:text-red-400 transition bg-black/30 p-1.5 rounded-full w-7 h-7 flex items-center justify-center backdrop-blur-sm z-10">
-                        <i class="fa-solid fa-xmark text-sm"></i>
+    <!-- ========================================== -->
+    <!-- MAIN APPLICATION CONTENT (HIDDEN BY DEFAULT) -->
+    <!-- ========================================== -->
+    <div id="appContent" class="hidden opacity-0 transition-opacity duration-700 pb-32 md:pb-12 pt-8 relative w-full min-h-screen">
+
+        <!-- RUNNING TEXT PROMO -->
+        <div class="fixed top-0 w-full z-[70] bg-primary text-[#070C18] text-[10px] sm:text-xs font-bold py-1.5 overflow-hidden flex items-center border-b border-white/20 shadow-[0_0_15px_rgba(56,189,248,0.5)]">
+            <div class="whitespace-nowrap animate-marquee flex items-center gap-8">
+                <span>🚀 PROMO: Diskon 20% untuk layanan YouTube Watchtime minggu ini!</span>
+                <span>💥 FLASH SALE: Instagram Followers Turun Harga Pukul 20:00 WIB!</span>
+                <span>💎 JOIN VIP: Akumulasi belanja 1 Juta dapatkan Level Master (Prioritas Proses)!</span>
+                <span>💳 QRIS ALL PAYMENT AKTIF: Support DANA, OVO, GoPay & M-Banking.</span>
+            </div>
+        </div>
+
+        <div id="socialProofContainer" class="fixed bottom-24 md:bottom-8 left-4 sm:left-6 z-[150] pointer-events-none flex flex-col gap-3"></div>
+
+        <!-- USER PROFILE DASHBOARD MODAL -->
+        <div id="profileDashboardModal" class="fixed inset-0 z-[250] hidden items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 transition-all">
+            <!-- (Isi Profile Dashboard 100% utuh seperti sebelumnya) -->
+            <div class="glass-card w-full max-w-4xl h-full max-h-[96vh] sm:max-h-[90vh] flex flex-col relative border-slate-700 shadow-2xl overflow-hidden my-auto">
+                <div class="flex-shrink-0 bg-slate-900/50">
+                    <div class="h-20 sm:h-28 bg-gradient-to-r from-slate-900 via-primary/20 to-slate-900 relative">
+                        <button onclick="closeProfileDashboard()" class="absolute top-3 right-3 text-white hover:text-red-400 transition bg-black/30 p-1.5 rounded-full w-7 h-7 flex items-center justify-center backdrop-blur-sm z-10">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
+                    <div class="px-4 sm:px-6 relative pb-4 border-b border-slate-700/60">
+                        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center sm:items-end -mt-10 sm:-mt-12 relative z-10">
+                            <!-- AVATAR UPLOAD -->
+                            <div class="relative group cursor-pointer flex-shrink-0" onclick="document.getElementById('avatarUpload').click()" title="Klik untuk ubah foto profil">
+                                <div id="profileAvatar" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 shadow-lg transition-all overflow-hidden bg-cover bg-center"></div>
+                                <div class="absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] border-4 border-transparent">
+                                    <i class="fa-solid fa-camera text-white text-xl sm:text-2xl drop-shadow-lg"></i>
+                                </div>
+                                <input type="file" id="avatarUpload" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleAvatarUpload(event)">
+                            </div>
+                            <!-- INFO -->
+                            <div class="text-center sm:text-left flex-grow pb-1 w-full flex flex-col sm:block items-center">
+                                <span id="dashGreeting" class="block text-[10px] sm:text-xs text-primary font-bold mb-0.5"></span>
+                                <h2 class="text-lg sm:text-2xl font-bold text-white flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
+                                    <span id="dashNameDisplay" class="truncate max-w-[150px] sm:max-w-none">Nama User</span>
+                                    <span id="dashRoleTag" class="hidden text-[8px] sm:text-[10px] bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-2 py-0.5 rounded-md border border-yellow-300 shadow-glow-gold uppercase font-extrabold tracking-wider flex-shrink-0">OWNER</span>
+                                    <i id="dashBluetick" class="fa-solid fa-circle-check text-blue-500 text-base sm:text-xl hidden flex-shrink-0" title="Verified Owner"></i>
+                                    <i id="dashShield" class="fa-solid fa-shield-halved text-indigo-400 text-base sm:text-xl hidden flex-shrink-0" title="Admin Staff"></i>
+                                    <i id="dashCrown" class="fa-solid fa-crown text-yellow-400 text-base sm:text-xl hidden drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] flex-shrink-0" title="Supreme Owner"></i>
+                                </h2>
+                                <p class="text-[10px] sm:text-sm text-slate-400 mt-0.5 truncate">@<span id="dashUsername">username</span> • <span id="dashEmail">email</span></p>
+                            </div>
+                            <!-- LOGOUT BTN -->
+                            <div class="mt-1 sm:mt-0 flex-shrink-0">
+                                <button onclick="logout()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded-xl text-[10px] sm:text-xs font-bold transition">
+                                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BODY SCROLLABLE -->
+                <div class="p-4 sm:p-6 flex-grow overflow-y-auto no-scrollbar space-y-4 bg-slate-900/30">
+                    <div class="bg-slate-900/60 border border-slate-700/50 rounded-lg py-2 px-4 flex justify-center sm:justify-start items-center shadow-inner">
+                        <span id="profileClock" class="text-[10px] sm:text-xs font-medium text-slate-300 w-full text-center sm:text-left flex flex-col sm:flex-row sm:items-center"></span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                        <div id="levelBox" class="sm:col-span-2 bg-slate-900/80 p-3 sm:p-4 rounded-xl border border-slate-700/80 transition-all">
+                            <div class="flex justify-between items-end mb-2">
+                                <div>
+                                    <span class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Level Anda</span>
+                                    <span id="dashLevel" class="text-sm sm:text-lg font-extrabold text-amber-400">Bronze</span>
+                                </div>
+                                <span id="dashNextLevelDesc" class="text-[9px] sm:text-[10px] text-slate-500">Rp 150.000 to Silver</span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-2 mb-1 overflow-hidden border border-slate-700">
+                                <div id="dashProgressBar" class="bg-gradient-to-r from-accent to-primary h-2 rounded-full transition-all duration-1000 w-0 shadow-glow"></div>
+                            </div>
+                        </div>
+
+                        <div id="userWalletBox" class="bg-slate-900/80 p-3 sm:p-4 rounded-xl border border-slate-700/80 flex flex-col justify-between relative overflow-hidden group">
+                            <div class="flex justify-between items-start relative z-10">
+                                <div>
+                                    <span class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Saldo Akun</span>
+                                    <span id="dashUserBalance" class="text-sm sm:text-xl font-extrabold text-primary block mt-0.5">Rp 0</span>
+                                </div>
+                                <i class="fa-solid fa-wallet text-xl sm:text-2xl text-slate-700 group-hover:text-primary/30 transition-colors"></i>
+                            </div>
+                            <button onclick="requestTopUp()" class="w-full mt-3 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary rounded-lg text-xs font-bold transition flex justify-center items-center gap-1 relative z-10">
+                                <i class="fa-solid fa-plus"></i> Isi Saldo
+                            </button>
+                        </div>
+
+                        <div id="userStatBox" class="sm:col-span-3 bg-slate-900/80 p-3 sm:p-4 rounded-xl border border-slate-700/80 flex justify-between items-center relative overflow-hidden hidden">
+                            <div>
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider block relative z-10">Total Belanja (Spent)</span>
+                                <span id="dashTotalSpent" class="text-xs sm:text-base font-extrabold text-white relative z-10 truncate">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ownerStatsBox" class="grid grid-cols-2 gap-3 sm:gap-4 hidden">
+                        <div class="bg-emerald-900/20 p-3 sm:p-4 rounded-xl border border-emerald-500/40 shadow-glow-emerald flex flex-col justify-center relative overflow-hidden group hover:border-emerald-400 transition-colors">
+                            <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-4xl sm:text-6xl text-emerald-500/10 group-hover:scale-110 transition-transform duration-500"></i>
+                            <span class="text-[9px] sm:text-[10px] text-emerald-400 font-bold uppercase tracking-tight sm:tracking-wider block relative z-10 leading-tight">Saldo Pendapatan</span>
+                            <span id="dashOwnerIncome" class="text-sm sm:text-xl md:text-2xl font-extrabold text-white relative z-10 mt-0.5 sm:mt-1 tracking-tighter sm:tracking-normal truncate">Rp 0</span>
+                        </div>
+                        <div class="bg-rose-900/20 p-3 sm:p-4 rounded-xl border border-rose-500/40 shadow-glow-rose flex flex-col justify-center relative overflow-hidden group hover:border-rose-400 transition-colors">
+                            <i class="fa-solid fa-money-bill-transfer absolute -right-2 -bottom-2 text-4xl sm:text-6xl text-rose-500/10 group-hover:scale-110 transition-transform duration-500"></i>
+                            <span class="text-[9px] sm:text-[10px] text-rose-400 font-bold uppercase tracking-tight sm:tracking-wider block relative z-10 leading-tight">Total Cashout</span>
+                            <span id="dashOwnerCashout" class="text-sm sm:text-xl md:text-2xl font-extrabold text-white relative z-10 mt-0.5 sm:mt-1 tracking-tighter sm:tracking-normal truncate">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- ADMIN: MANAJEMEN TIKET SUPPORT -->
+                    <div id="adminSupportBox" class="p-3 sm:p-4 bg-sky-900/20 rounded-xl border border-sky-700/50 hidden">
+                        <h4 class="text-[10px] sm:text-xs font-bold text-sky-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-headset mr-1.5"></i>Manajemen Tiket Support</h4>
+                        <div id="adminTicketList" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar"></div>
+                    </div>
+
+                    <div id="adminTopupBox" class="p-3 sm:p-4 bg-emerald-900/20 rounded-xl border border-emerald-700/50 hidden">
+                        <h4 class="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-money-bill-transfer mr-1.5"></i>Top-Up Saldo User</h4>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="email" id="topupUserEmail" placeholder="Email pelanggan..." class="w-full sm:w-2/5 bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 text-[11px] sm:text-sm focus:outline-none focus:border-emerald-500 transition">
+                            <input type="number" id="topupUserAmount" placeholder="Nominal Rp..." class="w-full sm:w-2/5 bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 text-[11px] sm:text-sm focus:outline-none focus:border-emerald-500 transition">
+                            <button onclick="adminAddBalance()" class="w-full sm:w-1/5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-[11px] font-bold transition shadow-lg shadow-emerald-500/20 whitespace-nowrap">
+                                <i class="fa-solid fa-plus"></i> Tambah
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="adminManagementBox" class="p-3 sm:p-4 bg-indigo-900/20 rounded-xl border border-indigo-700/50 hidden">
+                        <h4 class="text-[10px] sm:text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2"><i class="fa-solid fa-user-shield text-indigo-400 mr-1.5"></i>Manajemen Admin</h4>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="email" id="newAdminEmail" placeholder="Email user terdaftar..." class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 text-[11px] sm:text-sm focus:outline-none focus:border-indigo-500 transition">
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="promoteToAdmin('admin')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-lg text-[11px] font-bold transition flex items-center justify-center gap-1 shadow-lg shadow-indigo-500/20 whitespace-nowrap">
+                                    <i class="fa-solid fa-arrow-up"></i> Jadikan Admin
+                                </button>
+                                <button onclick="promoteToAdmin('user')" class="w-full bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-[11px] font-bold transition flex items-center justify-center gap-1 whitespace-nowrap">
+                                    <i class="fa-solid fa-arrow-down"></i> Cabut
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ownerActionBox" class="p-3 sm:p-4 bg-slate-800/40 rounded-xl border border-slate-700/80 hidden">
+                        <h4 class="text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-2"><i class="fa-solid fa-money-bill-wave text-emerald-400 mr-1.5"></i>Tarik Saldo (Cashout)</h4>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="number" id="cashoutAmount" placeholder="Nominal, ex: 100000" class="w-full sm:w-1/2 bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 text-[11px] sm:text-sm focus:outline-none focus:border-emerald-500 transition">
+                            <div class="relative w-full sm:w-1/3">
+                                <select id="cashoutBank" class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 appearance-none focus:outline-none focus:border-emerald-500 text-[11px] sm:text-sm cursor-pointer transition">
+                                    <option value="Bank Mandiri">Bank Mandiri</option>
+                                    <option value="SeaBank">SeaBank</option>
+                                    <option value="ShopeePay">ShopeePay</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-3 top-2.5 text-slate-400 text-[10px] pointer-events-none"></i>
+                            </div>
+                            <button onclick="processCashout()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-[11px] sm:text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20">
+                                <i class="fa-solid fa-paper-plane"></i> Tarik
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="ownerMutasiBox" class="hidden">
+                        <h4 class="text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 mt-2"><i class="fa-solid fa-list-check text-primary mr-1.5"></i>Mutasi Penarikan Terakhir</h4>
+                        <div id="mutasiList" class="space-y-2 bg-slate-900/40 p-2 sm:p-3 rounded-xl border border-slate-700/50 max-h-40 overflow-y-auto no-scrollbar"></div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 id="dashHistoryTitle" class="text-[10px] sm:text-sm font-bold text-white uppercase tracking-wider">
+                                <i class="fa-solid fa-clock-rotate-left text-primary mr-1.5"></i> Riwayat Pesanan Saya
+                            </h3>
+                            <span id="dashTotalOrders" class="text-[9px] sm:text-xs bg-slate-800 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-slate-300 font-semibold border border-slate-700 whitespace-nowrap">0 Transaksi</span>
+                        </div>
+                        <div id="dashboardHistoryItems" class="space-y-2 sm:space-y-3 pb-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL LIVE CHAT TICKET -->
+        <div id="liveChatModal" class="fixed inset-0 z-[500] hidden items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity p-0 sm:p-4">
+            <div class="glass-card w-full sm:max-w-md h-[85vh] sm:h-[600px] flex flex-col relative border-slate-700 shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden bg-[#070C18]/95">
+                
+                <div class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center z-10 shadow-md">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary relative">
+                            <i class="fa-solid fa-headset text-lg"></i>
+                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white" id="chatHeaderTitle">CS Support</h3>
+                            <p class="text-[10px] text-slate-400">Online • Membalas instan</p>
+                        </div>
+                    </div>
+                    <button onclick="closeChatModal()" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div id="chatMessagesArea" class="flex-grow overflow-y-auto p-4 space-y-3 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-10 flex flex-col no-scrollbar">
+                    <div class="text-center text-[10px] text-slate-500 my-2">Memuat percakapan...</div>
+                </div>
+
+                <div id="chatInputContainer" class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2 items-end">
+                    <textarea id="chatInputMessage" rows="1" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none no-scrollbar" placeholder="Ketik pesan Anda..."></textarea>
+                    <button onclick="sendChatMessage()" class="w-12 h-12 bg-primary hover:bg-accent text-white rounded-xl flex items-center justify-center flex-shrink-0 transition shadow-lg shadow-primary/30">
+                        <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
                 
-                <div class="px-4 sm:px-6 relative pb-4 border-b border-slate-700/60">
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center sm:items-end -mt-10 sm:-mt-12 relative z-10">
-                        
-                        <!-- AVATAR UPLOAD -->
-                        <div class="relative group cursor-pointer flex-shrink-0" onclick="document.getElementById('avatarUpload').click()" title="Klik untuk ubah foto profil">
-                            <div id="profileAvatar" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 shadow-lg transition-all overflow-hidden bg-cover bg-center"></div>
-                            <div class="absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] border-4 border-transparent">
-                                <i class="fa-solid fa-camera text-white text-xl sm:text-2xl drop-shadow-lg"></i>
-                            </div>
-                            <input type="file" id="avatarUpload" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleAvatarUpload(event)">
-                        </div>
-                        
-                        <!-- INFO -->
-                        <div class="text-center sm:text-left flex-grow pb-1 w-full flex flex-col sm:block items-center">
-                            <span id="dashGreeting" class="block text-[10px] sm:text-xs text-primary font-bold mb-0.5"></span>
-                            <h2 class="text-lg sm:text-2xl font-bold text-white flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
-                                <span id="dashNameDisplay" class="truncate max-w-[150px] sm:max-w-none">Nama User</span>
-                                <span id="dashRoleTag" class="hidden text-[8px] sm:text-[10px] bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-2 py-0.5 rounded-md border border-yellow-300 shadow-glow-gold uppercase font-extrabold tracking-wider flex-shrink-0">OWNER</span>
-                                
-                                <i id="dashBluetick" class="fa-solid fa-circle-check text-blue-500 text-base sm:text-xl hidden flex-shrink-0" title="Verified Owner"></i>
-                                <i id="dashShield" class="fa-solid fa-shield-halved text-indigo-400 text-base sm:text-xl hidden flex-shrink-0" title="Admin Staff"></i>
-                                <i id="dashCrown" class="fa-solid fa-crown text-yellow-400 text-base sm:text-xl hidden drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] flex-shrink-0" title="Supreme Owner"></i>
-                            </h2>
-                            <p class="text-[10px] sm:text-sm text-slate-400 mt-0.5 truncate">@<span id="dashUsername">username</span> • <span id="dashEmail">email</span></p>
-                        </div>
-                        
-                        <!-- LOGOUT BTN -->
-                        <div class="mt-1 sm:mt-0 flex-shrink-0">
-                            <button onclick="logout()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded-xl text-[10px] sm:text-xs font-bold transition">
-                                <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- BODY SCROLLABLE -->
-            <div class="p-4 sm:p-6 flex-grow overflow-y-auto no-scrollbar space-y-4 bg-slate-900/30">
-                <div class="bg-slate-900/60 border border-slate-700/50 rounded-lg py-2 px-4 flex justify-center sm:justify-start items-center shadow-inner">
-                    <span id="profileClock" class="text-[10px] sm:text-xs font-medium text-slate-300 w-full text-center sm:text-left flex flex-col sm:flex-row sm:items-center"></span>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                    <div id="levelBox" class="sm:col-span-2 bg-slate-900/80 p-3 sm:p-4 rounded-xl border border-slate-700/80 transition-all">
-                        <div class="flex justify-between items-end mb-2">
-                            <div>
-                                <span class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Level Anda</span>
-                                <span id="dashLevel" class="text-sm sm:text-lg font-extrabold text-amber-400">Bronze</span>
-                            </div>
-                            <span id="dashNextLevelDesc" class="text-[9px] sm:text-[10px] text-slate-500">Rp 150.000 to Silver</span>
-                        </div>
-                        <div class="w-full bg-slate-800 rounded-full h-2 mb-1 overflow-hidden border border-slate-700">
-                            <div id="dashProgressBar" class="bg-gradient-to-r from-accent to-primary h-2 rounded-full transition-all duration-1000 w-0 shadow-glow"></div>
-                        </div>
-                    </div>
-
-                    <div id="userWalletBox" class="bg-slate-900/80 p-3 sm:p-4 rounded-xl border border-slate-700/80 flex flex-col justify-between relative overflow-hidden group">
-                        <div class="flex justify-between items-start relative z-10">
-                            <div>
-                                <span class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Saldo Akun</span>
-                                <span id="dashUserBalance" class="text-sm sm:text-xl font-extrabold text-primary block mt-0.5">Rp 0</span>
-                            </div>
-                            <i class="fa-solid fa-wallet text-xl sm:text-2xl text-slate-700 group-hover:text-primary/30 transition-colors"></i>
-                        </div>
-                        <button onclick="requestTopUp()" class="w-full mt-3 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary rounded-lg text-xs font-bold transition flex justify-center items-center gap-1 relative z-10">
-                            <i class="fa-solid fa-plus"></i> Isi Saldo
-                        </button>
-                    </div>
-
-                    <div id="userStatBox" class="sm:col-span-3 bg-slate-900/80 p-3 sm:p-4 rounded-xl border border-slate-700/80 flex justify-between items-center relative overflow-hidden hidden">
-                        <div>
-                            <span class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider block relative z-10">Total Belanja (Spent)</span>
-                            <span id="dashTotalSpent" class="text-xs sm:text-base font-extrabold text-white relative z-10 truncate">Rp 0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="ownerStatsBox" class="grid grid-cols-2 gap-3 sm:gap-4 hidden">
-                    <div class="bg-emerald-900/20 p-3 sm:p-4 rounded-xl border border-emerald-500/40 shadow-glow-emerald flex flex-col justify-center relative overflow-hidden group hover:border-emerald-400 transition-colors">
-                        <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-4xl sm:text-6xl text-emerald-500/10 group-hover:scale-110 transition-transform duration-500"></i>
-                        <span class="text-[9px] sm:text-[10px] text-emerald-400 font-bold uppercase tracking-tight sm:tracking-wider block relative z-10 leading-tight">Saldo Pendapatan</span>
-                        <span id="dashOwnerIncome" class="text-sm sm:text-xl md:text-2xl font-extrabold text-white relative z-10 mt-0.5 sm:mt-1 tracking-tighter sm:tracking-normal truncate">Rp 0</span>
-                    </div>
-                    <div class="bg-rose-900/20 p-3 sm:p-4 rounded-xl border border-rose-500/40 shadow-glow-rose flex flex-col justify-center relative overflow-hidden group hover:border-rose-400 transition-colors">
-                        <i class="fa-solid fa-money-bill-transfer absolute -right-2 -bottom-2 text-4xl sm:text-6xl text-rose-500/10 group-hover:scale-110 transition-transform duration-500"></i>
-                        <span class="text-[9px] sm:text-[10px] text-rose-400 font-bold uppercase tracking-tight sm:tracking-wider block relative z-10 leading-tight">Total Cashout</span>
-                        <span id="dashOwnerCashout" class="text-sm sm:text-xl md:text-2xl font-extrabold text-white relative z-10 mt-0.5 sm:mt-1 tracking-tighter sm:tracking-normal truncate">Rp 0</span>
-                    </div>
-                </div>
-
-                <!-- ADMIN: MANAJEMEN TIKET SUPPORT -->
-                <div id="adminSupportBox" class="p-3 sm:p-4 bg-sky-900/20 rounded-xl border border-sky-700/50 hidden">
-                    <h4 class="text-[10px] sm:text-xs font-bold text-sky-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-headset mr-1.5"></i>Manajemen Tiket Support</h4>
-                    <div id="adminTicketList" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar">
-                        <!-- Tickets appended here -->
-                    </div>
-                </div>
-
-                <div id="adminTopupBox" class="p-3 sm:p-4 bg-emerald-900/20 rounded-xl border border-emerald-700/50 hidden">
-                    <h4 class="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-money-bill-transfer mr-1.5"></i>Top-Up Saldo User</h4>
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <input type="email" id="topupUserEmail" placeholder="Email pelanggan..." class="w-full sm:w-2/5 bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 text-[11px] sm:text-sm focus:outline-none focus:border-emerald-500 transition">
-                        <input type="number" id="topupUserAmount" placeholder="Nominal Rp..." class="w-full sm:w-2/5 bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 text-[11px] sm:text-sm focus:outline-none focus:border-emerald-500 transition">
-                        <button onclick="adminAddBalance()" class="w-full sm:w-1/5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-[11px] font-bold transition shadow-lg shadow-emerald-500/20 whitespace-nowrap">
-                            <i class="fa-solid fa-plus"></i> Tambah
-                        </button>
-                    </div>
-                </div>
-
-                <div id="adminManagementBox" class="p-3 sm:p-4 bg-indigo-900/20 rounded-xl border border-indigo-700/50 hidden">
-                    <h4 class="text-[10px] sm:text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2"><i class="fa-solid fa-user-shield text-indigo-400 mr-1.5"></i>Manajemen Admin</h4>
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <input type="email" id="newAdminEmail" placeholder="Email user terdaftar..." class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 text-[11px] sm:text-sm focus:outline-none focus:border-indigo-500 transition">
-                        <div class="flex gap-2 w-full sm:w-auto">
-                            <button onclick="promoteToAdmin('admin')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-lg text-[11px] font-bold transition flex items-center justify-center gap-1 shadow-lg shadow-indigo-500/20 whitespace-nowrap">
-                                <i class="fa-solid fa-arrow-up"></i> Jadikan Admin
-                            </button>
-                            <button onclick="promoteToAdmin('user')" class="w-full bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-[11px] font-bold transition flex items-center justify-center gap-1 whitespace-nowrap">
-                                <i class="fa-solid fa-arrow-down"></i> Cabut
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="ownerActionBox" class="p-3 sm:p-4 bg-slate-800/40 rounded-xl border border-slate-700/80 hidden">
-                    <h4 class="text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-2"><i class="fa-solid fa-money-bill-wave text-emerald-400 mr-1.5"></i>Tarik Saldo (Cashout)</h4>
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <input type="number" id="cashoutAmount" placeholder="Nominal, ex: 100000" class="w-full sm:w-1/2 bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 text-[11px] sm:text-sm focus:outline-none focus:border-emerald-500 transition">
-                        <div class="relative w-full sm:w-1/3">
-                            <select id="cashoutBank" class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 appearance-none focus:outline-none focus:border-emerald-500 text-[11px] sm:text-sm cursor-pointer transition">
-                                <option value="Bank Mandiri">Bank Mandiri</option>
-                                <option value="SeaBank">SeaBank</option>
-                                <option value="ShopeePay">ShopeePay</option>
-                            </select>
-                            <i class="fa-solid fa-chevron-down absolute right-3 top-2.5 text-slate-400 text-[10px] pointer-events-none"></i>
-                        </div>
-                        <button onclick="processCashout()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-[11px] sm:text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20">
-                            <i class="fa-solid fa-paper-plane"></i> Tarik
-                        </button>
-                    </div>
-                </div>
-
-                <div id="ownerMutasiBox" class="hidden">
-                    <h4 class="text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 mt-2"><i class="fa-solid fa-list-check text-primary mr-1.5"></i>Mutasi Penarikan Terakhir</h4>
-                    <div id="mutasiList" class="space-y-2 bg-slate-900/40 p-2 sm:p-3 rounded-xl border border-slate-700/50 max-h-40 overflow-y-auto no-scrollbar"></div>
-                </div>
-
-                <div class="mt-4">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 id="dashHistoryTitle" class="text-[10px] sm:text-sm font-bold text-white uppercase tracking-wider">
-                            <i class="fa-solid fa-clock-rotate-left text-primary mr-1.5"></i> Riwayat Pesanan Saya
-                        </h3>
-                        <span id="dashTotalOrders" class="text-[9px] sm:text-xs bg-slate-800 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-slate-300 font-semibold border border-slate-700 whitespace-nowrap">0 Transaksi</span>
-                    </div>
-                    <div id="dashboardHistoryItems" class="space-y-2 sm:space-y-3 pb-4"></div>
+                <!-- This prompt is technically impossible to see now because of Forced Login, but kept for structural safety -->
+                <div id="chatLoginPrompt" class="absolute bottom-0 left-0 w-full p-4 bg-slate-900 border-t border-slate-800 text-center hidden flex-col justify-center items-center h-48">
+                    <i class="fa-solid fa-lock text-3xl text-slate-600 mb-2"></i>
+                    <p class="text-xs text-slate-400 mb-3">Sistem terkunci.</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- MODAL LIVE CHAT TICKET -->
-    <div id="liveChatModal" class="fixed inset-0 z-[500] hidden items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity p-0 sm:p-4">
-        <div class="glass-card w-full sm:max-w-md h-[85vh] sm:h-[600px] flex flex-col relative border-slate-700 shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden bg-[#070C18]/95">
-            
-            <!-- Chat Header -->
-            <div class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center z-10 shadow-md">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary relative">
-                        <i class="fa-solid fa-headset text-lg"></i>
-                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900"></div>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-white" id="chatHeaderTitle">CS Support</h3>
-                        <p class="text-[10px] text-slate-400">Online • Membalas instan</p>
-                    </div>
+        <!-- MODAL QRIS -->
+        <div id="qrisModal" class="fixed inset-0 z-[280] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
+            <div class="glass-card max-w-sm w-full p-6 text-center relative border-primary/40 shadow-glow-strong">
+                <button onclick="closeQrisModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <div class="inline-block p-2 bg-white rounded-2xl mb-4 border-2 border-primary shadow-lg">
+                    <img src="ReactNative-snapshot-image316319566030730119.png" alt="QRIS KA TECH HUB" class="w-64 h-64 rounded-lg mx-auto object-cover">
                 </div>
-                <button onclick="closeChatModal()" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition">
-                    <i class="fa-solid fa-xmark"></i>
+                <h3 class="text-lg font-bold text-white mb-1">Scan QRIS All Payment</h3>
+                <p class="text-xs text-slate-400 mb-4">Dukungan: DANA, OVO, GoPay, ShopeePay &amp; Seluruh M-Banking</p>
+                <button onclick="copyToClipboard('081312185600', 'Nomor QRIS')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold transition mb-3 flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-copy text-primary"></i> Salin Nomor E-Wallet / HP
                 </button>
-            </div>
-
-            <!-- Chat Messages Area -->
-            <div id="chatMessagesArea" class="flex-grow overflow-y-auto p-4 space-y-3 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-10 flex flex-col no-scrollbar">
-                <div class="text-center text-[10px] text-slate-500 my-2">Memuat percakapan...</div>
-            </div>
-
-            <!-- Chat Input Area -->
-            <div id="chatInputContainer" class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2 items-end">
-                <textarea id="chatInputMessage" rows="1" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none no-scrollbar" placeholder="Ketik pesan Anda..."></textarea>
-                <button onclick="sendChatMessage()" class="w-12 h-12 bg-primary hover:bg-accent text-white rounded-xl flex items-center justify-center flex-shrink-0 transition shadow-lg shadow-primary/30">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </div>
-            
-            <!-- State: Input Email for non-logged in -->
-            <div id="chatLoginPrompt" class="absolute bottom-0 left-0 w-full p-4 bg-slate-900 border-t border-slate-800 text-center hidden flex-col justify-center items-center h-48">
-                <i class="fa-solid fa-lock text-3xl text-slate-600 mb-2"></i>
-                <p class="text-xs text-slate-400 mb-3">Silakan login untuk memulai Live Chat.</p>
-                <button onclick="closeChatModal(); openWelcomeModal();" class="btn-primary px-6 py-2 rounded-lg text-xs font-bold shadow-lg">Login / Daftar</button>
+                <button onclick="closeQrisModal()" class="w-full btn-primary py-2.5 rounded-xl font-bold text-xs">Tutup Preview</button>
             </div>
         </div>
-    </div>
 
-    <!-- MODAL QRIS -->
-    <div id="qrisModal" class="fixed inset-0 z-[280] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
-        <div class="glass-card max-w-sm w-full p-6 text-center relative border-primary/40 shadow-glow-strong">
-            <button onclick="closeQrisModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <div class="inline-block p-2 bg-white rounded-2xl mb-4 border-2 border-primary shadow-lg">
-                <img src="ReactNative-snapshot-image316319566030730119.png" alt="QRIS KA TECH HUB" class="w-64 h-64 rounded-lg mx-auto object-cover">
-            </div>
-            <h3 class="text-lg font-bold text-white mb-1">Scan QRIS All Payment</h3>
-            <p class="text-xs text-slate-400 mb-4">Dukungan: DANA, OVO, GoPay, ShopeePay &amp; Seluruh M-Banking</p>
-            <button onclick="copyToClipboard('081312185600', 'Nomor QRIS')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold transition mb-3 flex items-center justify-center gap-2">
-                <i class="fa-regular fa-copy text-primary"></i> Salin Nomor E-Wallet / HP
-            </button>
-            <button onclick="closeQrisModal()" class="w-full btn-primary py-2.5 rounded-xl font-bold text-xs">Tutup Preview</button>
-        </div>
-    </div>
-
-    <!-- HEADER -->
-    <header class="fixed top-[28px] sm:top-[30px] w-full z-50 glass-nav transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer group transition-all" onclick="openProfileDashboard()">
-                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-glow border border-white/20 group-hover:scale-105 transition-transform">
-                        <i class="fa-solid fa-bolt text-white text-2xl group-hover:animate-pulse"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-extrabold text-xl tracking-wider text-white leading-none group-hover:text-primary transition-colors">KA TECH HUB</span>
-                        <span class="text-[10px] text-slate-400 font-medium tracking-widest mt-1 uppercase flex items-center gap-1 group-hover:text-slate-300 transition-colors">
-                            <i class="fa-solid fa-user-circle text-[10px] text-primary"></i> Akses Profile
-                        </span>
-                    </div>
-                </div>
-
-                <nav class="hidden md:flex space-x-8 items-center">
-                    <a href="#" class="text-primary font-semibold">Beranda</a>
-                    <a href="#layanan" class="text-slate-300 hover:text-white transition font-medium">Layanan</a>
-                    <a href="#lacak" class="text-slate-300 hover:text-white transition font-medium">Lacak Pesanan</a>
-                    <a href="#faq-section" class="text-slate-300 hover:text-white transition font-medium">Bantuan</a>
-                    
-                    <div class="ml-4 flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                        <span class="relative flex h-2.5 w-2.5">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                        </span>
-                        <span class="text-[10px] font-bold text-emerald-400 tracking-wider">1.248 Online</span>
-                    </div>
-                </nav>
-
-                <div class="hidden md:flex items-center space-x-4">
-                    <button onclick="toggleCartModal()" class="relative text-slate-300 hover:text-white transition p-2.5 bg-slate-800/60 rounded-xl border border-slate-700/60">
-                        <i class="fa-solid fa-cart-shopping text-xl"></i>
-                        <span id="desktopCartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-[#070C18] hidden">0</span>
-                    </button>
-                    <a href="#layanan" class="btn-primary px-6 py-2.5 rounded-xl font-bold">Mulai Pesan</a>
-                </div>
-
-                <div class="md:hidden flex items-center gap-3">
-                    <div class="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
-                        <span class="text-[9px] font-bold text-emerald-400">Live</span>
-                    </div>
-                    <button onclick="openProfileDashboard()" class="text-primary hover:text-white p-2 text-sm"><i class="fa-solid fa-user"></i></button>
-                    <button onclick="toggleCartModal()" class="relative text-slate-300 hover:text-white transition p-2 bg-slate-800/60 rounded-xl border border-slate-700/60">
-                        <i class="fa-solid fa-cart-shopping text-lg"></i>
-                        <span id="mobileHeaderCartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden">0</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- HERO SECTION -->
-    <section class="relative pt-40 pb-16 lg:pt-52 lg:pb-24 overflow-hidden min-h-[85vh] flex items-center">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] md:w-[650px] md:h-[650px] bg-accent/20 rounded-full blur-[100px] md:blur-[130px] -z-10"></div>
-        <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-secondary/15 rounded-full blur-[110px] -z-10"></div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            
-            <div id="dashboardClock" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-900/60 border border-slate-700/50 text-[10px] sm:text-xs font-semibold text-slate-300 mb-4 backdrop-blur-md shadow-sm"></div>
-            <br>
-            <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 text-xs font-semibold text-slate-300 mb-8 backdrop-blur-md shadow-lg cursor-pointer hover:bg-slate-800 transition" onclick="openProfileDashboard()">
-                <span class="flex h-2.5 w-2.5 relative">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
-                </span>
-                <span>Cek Profile & Riwayat Pesananmu Disini <i class="fa-solid fa-arrow-right ml-1"></i></span>
-            </div>
-            
-            <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight h-[100px] sm:h-[160px]">
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400 block pb-2">Pusat Terpercaya</span>
-                <span id="typewriter-text" class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary typewriter-cursor"></span>
-            </h1>
-            
-            <p class="mt-4 text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
-                Temukan berbagai kebutuhan sosial media, game, dan perbaikan perangkat teknologi dalam satu platform terpercaya dengan proses super kilat.
-            </p>
-            
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="#layanan" class="btn-primary px-8 py-4 rounded-xl text-lg font-bold w-full sm:w-auto shadow-lg flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-bolt"></i> Buat Pesanan Instant
-                </a>
-                <a href="#lacak" class="px-8 py-4 rounded-xl text-lg font-bold w-full sm:w-auto bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-magnifying-glass"></i> Lacak Status Pesanan
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION LAYANAN & ORDER PANEL -->
-    <section id="layanan" class="py-16 relative z-10">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-10">
-                <span class="px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold uppercase tracking-wider mb-3 inline-block">Order Panel Premium</span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Buat Pesanan Instant</h2>
-                <p class="text-slate-400 text-sm mt-2">Gunakan pencarian cepat atau filter kategori untuk memilih layanan</p>
-            </div>
-
-            <div class="gradient-border-box p-6 sm:p-8 shadow-glow-strong">
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-magnifying-glass text-primary"></i> Pencarian Cepat Layanan</span>
-                        </label>
-                        <div class="relative">
-                            <input type="text" id="serviceSearchInput" oninput="onSearchInput()" placeholder="Ketik nama layanan..." class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:border-primary transition text-sm shadow-inner">
-                            <i class="fa-solid fa-search absolute right-4 top-3.5 text-slate-500"></i>
+        <!-- HEADER -->
+        <header class="fixed top-[28px] sm:top-[30px] w-full z-50 glass-nav transition-all duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer group transition-all" onclick="openProfileDashboard()">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-glow border border-white/20 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-bolt text-white text-2xl group-hover:animate-pulse"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-extrabold text-xl tracking-wider text-white leading-none group-hover:text-primary transition-colors">KA TECH HUB</span>
+                            <span class="text-[10px] text-slate-400 font-medium tracking-widest mt-1 uppercase flex items-center gap-1 group-hover:text-slate-300 transition-colors">
+                                <i class="fa-solid fa-user-circle text-[10px] text-primary"></i> Akses Profile
+                            </span>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-primary mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group"></i> Kategori Layanan
-                        </label>
-                        <div class="relative">
-                            <select id="mainCategorySelect" onchange="onCategoryChange()" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3.5 appearance-none focus:outline-none focus:border-primary transition font-semibold text-sm cursor-pointer shadow-inner"></select>
-                            <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                    <nav class="hidden md:flex space-x-8 items-center">
+                        <a href="#" class="text-primary font-semibold">Beranda</a>
+                        <a href="#layanan" class="text-slate-300 hover:text-white transition font-medium">Layanan</a>
+                        <a href="#lacak" class="text-slate-300 hover:text-white transition font-medium">Lacak Pesanan</a>
+                        <a href="#faq-section" class="text-slate-300 hover:text-white transition font-medium">Bantuan</a>
+                        
+                        <div class="ml-4 flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                            <span class="relative flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-[10px] font-bold text-emerald-400 tracking-wider">1.248 Online</span>
                         </div>
+                    </nav>
+
+                    <div class="hidden md:flex items-center space-x-4">
+                        <button onclick="toggleCartModal()" class="relative text-slate-300 hover:text-white transition p-2.5 bg-slate-800/60 rounded-xl border border-slate-700/60">
+                            <i class="fa-solid fa-cart-shopping text-xl"></i>
+                            <span id="desktopCartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-[#070C18] hidden">0</span>
+                        </button>
+                        <a href="#layanan" class="btn-primary px-6 py-2.5 rounded-xl font-bold">Mulai Pesan</a>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-primary mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-list-check"></i> Pilih Layanan
-                        </label>
-                        <div class="relative">
-                            <select id="mainServiceSelect" onchange="onServiceChange()" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3.5 appearance-none focus:outline-none focus:border-primary transition font-semibold text-sm cursor-pointer shadow-inner"></select>
-                            <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                    <div class="md:hidden flex items-center gap-3">
+                        <div class="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+                            <span class="text-[9px] font-bold text-emerald-400">Live</span>
                         </div>
-                    </div>
-
-                    <div id="serviceDetailBox" class="p-4 bg-slate-900/80 rounded-xl border border-slate-800/80 space-y-3">
-                        <p id="selectedDesc" class="text-xs text-slate-300 leading-relaxed">Deskripsi layanan akan muncul di sini.</p>
-                        <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800 text-xs">
-                            <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Harga Unit</span>
-                                <span id="selectedPrice" class="font-bold text-primary text-sm">Rp 0</span>
-                            </div>
-                            <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Min / Max Pesanan</span>
-                                <span id="selectedMinMax" class="font-bold text-slate-200 text-xs">100 / 50.000</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Target Pesanan <span class="text-red-400">*</span></label>
-                            <input type="text" id="mainTargetInput" placeholder="Username / Link / Rekening" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Jumlah Pesanan</label>
-                            <input type="number" id="mainQuantityInput" oninput="calculateMainTotal()" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition text-sm font-bold text-primary" value="100">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Metode Pembayaran</label>
-                        <div class="relative">
-                            <select id="mainPaymentSelect" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary transition text-sm cursor-pointer">
-                                <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis)</option>
-                                <option value="QRIS (Minta via WA)">QRIS (Minta Barcode via WA)</option>
-                                <option value="Bank Mandiri (1290013795022)">Bank Mandiri (1290013795022)</option>
-                                <option value="ShopeePay (081312185600)">ShopeePay (081312185600)</option>
-                            </select>
-                            <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-400 pointer-events-none"></i>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
-                        <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Total Pembayaran</span>
-                            <span id="mainCalculatedTotal" class="text-2xl sm:text-3xl font-extrabold text-primary">Rp 0</span>
-                        </div>
-                        <div class="flex gap-3">
-                            <button onclick="addMainToCart()" class="w-full sm:w-auto px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold border border-slate-700 transition flex items-center justify-center gap-2 text-sm">
-                                <i class="fa-solid fa-cart-plus text-primary"></i> + Keranjang
-                            </button>
-                            <button onclick="processDirectOrder()" class="w-full sm:w-auto btn-primary px-6 py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 text-sm shadow-lg">
-                                <i class="fa-solid fa-bolt"></i> Order Sekarang
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- LACAK PESANAN -->
-    <section id="lacak" class="py-16 relative z-10 bg-slate-900/30 border-t border-slate-800/60">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <span class="text-xs font-bold px-3 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mb-3 inline-block uppercase">Order Status Checker</span>
-            <h2 class="text-3xl font-extrabold text-white mb-2">Lacak Status Pesanan</h2>
-            <p class="text-slate-400 text-sm mb-8">Masukkan Kode Pesanan untuk melihat progres real-time</p>
-
-            <div class="glass-card p-6 border-slate-700">
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="trackInput" placeholder="Contoh: KATH-20260906-8821" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition text-sm font-mono">
-                    <button onclick="trackOrderReal()" class="btn-primary px-6 py-3 rounded-xl font-bold text-sm whitespace-nowrap flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-magnifying-glass"></i> Cek Status
-                    </button>
-                </div>
-                <div id="trackResult" class="hidden mt-6 p-4 bg-slate-900/90 rounded-xl border border-slate-800 text-left space-y-3">
-                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                        <span id="resCode" class="font-mono font-bold text-primary text-sm">#KATH-XXXX</span>
-                        <span id="resBadge" class="px-2.5 py-1 rounded-full text-[10px] font-bold border"></span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
-                        <div><span class="text-slate-500 block text-[10px]">Waktu Pemesanan:</span><span id="resTime" class="font-semibold text-slate-200"></span></div>
-                        <div><span class="text-slate-500 block text-[10px]">Detail Item:</span><span id="resItemDetail" class="font-semibold text-primary"></span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION INFO REKENING & PEMBAYARAN -->
-    <section id="pembayaran" class="py-16 relative z-10 bg-slate-900/40 border-y border-slate-800/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <span class="text-xs font-bold px-3 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mb-2 inline-block">Payment Gateways</span>
-                <h2 class="text-3xl font-bold text-white">Metode Pembayaran Resmi</h2>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="glass-card p-6 flex flex-col justify-between relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 font-extrabold text-xl"><i class="fa-solid fa-qrcode"></i></div>
-                        <span class="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 font-semibold">Instant</span>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white mb-1">QRIS All Payment</h3>
-                        <p class="text-xs text-slate-400 mb-3">Dana, Ovo, GoPay, ShopeePay &amp; M-Banking</p>
-                        <button onclick="openQrisModal()" class="w-full py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg text-xs font-bold transition border border-primary/30 flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-expand"></i> Preview Barcode
+                        <button onclick="openProfileDashboard()" class="text-primary hover:text-white p-2 text-sm"><i class="fa-solid fa-user"></i></button>
+                        <button onclick="toggleCartModal()" class="relative text-slate-300 hover:text-white transition p-2 bg-slate-800/60 rounded-xl border border-slate-700/60">
+                            <i class="fa-solid fa-cart-shopping text-lg"></i>
+                            <span id="mobileHeaderCartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden">0</span>
                         </button>
                     </div>
                 </div>
-                <div class="glass-card p-6 flex flex-col justify-between relative">
-                    <div class="flex justify-between items-start mb-4"><div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-xl"><i class="fa-solid fa-building-columns"></i></div><span class="text-[10px] bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-full border border-blue-500/20 font-semibold">Mandiri</span></div>
-                    <div><p class="text-xs text-slate-400 mb-1">Nomor Rekening:</p><div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800"><span class="font-mono font-bold text-white text-sm">1290013795022</span><button onclick="copyToClipboard('1290013795022', 'Mandiri')" class="text-xs bg-primary/20 text-primary px-2 py-1 rounded">Salin</button></div></div>
-                </div>
-                <div class="glass-card p-6 flex flex-col justify-between relative">
-                    <div class="flex justify-between items-start mb-4"><div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl"><i class="fa-solid fa-water-ladder"></i></div><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-500/20 font-semibold">SeaBank</span></div>
-                    <div><p class="text-xs text-slate-400 mb-1">Nomor Rekening:</p><div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800"><span class="font-mono font-bold text-white text-sm">901705790299</span><button onclick="copyToClipboard('901705790299', 'SeaBank')" class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">Salin</button></div></div>
-                </div>
-                <div class="glass-card p-6 flex flex-col justify-between relative">
-                    <div class="flex justify-between items-start mb-4"><div class="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 text-xl"><i class="fa-solid fa-wallet"></i></div><span class="text-[10px] bg-orange-500/10 text-orange-400 px-2.5 py-1 rounded-full border border-orange-500/20 font-semibold">ShopeePay</span></div>
-                    <div><p class="text-xs text-slate-400 mb-1">Nomor E-Wallet:</p><div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800"><span class="font-mono font-bold text-white text-sm">081312185600</span><button onclick="copyToClipboard('081312185600', 'ShopeePay')" class="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded">Salin</button></div></div>
-                </div>
             </div>
-        </div>
-    </section>
+        </header>
 
-    <!-- FAQ SECTION -->
-    <section id="faq-section" class="py-20 relative z-10 border-b border-slate-800/80">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <span class="text-xs font-bold px-3 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mb-2 inline-block">Bantuan</span>
-                <h2 class="text-3xl font-bold text-white">Pertanyaan yang Sering Diajukan (FAQ)</h2>
-            </div>
-            <div class="space-y-4">
-                <div class="glass-card border-slate-800 overflow-hidden">
-                    <button class="faq-btn w-full px-6 py-4 flex justify-between items-center text-left focus:outline-none" onclick="toggleFAQ(this)">
-                        <span class="font-bold text-white text-sm sm:text-base">Bagaimana cara top-up Saldo Akun?</span>
-                        <i class="fa-solid fa-chevron-down text-slate-400 faq-icon text-sm"></i>
-                    </button>
-                    <div class="faq-content bg-slate-900/50 border-t border-slate-800/50">
-                        <div class="px-6 py-4 text-sm text-slate-400 leading-relaxed">
-                            Silakan masuk ke menu Profile, klik tombol <b>Isi Saldo</b>. Kirim format permintaan ke WhatsApp Admin dan lakukan transfer. Admin akan menambahkan saldo ke akun Anda secara instan.
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card border-slate-800 overflow-hidden">
-                    <button class="faq-btn w-full px-6 py-4 flex justify-between items-center text-left focus:outline-none" onclick="toggleFAQ(this)">
-                        <span class="font-bold text-white text-sm sm:text-base">Berapa lama proses pengerjaan pesanan?</span>
-                        <i class="fa-solid fa-chevron-down text-slate-400 faq-icon text-sm"></i>
-                    </button>
-                    <div class="faq-content bg-slate-900/50 border-t border-slate-800/50">
-                        <div class="px-6 py-4 text-sm text-slate-400 leading-relaxed">
-                            Sebagian besar pesanan media sosial (seperti Followers, Likes, Views) diproses secara <b>Instan hingga Maksimal 1x24 jam</b>. Untuk layanan perbaikan perangkat, waktu akan disesuaikan.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        <!-- HERO SECTION -->
+        <section class="relative pt-40 pb-16 lg:pt-52 lg:pb-24 overflow-hidden min-h-[85vh] flex items-center">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] md:w-[650px] md:h-[650px] bg-accent/20 rounded-full blur-[100px] md:blur-[130px] -z-10"></div>
+            <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-secondary/15 rounded-full blur-[110px] -z-10"></div>
 
-    <!-- FEATURES & STATS -->
-    <section id="features" class="py-20 relative z-10 border-b border-slate-800/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div class="glass-card p-5 border-slate-800">
-                    <span class="text-3xl sm:text-4xl font-extrabold text-primary block" id="countOrders">0</span>
-                    <span class="text-xs text-slate-400 font-medium">Pesanan Selesai</span>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                
+                <div id="dashboardClock" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-900/60 border border-slate-700/50 text-[10px] sm:text-xs font-semibold text-slate-300 mb-4 backdrop-blur-md shadow-sm"></div>
+                <br>
+                <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 text-xs font-semibold text-slate-300 mb-8 backdrop-blur-md shadow-lg cursor-pointer hover:bg-slate-800 transition" onclick="openProfileDashboard()">
+                    <span class="flex h-2.5 w-2.5 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
+                    </span>
+                    <span>Cek Profile & Riwayat Pesananmu Disini <i class="fa-solid fa-arrow-right ml-1"></i></span>
                 </div>
-                <div class="glass-card p-5 border-slate-800">
-                    <span class="text-3xl sm:text-4xl font-extrabold text-primary block" id="countUsers">0</span>
-                    <span class="text-xs text-slate-400 font-medium">Pelanggan Aktif</span>
-                </div>
-                <div class="glass-card p-5 border-slate-800">
-                    <span class="text-3xl sm:text-4xl font-extrabold text-primary block" id="countSatisfy">0</span>
-                    <span class="text-xs text-slate-400 font-medium">% Rate Kepuasan</span>
-                </div>
-                <div class="glass-card p-5 border-slate-800">
-                    <span class="text-3xl sm:text-4xl font-extrabold text-primary block">24/7</span>
-                    <span class="text-xs text-slate-400 font-medium">Sistem Bantuan</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FLOATING ACTION BUTTONS (WA & LIVE CHAT) -->
-    <div class="fixed bottom-20 md:bottom-8 left-5 z-40 flex flex-col items-start gap-3">
-        <!-- Live Chat Button -->
-        <button onclick="openChatWidget()" class="w-14 h-14 bg-gradient-to-r from-blue-500 to-primary rounded-full flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/30 hover:scale-110 transition-transform floating-action" title="Live Support Chat">
-            <i class="fa-solid fa-comments"></i>
-        </button>
-    </div>
-    <div class="fixed bottom-20 md:bottom-8 right-5 z-40 flex flex-col items-end gap-3">
-        <a href="https://instagram.com/rakadimas_2211" target="_blank" class="w-12 h-12 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg hover:scale-110 transition-transform floating-action" style="animation-delay: 0.5s;" title="Instagram">
-            <i class="fa-brands fa-instagram"></i>
-        </a>
-        <button onclick="window.open('https://wa.me/6281312185600', '_blank')" class="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white text-3xl shadow-lg shadow-green-500/30 hover:scale-110 transition-transform floating-action" title="WhatsApp Chat">
-            <i class="fa-brands fa-whatsapp"></i>
-        </button>
-    </div>
-
-    <!-- MOBILE NAVIGATION -->
-    <nav class="md:hidden fixed bottom-0 w-full glass-nav border-t border-slate-800/80 z-50 px-6 py-3 flex justify-between items-center pb-safe">
-        <a href="#" class="flex flex-col items-center text-slate-400 hover:text-white transition gap-1">
-            <i class="fa-solid fa-house text-lg"></i>
-            <span class="text-[10px] font-semibold">Home</span>
-        </a>
-        <a href="#layanan" class="flex flex-col items-center text-slate-400 hover:text-slate-200 transition gap-1">
-            <i class="fa-solid fa-layer-group text-lg"></i>
-            <span class="text-[10px] font-semibold">Layanan</span>
-        </a>
-        <button onclick="openProfileDashboard()" class="flex flex-col items-center text-primary gap-1 relative">
-            <i class="fa-solid fa-user text-lg"></i>
-            <span class="text-[10px] font-semibold">Profile</span>
-        </button>
-        <button onclick="toggleCartModal()" class="flex flex-col items-center text-slate-400 hover:text-slate-200 transition gap-1 relative">
-            <i class="fa-solid fa-cart-shopping text-lg"></i>
-            <span class="text-[10px] font-semibold">Keranjang</span>
-            <span id="mobileBottomCartBadge" class="absolute -top-1 right-2 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden border border-[#070C18]">0</span>
-        </button>
-    </nav>
-
-    <!-- FOOTER -->
-    <footer id="footer" class="border-t border-slate-800 bg-[#040810] pt-16 pb-24 md:pb-8 relative z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
-                <div>
-                    <h4 class="text-white font-bold text-lg mb-4">KA TECH HUB</h4>
-                    <p class="text-slate-400 text-xs leading-relaxed mb-4">Pusat layanan digital terpercaya. Menyediakan top up, boost social media, dan solusi teknologi dengan proses instan.</p>
-                    <div class="text-slate-300 text-xs space-y-2">
-                        <p><i class="fa-solid fa-location-dot text-primary w-4"></i> Jl. Contoh Alamat Bisnis No.123, Jakarta Timur, Indonesia</p>
-                        <p><i class="fa-solid fa-envelope text-primary w-4"></i> admin@katechhub.com</p>
-                        <p><i class="fa-brands fa-whatsapp text-primary w-4"></i> +62 813-1218-5600</p>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">Legalitas & Kebijakan</h4>
-                    <div class="flex flex-col space-y-2 text-xs items-center md:items-start">
-                        <button onclick="openPolicyModal('tnc')" class="text-slate-400 hover:text-primary transition">Syarat & Ketentuan (T&C)</button>
-                        <button onclick="openPolicyModal('privacy')" class="text-slate-400 hover:text-primary transition">Kebijakan Privasi</button>
-                        <button onclick="openPolicyModal('refund')" class="text-slate-400 hover:text-primary transition">Kebijakan Pengembalian Dana (Refund)</button>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">Metode Pembayaran</h4>
-                    <div class="flex flex-wrap justify-center md:justify-start gap-2">
-                        <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">QRIS</span>
-                        <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">Mandiri</span>
-                        <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">SeaBank</span>
-                        <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">ShopeePay</span>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-slate-800/80 pt-8 flex flex-col justify-center items-center gap-4 text-center">
-                <p class="text-slate-500 text-xs">
-                    &copy; 2026 KA TECH HUB. All Rights Reserved. Powered by Firebase Cloud.
+                
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight h-[100px] sm:h-[160px]">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400 block pb-2">Pusat Terpercaya</span>
+                    <span id="typewriter-text" class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary typewriter-cursor"></span>
+                </h1>
+                
+                <p class="mt-4 text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
+                    Temukan berbagai kebutuhan sosial media, game, dan perbaikan perangkat teknologi dalam satu platform terpercaya dengan proses super kilat.
                 </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="#layanan" class="btn-primary px-8 py-4 rounded-xl text-lg font-bold w-full sm:w-auto shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Buat Pesanan Instant
+                    </a>
+                    <a href="#lacak" class="px-8 py-4 rounded-xl text-lg font-bold w-full sm:w-auto bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i> Lacak Status Pesanan
+                    </a>
+                </div>
             </div>
-        </div>
-    </footer>
+        </section>
 
-    <!-- KERANJANG BELANJA MODAL -->
-    <div id="cartModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity">
-        <div class="glass-card w-full max-w-lg p-6 max-h-[90vh] flex flex-col relative m-4 border-slate-700">
-            <button onclick="toggleCartModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
-                <i class="fa-solid fa-xmark text-2xl"></i>
-            </button>
-            <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                <i class="fa-solid fa-cart-shopping mr-3 text-primary"></i> Keranjang Belanja
-            </h2>
-            <div id="cartItems" class="space-y-4 mb-6 flex-grow overflow-y-auto pr-2"></div>
-            <div class="border-t border-slate-700/50 pt-5 mb-5">
-                <label class="block text-sm font-medium text-slate-300 mb-2">Metode Pembayaran</label>
-                <div class="relative">
-                    <select id="paymentMethod" class="w-full bg-slate-800/90 border border-slate-700 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary transition cursor-pointer font-medium text-sm">
-                        <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis)</option>
-                        <option value="QRIS (Minta via WA)">QRIS (Minta Barcode via WA)</option>
-                        <option value="Bank Mandiri (1290013795022)">Bank Mandiri (1290013795022)</option>
-                        <option value="ShopeePay (081312185600)">ShopeePay (081312185600)</option>
-                    </select>
-                    <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+        <!-- SECTION LAYANAN & ORDER PANEL -->
+        <section id="layanan" class="py-16 relative z-10">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-10">
+                    <span class="px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold uppercase tracking-wider mb-3 inline-block">Order Panel Premium</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Buat Pesanan Instant</h2>
+                    <p class="text-slate-400 text-sm mt-2">Gunakan pencarian cepat atau filter kategori untuk memilih layanan</p>
+                </div>
+
+                <div class="gradient-border-box p-6 sm:p-8 shadow-glow-strong">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
+                                <span class="flex items-center gap-2"><i class="fa-solid fa-magnifying-glass text-primary"></i> Pencarian Cepat Layanan</span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="serviceSearchInput" oninput="onSearchInput()" placeholder="Ketik nama layanan..." class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:border-primary transition text-sm shadow-inner">
+                                <i class="fa-solid fa-search absolute right-4 top-3.5 text-slate-500"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-primary mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-layer-group"></i> Kategori Layanan
+                            </label>
+                            <div class="relative">
+                                <select id="mainCategorySelect" onchange="onCategoryChange()" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3.5 appearance-none focus:outline-none focus:border-primary transition font-semibold text-sm cursor-pointer shadow-inner"></select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-primary mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check"></i> Pilih Layanan
+                            </label>
+                            <div class="relative">
+                                <select id="mainServiceSelect" onchange="onServiceChange()" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3.5 appearance-none focus:outline-none focus:border-primary transition font-semibold text-sm cursor-pointer shadow-inner"></select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div id="serviceDetailBox" class="p-4 bg-slate-900/80 rounded-xl border border-slate-800/80 space-y-3">
+                            <p id="selectedDesc" class="text-xs text-slate-300 leading-relaxed">Deskripsi layanan akan muncul di sini.</p>
+                            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800 text-xs">
+                                <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
+                                    <span class="text-slate-400 block text-[10px] uppercase font-bold">Harga Unit</span>
+                                    <span id="selectedPrice" class="font-bold text-primary text-sm">Rp 0</span>
+                                </div>
+                                <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
+                                    <span class="text-slate-400 block text-[10px] uppercase font-bold">Min / Max Pesanan</span>
+                                    <span id="selectedMinMax" class="font-bold text-slate-200 text-xs">100 / 50.000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Target Pesanan <span class="text-red-400">*</span></label>
+                                <input type="text" id="mainTargetInput" placeholder="Username / Link / Rekening" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Jumlah Pesanan</label>
+                                <input type="number" id="mainQuantityInput" oninput="calculateMainTotal()" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition text-sm font-bold text-primary" value="100">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Metode Pembayaran</label>
+                            <div class="relative">
+                                <select id="mainPaymentSelect" class="w-full bg-slate-900/90 border border-slate-700/80 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary transition text-sm cursor-pointer">
+                                    <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis)</option>
+                                    <option value="QRIS (Minta via WA)">QRIS (Minta Barcode via WA)</option>
+                                    <option value="Bank Mandiri (1290013795022)">Bank Mandiri (1290013795022)</option>
+                                    <option value="ShopeePay (081312185600)">ShopeePay (081312185600)</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Total Pembayaran</span>
+                                <span id="mainCalculatedTotal" class="text-2xl sm:text-3xl font-extrabold text-primary">Rp 0</span>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="addMainToCart()" class="w-full sm:w-auto px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold border border-slate-700 transition flex items-center justify-center gap-2 text-sm">
+                                    <i class="fa-solid fa-cart-plus text-primary"></i> + Keranjang
+                                </button>
+                                <button onclick="processDirectOrder()" class="w-full sm:w-auto btn-primary px-6 py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 text-sm shadow-lg">
+                                    <i class="fa-solid fa-bolt"></i> Order Sekarang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-slate-700/50 pt-5">
-                <div class="flex justify-between items-end mb-4">
-                    <p class="text-sm text-slate-400 font-medium">Total Pembayaran</p>
-                    <h3 class="text-2xl font-bold text-primary" id="cartTotal">Rp 0</h3>
+        </section>
+
+        <!-- LACAK PESANAN -->
+        <section id="lacak" class="py-16 relative z-10 bg-slate-900/30 border-t border-slate-800/60">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <span class="text-xs font-bold px-3 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mb-3 inline-block uppercase">Order Status Checker</span>
+                <h2 class="text-3xl font-extrabold text-white mb-2">Lacak Status Pesanan</h2>
+                <p class="text-slate-400 text-sm mb-8">Masukkan Kode Pesanan untuk melihat progres real-time</p>
+
+                <div class="glass-card p-6 border-slate-700">
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="trackInput" placeholder="Contoh: KATH-20260906-8821" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition text-sm font-mono">
+                        <button onclick="trackOrderReal()" class="btn-primary px-6 py-3 rounded-xl font-bold text-sm whitespace-nowrap flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass"></i> Cek Status
+                        </button>
+                    </div>
+                    <div id="trackResult" class="hidden mt-6 p-4 bg-slate-900/90 rounded-xl border border-slate-800 text-left space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <span id="resCode" class="font-mono font-bold text-primary text-sm">#KATH-XXXX</span>
+                            <span id="resBadge" class="px-2.5 py-1 rounded-full text-[10px] font-bold border"></span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                            <div><span class="text-slate-500 block text-[10px]">Waktu Pemesanan:</span><span id="resTime" class="font-semibold text-slate-200"></span></div>
+                            <div><span class="text-slate-500 block text-[10px]">Detail Item:</span><span id="resItemDetail" class="font-semibold text-primary"></span></div>
+                        </div>
+                    </div>
                 </div>
-                <button onclick="processCartCheckout()" class="w-full btn-primary py-3.5 rounded-xl font-bold text-lg flex justify-center items-center gap-2 shadow-lg">
-                    <i class="fa-solid fa-bolt"></i> Proses Checkout
+            </div>
+        </section>
+
+        <!-- SECTION INFO REKENING & PEMBAYARAN -->
+        <section id="pembayaran" class="py-16 relative z-10 bg-slate-900/40 border-y border-slate-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <span class="text-xs font-bold px-3 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mb-2 inline-block">Payment Gateways</span>
+                    <h2 class="text-3xl font-bold text-white">Metode Pembayaran Resmi</h2>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-card p-6 flex flex-col justify-between relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 font-extrabold text-xl"><i class="fa-solid fa-qrcode"></i></div>
+                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 font-semibold">Instant</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">QRIS All Payment</h3>
+                            <p class="text-xs text-slate-400 mb-3">Dana, Ovo, GoPay, ShopeePay &amp; M-Banking</p>
+                            <button onclick="openQrisModal()" class="w-full py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg text-xs font-bold transition border border-primary/30 flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-expand"></i> Preview Barcode
+                            </button>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-between relative">
+                        <div class="flex justify-between items-start mb-4"><div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-xl"><i class="fa-solid fa-building-columns"></i></div><span class="text-[10px] bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-full border border-blue-500/20 font-semibold">Mandiri</span></div>
+                        <div><p class="text-xs text-slate-400 mb-1">Nomor Rekening:</p><div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800"><span class="font-mono font-bold text-white text-sm">1290013795022</span><button onclick="copyToClipboard('1290013795022', 'Mandiri')" class="text-xs bg-primary/20 text-primary px-2 py-1 rounded">Salin</button></div></div>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-between relative">
+                        <div class="flex justify-between items-start mb-4"><div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl"><i class="fa-solid fa-water-ladder"></i></div><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-500/20 font-semibold">SeaBank</span></div>
+                        <div><p class="text-xs text-slate-400 mb-1">Nomor Rekening:</p><div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800"><span class="font-mono font-bold text-white text-sm">901705790299</span><button onclick="copyToClipboard('901705790299', 'SeaBank')" class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">Salin</button></div></div>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-between relative">
+                        <div class="flex justify-between items-start mb-4"><div class="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 text-xl"><i class="fa-solid fa-wallet"></i></div><span class="text-[10px] bg-orange-500/10 text-orange-400 px-2.5 py-1 rounded-full border border-orange-500/20 font-semibold">ShopeePay</span></div>
+                        <div><p class="text-xs text-slate-400 mb-1">Nomor E-Wallet:</p><div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800"><span class="font-mono font-bold text-white text-sm">081312185600</span><button onclick="copyToClipboard('081312185600', 'ShopeePay')" class="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded">Salin</button></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ SECTION -->
+        <section id="faq-section" class="py-20 relative z-10 border-b border-slate-800/80">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <span class="text-xs font-bold px-3 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mb-2 inline-block">Bantuan</span>
+                    <h2 class="text-3xl font-bold text-white">Pertanyaan yang Sering Diajukan (FAQ)</h2>
+                </div>
+                <div class="space-y-4">
+                    <div class="glass-card border-slate-800 overflow-hidden">
+                        <button class="faq-btn w-full px-6 py-4 flex justify-between items-center text-left focus:outline-none" onclick="toggleFAQ(this)">
+                            <span class="font-bold text-white text-sm sm:text-base">Bagaimana cara top-up Saldo Akun?</span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 faq-icon text-sm"></i>
+                        </button>
+                        <div class="faq-content bg-slate-900/50 border-t border-slate-800/50">
+                            <div class="px-6 py-4 text-sm text-slate-400 leading-relaxed">
+                                Silakan masuk ke menu Profile, klik tombol <b>Isi Saldo</b>. Kirim format permintaan ke WhatsApp Admin dan lakukan transfer. Admin akan menambahkan saldo ke akun Anda secara instan.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card border-slate-800 overflow-hidden">
+                        <button class="faq-btn w-full px-6 py-4 flex justify-between items-center text-left focus:outline-none" onclick="toggleFAQ(this)">
+                            <span class="font-bold text-white text-sm sm:text-base">Berapa lama proses pengerjaan pesanan?</span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 faq-icon text-sm"></i>
+                        </button>
+                        <div class="faq-content bg-slate-900/50 border-t border-slate-800/50">
+                            <div class="px-6 py-4 text-sm text-slate-400 leading-relaxed">
+                                Sebagian besar pesanan media sosial (seperti Followers, Likes, Views) diproses secara <b>Instan hingga Maksimal 1x24 jam</b>. Untuk layanan perbaikan perangkat, waktu akan disesuaikan.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES & STATS -->
+        <section id="features" class="py-20 relative z-10 border-b border-slate-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="glass-card p-5 border-slate-800">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-primary block" id="countOrders">0</span>
+                        <span class="text-xs text-slate-400 font-medium">Pesanan Selesai</span>
+                    </div>
+                    <div class="glass-card p-5 border-slate-800">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-primary block" id="countUsers">0</span>
+                        <span class="text-xs text-slate-400 font-medium">Pelanggan Aktif</span>
+                    </div>
+                    <div class="glass-card p-5 border-slate-800">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-primary block" id="countSatisfy">0</span>
+                        <span class="text-xs text-slate-400 font-medium">% Rate Kepuasan</span>
+                    </div>
+                    <div class="glass-card p-5 border-slate-800">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-primary block">24/7</span>
+                        <span class="text-xs text-slate-400 font-medium">Sistem Bantuan</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FLOATING ACTION BUTTONS (WA & LIVE CHAT) -->
+        <div class="fixed bottom-20 md:bottom-8 left-5 z-40 flex flex-col items-start gap-3">
+            <button onclick="openChatWidget()" class="w-14 h-14 bg-gradient-to-r from-blue-500 to-primary rounded-full flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/30 hover:scale-110 transition-transform floating-action" title="Live Support Chat">
+                <i class="fa-solid fa-comments"></i>
+            </button>
+        </div>
+        <div class="fixed bottom-20 md:bottom-8 right-5 z-40 flex flex-col items-end gap-3">
+            <a href="https://instagram.com/rakadimas_2211" target="_blank" class="w-12 h-12 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg hover:scale-110 transition-transform floating-action" style="animation-delay: 0.5s;" title="Instagram">
+                <i class="fa-brands fa-instagram"></i>
+            </a>
+            <button onclick="window.open('https://wa.me/6281312185600', '_blank')" class="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white text-3xl shadow-lg shadow-green-500/30 hover:scale-110 transition-transform floating-action" title="WhatsApp Chat">
+                <i class="fa-brands fa-whatsapp"></i>
+            </button>
+        </div>
+
+        <!-- MOBILE NAVIGATION -->
+        <nav class="md:hidden fixed bottom-0 w-full glass-nav border-t border-slate-800/80 z-50 px-6 py-3 flex justify-between items-center pb-safe">
+            <a href="#" class="flex flex-col items-center text-slate-400 hover:text-white transition gap-1">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[10px] font-semibold">Home</span>
+            </a>
+            <a href="#layanan" class="flex flex-col items-center text-slate-400 hover:text-slate-200 transition gap-1">
+                <i class="fa-solid fa-layer-group text-lg"></i>
+                <span class="text-[10px] font-semibold">Layanan</span>
+            </a>
+            <button onclick="openProfileDashboard()" class="flex flex-col items-center text-primary gap-1 relative">
+                <i class="fa-solid fa-user text-lg"></i>
+                <span class="text-[10px] font-semibold">Profile</span>
+            </button>
+            <button onclick="toggleCartModal()" class="flex flex-col items-center text-slate-400 hover:text-slate-200 transition gap-1 relative">
+                <i class="fa-solid fa-cart-shopping text-lg"></i>
+                <span class="text-[10px] font-semibold">Keranjang</span>
+                <span id="mobileBottomCartBadge" class="absolute -top-1 right-2 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden border border-[#070C18]">0</span>
+            </button>
+        </nav>
+
+        <!-- FOOTER -->
+        <footer id="footer" class="border-t border-slate-800 bg-[#040810] pt-16 pb-24 md:pb-8 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
+                    <div>
+                        <h4 class="text-white font-bold text-lg mb-4">KA TECH HUB</h4>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">Pusat layanan digital terpercaya. Menyediakan top up, boost social media, dan solusi teknologi dengan proses instan.</p>
+                        <div class="text-slate-300 text-xs space-y-2">
+                            <p><i class="fa-solid fa-location-dot text-primary w-4"></i> Jl. Contoh Alamat Bisnis No.123, Jakarta Timur, Indonesia</p>
+                            <p><i class="fa-solid fa-envelope text-primary w-4"></i> admin@katechhub.com</p>
+                            <p><i class="fa-brands fa-whatsapp text-primary w-4"></i> +62 813-1218-5600</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">Legalitas & Kebijakan</h4>
+                        <div class="flex flex-col space-y-2 text-xs items-center md:items-start">
+                            <button onclick="openPolicyModal('tnc')" class="text-slate-400 hover:text-primary transition">Syarat & Ketentuan (T&C)</button>
+                            <button onclick="openPolicyModal('privacy')" class="text-slate-400 hover:text-primary transition">Kebijakan Privasi</button>
+                            <button onclick="openPolicyModal('refund')" class="text-slate-400 hover:text-primary transition">Kebijakan Pengembalian Dana (Refund)</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">Metode Pembayaran</h4>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-2">
+                            <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">QRIS</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">Mandiri</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">SeaBank</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">ShopeePay</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-slate-800/80 pt-8 flex flex-col justify-center items-center gap-4 text-center">
+                    <p class="text-slate-500 text-xs">
+                        &copy; 2026 KA TECH HUB. All Rights Reserved. Powered by Firebase Cloud.
+                    </p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- KERANJANG BELANJA MODAL -->
+        <div id="cartModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity">
+            <div class="glass-card w-full max-w-lg p-6 max-h-[90vh] flex flex-col relative m-4 border-slate-700">
+                <button onclick="toggleCartModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
                 </button>
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <i class="fa-solid fa-cart-shopping mr-3 text-primary"></i> Keranjang Belanja
+                </h2>
+                <div id="cartItems" class="space-y-4 mb-6 flex-grow overflow-y-auto pr-2"></div>
+                <div class="border-t border-slate-700/50 pt-5 mb-5">
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Metode Pembayaran</label>
+                    <div class="relative">
+                        <select id="paymentMethod" class="w-full bg-slate-800/90 border border-slate-700 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary transition cursor-pointer font-medium text-sm">
+                            <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis)</option>
+                            <option value="QRIS (Minta via WA)">QRIS (Minta Barcode via WA)</option>
+                            <option value="Bank Mandiri (1290013795022)">Bank Mandiri (1290013795022)</option>
+                            <option value="ShopeePay (081312185600)">ShopeePay (081312185600)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div class="border-t border-slate-700/50 pt-5">
+                    <div class="flex justify-between items-end mb-4">
+                        <p class="text-sm text-slate-400 font-medium">Total Pembayaran</p>
+                        <h3 class="text-2xl font-bold text-primary" id="cartTotal">Rp 0</h3>
+                    </div>
+                    <button onclick="processCartCheckout()" class="w-full btn-primary py-3.5 rounded-xl font-bold text-lg flex justify-center items-center gap-2 shadow-lg">
+                        <i class="fa-solid fa-bolt"></i> Proses Checkout
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- MODAL KEBIJAKAN (POLICIES) -->
-    <div id="policyModal" class="fixed inset-0 z-[450] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity p-4">
-        <div class="glass-card w-full max-w-2xl p-6 max-h-[85vh] flex flex-col relative border-slate-700 shadow-2xl">
-            <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition bg-slate-800 rounded-full w-8 h-8 flex items-center justify-center">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <h2 id="policyTitle" class="text-xl md:text-2xl font-bold text-white mb-4 border-b border-slate-700/50 pb-4">Judul Kebijakan</h2>
-            <div id="policyContent" class="overflow-y-auto pr-2 text-slate-300 text-sm leading-relaxed space-y-4 no-scrollbar"></div>
-            <div class="border-t border-slate-700/50 pt-4 mt-4">
-                <button onclick="closePolicyModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-bold text-sm transition">Saya Mengerti & Setuju</button>
+        <!-- MODAL KEBIJAKAN (POLICIES) -->
+        <div id="policyModal" class="fixed inset-0 z-[450] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity p-4">
+            <div class="glass-card w-full max-w-2xl p-6 max-h-[85vh] flex flex-col relative border-slate-700 shadow-2xl">
+                <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition bg-slate-800 rounded-full w-8 h-8 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+                <h2 id="policyTitle" class="text-xl md:text-2xl font-bold text-white mb-4 border-b border-slate-700/50 pb-4">Judul Kebijakan</h2>
+                <div id="policyContent" class="overflow-y-auto pr-2 text-slate-300 text-sm leading-relaxed space-y-4 no-scrollbar"></div>
+                <div class="border-t border-slate-700/50 pt-4 mt-4">
+                    <button onclick="closePolicyModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-bold text-sm transition">Saya Mengerti & Setuju</button>
+                </div>
             </div>
         </div>
-    </div>
+
+    </div> <!-- END OF MAIN APP CONTENT -->
 
     <!-- FIREBASE SDK ENGINE -->
     <script type="module">
@@ -883,15 +886,32 @@
         window.activeTicketId = null;
         window.unsubscribeChat = null;
 
+        // AUTH GATE: Gating everything inside onAuthStateChanged
         onAuthStateChanged(auth, async (user) => {
+            const welcomeModal = document.getElementById('welcomeModal');
+            const appContent = document.getElementById('appContent');
+
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) {
                     window.currentUserData = { uid: user.uid, ...userDoc.data() };
                 }
-                if(window.closeWelcomeModal) window.closeWelcomeModal();
+                
+                // USER LOGGED IN -> Hide Gateway, Show App
+                welcomeModal.classList.add('hidden');
+                welcomeModal.classList.remove('flex');
+                
+                appContent.classList.remove('hidden');
+                setTimeout(() => appContent.classList.remove('opacity-0'), 50);
+
             } else {
                 window.currentUserData = null;
+                
+                // NOT LOGGED IN -> Show Gateway, Hide App
+                appContent.classList.add('hidden', 'opacity-0');
+                
+                welcomeModal.classList.remove('hidden');
+                welcomeModal.classList.add('flex');
             }
         });
 
@@ -909,19 +929,14 @@
             const reader = new FileReader();
             reader.onload = async function(e) {
                 const base64Data = e.target.result;
-                
                 try {
-                    await updateDoc(doc(db, "users", window.currentUserData.uid), {
-                        avatar: base64Data
-                    });
-                    
+                    await updateDoc(doc(db, "users", window.currentUserData.uid), { avatar: base64Data });
                     window.currentUserData.avatar = base64Data;
                     const avatarEl = document.getElementById('profileAvatar');
                     
                     avatarEl.style.backgroundImage = `url(${base64Data})`;
                     avatarEl.innerHTML = ''; 
                     avatarEl.classList.remove('bg-gradient-to-br', 'from-yellow-400', 'via-gold', 'to-amber-600', 'from-accent', 'to-primary', 'from-indigo-500', 'to-blue-600');
-                    
                     window.showToast("Foto profil berhasil diperbarui!");
                 } catch(err) {
                     alert("Gagal menyimpan foto (Quota/Jaringan): " + err.message);
@@ -934,25 +949,11 @@
         // --- LIVE CHAT & TICKET SYSTEM ---
         window.openChatWidget = async function() {
             const modal = document.getElementById('liveChatModal');
-            const loginPrompt = document.getElementById('chatLoginPrompt');
-            const chatContainer = document.getElementById('chatInputContainer');
-            
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
             
-            if(!window.currentUserData) {
-                loginPrompt.classList.remove('hidden');
-                loginPrompt.classList.add('flex');
-                chatContainer.classList.add('hidden');
-                document.getElementById('chatMessagesArea').innerHTML = '';
-                return;
-            }
-            
-            loginPrompt.classList.add('hidden');
-            loginPrompt.classList.remove('flex');
-            chatContainer.classList.remove('hidden');
-            
+            // Because of Forced Auth, user is 100% guaranteed to be logged in here!
             document.getElementById('chatHeaderTitle').innerText = "CS Support (Anda)";
             
             const q = query(collection(db, "tickets"), where("uid", "==", window.currentUserData.uid));
@@ -1015,8 +1016,6 @@
         };
 
         window.sendChatMessage = async function() {
-            if(!window.currentUserData) return alert("Harap login");
-            
             const input = document.getElementById('chatInputMessage');
             const text = input.value.trim();
             if(!text) return;
@@ -1116,10 +1115,7 @@
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
             
-            document.getElementById('chatLoginPrompt').classList.add('hidden');
-            document.getElementById('chatInputContainer').classList.remove('hidden');
             document.getElementById('chatHeaderTitle').innerHTML = `CS - <span class="text-slate-300 font-normal">${userName}</span>`;
-            
             window.subscribeToChat(ticketId, true); 
         };
 
@@ -1147,7 +1143,6 @@
 
                 await setDoc(doc(db, "users", user.uid), userData);
                 window.showToast("Registrasi Berhasil ke Firebase!");
-                if(window.switchAuthTab) window.switchAuthTab('login');
             } catch (error) {
                 alert("Gagal Registrasi: " + error.message);
             }
@@ -1156,15 +1151,13 @@
         window.processLogin = async function() {
             const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
             const passIn = document.getElementById('loginPassword').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
             
             if(!emailInput || !passIn) return alert("Isi Email dan Password!");
             
             try {
                 await setPersistence(auth, browserLocalPersistence);
                 await signInWithEmailAndPassword(auth, emailInput, passIn);
-                window.showToast("Berhasil Login Cloud!");
-                window.closeWelcomeModal();
+                window.showToast("Login Berhasil! Mengalihkan...");
             } catch (error) { 
                 alert("Login Gagal: " + error.message); 
             }
@@ -1184,7 +1177,6 @@
 
         window.logout = async function() { 
             await signOut(auth); 
-            location.reload(); 
         };
 
         window.adminAddBalance = async function() {
@@ -1261,11 +1253,8 @@
 
         window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
             const userData = window.currentUserData;
-            if(!userData) return { success: false, message: "Harap login!" };
-
             try {
                 let statusOrder = 'Belum Proses';
-                
                 if(paymentMethod === 'Saldo Akun') {
                     if((userData.balance || 0) < totalHarga) return { success: false, message: `Saldo tidak cukup!` };
                     await updateDoc(doc(db, "users", userData.uid), { balance: increment(-totalHarga), totalSpent: increment(totalHarga) });
@@ -1381,7 +1370,7 @@
             }
         };
 
-        // AUTH & MODAL TOGGLERS (FIXED - DO NOT REMOVE)
+        // AUTH TABS 
         window.switchAuthTab = function(tabName) {
             document.getElementById('formLogin').classList.add('hidden');
             document.getElementById('formRegister').classList.add('hidden');
@@ -1403,27 +1392,9 @@
             }
         };
 
-        window.openWelcomeModal = function() {
-            document.getElementById('welcomeModal').classList.remove('hidden');
-            document.getElementById('welcomeModal').classList.add('flex');
-            document.body.style.overflow = 'hidden';
-            window.switchAuthTab('login'); // Default to login
-        };
-
-        window.closeWelcomeModal = function() {
-            document.getElementById('welcomeModal').classList.add('hidden');
-            document.getElementById('welcomeModal').classList.remove('flex');
-            document.body.style.overflow = 'auto';
-        };
-
         // PROFILE DASHBOARD LOGIC
         window.openProfileDashboard = function() {
             const userData = window.currentUserData;
-            if(!userData) {
-                window.openWelcomeModal();
-                return;
-            }
-            
             document.getElementById('dashNameDisplay').innerText = userData.name;
             document.getElementById('dashUsername').innerText = userData.username;
             document.getElementById('dashEmail').innerText = window.maskEmail(userData.email);
@@ -1517,7 +1488,6 @@
 
         // UTILITIES & OWNER LOGICS
         window.requestTopUp = function() {
-            if(!window.currentUserData) return window.openWelcomeModal();
             const message = `Halo Admin 👋\nSaya mau isi Saldo Akun KA TECH HUB.\n\n👤 *Akun:* ${window.currentUserData.email}\n💰 *Nominal:* Rp ... (Isi Nominal)\n💳 *Bayar Via:* ... (QRIS/Mandiri)\n\nMohon bantuannya Kak!`;
             window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
         };
@@ -1719,7 +1689,6 @@
         };
 
         window.processDirectOrder = async function() {
-            if(!window.currentUserData) return window.openWelcomeModal();
             if (!selectedProduct) return;
             
             const target = document.getElementById('mainTargetInput').value.trim(); 
@@ -1753,7 +1722,6 @@
         };
 
         window.processCartCheckout = async function() {
-            if(!window.currentUserData) return window.openWelcomeModal();
             if(cart.length === 0) return alert("Keranjang kosong!");
             
             const paymentMethod = document.getElementById('paymentMethod').value; 
