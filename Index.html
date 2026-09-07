@@ -91,7 +91,7 @@
         .swal2-container { z-index: 999999 !important; }
         .order-tab.active { background-color: #0EA5E9; color: white; font-weight: bold; border-color: #38BDF8; box-shadow: 0 0 15px rgba(14,165,233,0.3); }
         .order-tab { background-color: rgba(15, 23, 42, 0.8); color: #94A3B8; border: 1px solid rgba(51, 65, 85, 0.8); }
-        /* Hides Recaptcha Badge to keep UI clean (optional but legal if privacy policy is stated) */
+        /* Hides Recaptcha Badge to keep UI clean */
         .grecaptcha-badge { visibility: hidden; }
     </style>
 </head>
@@ -196,7 +196,7 @@
                     </div>
                     <!-- ReCaptcha Terms (Required by Google if badge is hidden) -->
                     <div class="text-[9px] text-slate-500 text-center mt-2 leading-tight">
-                        Dengan mendaftar, Anda menyetujui Kebijakan Privasi. Terlindungi oleh reCAPTCHA Enterprise.
+                        Pendaftaran dilindungi oleh sistem keamanan reCAPTCHA Enterprise.
                     </div>
 
                     <button id="btnRegister" onclick="processRegister()" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 py-3 rounded-xl font-bold text-sm transition mt-3 hover:scale-[1.02]">
@@ -1031,8 +1031,8 @@
     <!-- FIREBASE SDK ENGINE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-        // DIUPDATE: Menambahkan sendEmailVerification
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+        // DIUPDATE: Tidak lagi mengimpor sendEmailVerification
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, orderBy, limit, runTransaction } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -1226,7 +1226,7 @@
             finally { btnGoogle.innerHTML = originalText; btnGoogle.disabled = false; }
         };
 
-        // DIUPDATE: REGISTER DENGAN RECAPTCHA DAN EMAIL VERIFICATION
+        // DIUPDATE: REGISTER DENGAN RECAPTCHA (TIDAK ADA BLOKIR EMAIL)
         window.processRegister = async function() {
             const name = document.getElementById('regName').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase().replace(/\s+/g, '');
@@ -1241,7 +1241,7 @@
             btnReg.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memeriksa Keamanan...';
             btnReg.disabled = true;
 
-            // Eksekusi ReCaptcha v3 Anti-Spam (Tidak Terlihat oleh User)
+            // Eksekusi ReCaptcha v3 Anti-Spam
             grecaptcha.ready(async function() {
                 try {
                     const token = await grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', {action: 'register'});
@@ -1274,14 +1274,8 @@
                     if (appliedRef) { await window.processReferrerBonus(refUsername, username); }
                     localStorage.removeItem('katech_ref');
 
-                    // KUNCI KEAMANAN: Kirim Email Verifikasi
-                    await sendEmailVerification(user);
-                    
-                    // Logout otomatis agar user wajib klik email dulu
-                    await signOut(auth);
-
-                    window.alert("Registrasi Berhasil! Kami telah mengirimkan link verifikasi ke Email Anda. Silakan klik link tersebut sebelum Login.");
-                    window.switchAuthTab('formLogin');
+                    window.alert("Registrasi Berhasil! Selamat datang di KA TECH HUB.");
+                    // Auth state otomatis berubah menjadi terlogin.
 
                 } catch (error) { 
                     window.alert("Gagal Registrasi: " + error.message); 
@@ -1292,7 +1286,7 @@
             });
         };
 
-        // DIUPDATE: CEK STATUS VERIFIKASI EMAIL SAAT LOGIN
+        // DIUPDATE: LOGIN TANPA CEK VERIFIKASI EMAIL
         window.processLogin = async function() {
             const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
             const passIn = document.getElementById('loginPassword').value;
@@ -1304,15 +1298,10 @@
 
             try {
                 await setPersistence(auth, browserLocalPersistence);
-                const userCredential = await signInWithEmailAndPassword(auth, emailInput, passIn);
+                await signInWithEmailAndPassword(auth, emailInput, passIn);
                 
-                // Pengecekan OTP/Verifikasi (Dikecualikan untuk Akun Owner/Test jika belum diset)
-                if (!userCredential.user.emailVerified && userCredential.user.email !== "marcurapikk@gmail.com") {
-                    await signOut(auth); // Usir user jika belum verifikasi
-                    if(btn) { btn.innerHTML = originalContent; btn.disabled = false; }
-                    return window.alert("Akses Ditolak! Anda belum memverifikasi Email. Silakan klik link di Kotak Masuk atau Spam Email Anda.");
-                }
-
+                // KODE PEMBLOKIRAN EMAIL SUDAH DIHAPUS DI SINI. User bisa bebas masuk.
+                
                 window.showToast("Login Berhasil!");
             } catch (error) { 
                 let msg = error.message;
@@ -1590,8 +1579,6 @@
             try { await updateDoc(doc(db, "orders", docId), { status: newStatus }); window.showToast(`Status diset ke ${newStatus}`); } catch (e) { window.alert("Gagal: " + e.message); }
         };
 
-        // DIUPDATE: SECURE TRANSACTION CHECKOUT
-        // Transaksi menggunakan runTransaction untuk memastikan data saldo aman dan tersinkron
         window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
             const userData = window.currentUserData;
             if (!userData) return { success: false, message: "Sesi login tidak valid atau belum termuat. Silakan refresh halaman." };
