@@ -133,9 +133,22 @@
                         </label>
                         <button type="button" onclick="switchAuthTab('forgot')" class="hover:text-primary transition">Lupa Password?</button>
                     </div>
-                    <button onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-lg mt-3 transition hover:scale-[1.02]">
+                    
+                    <button onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-lg transition hover:scale-[1.02]">
                         <i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk Cloud
                     </button>
+
+                    <!-- TOMBOL GOOGLE LOGIN -->
+                    <div class="relative my-4">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-700/80"></div></div>
+                        <div class="relative flex justify-center text-xs"><span class="bg-slate-900 px-2 text-slate-400">Atau masuk dengan</span></div>
+                    </div>
+
+                    <button onclick="processGoogleLogin()" type="button" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2.5 rounded-xl font-semibold text-xs transition flex items-center justify-center gap-2 hover:border-slate-500">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.4 0 15.2s.7 5.5 1.9 7.9l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
+                        Masuk dengan Google
+                    </button>
+
                     <div class="text-center text-xs mt-5 text-slate-400 pt-3 border-t border-slate-700/50">
                         Belum punya akun? <button type="button" onclick="switchAuthTab('register')" class="text-primary font-bold hover:underline transition">Daftar Akun</button>
                     </div>
@@ -148,11 +161,11 @@
                         <input type="text" id="regName" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Username</label>
-                        <input type="text" id="regUsername" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Username (Unik/1 Akun 1)</label>
+                        <input type="text" id="regUsername" placeholder="Username tanpa spasi..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Email</label>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Email Terdaftar</label>
                         <input type="email" id="regEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
                     </div>
                     <div>
@@ -172,12 +185,14 @@
 
                 <!-- FORM LUPA PASSWORD -->
                 <div id="formForgot" class="hidden space-y-4">
-                    <p class="text-xs text-slate-300 mb-4 text-center">Masukkan Email terdaftar untuk kirim link reset password.</p>
+                    <p class="text-xs text-slate-300 mb-4 text-center">Masukkan Email terdaftar untuk menerima link verifikasi reset password.</p>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">Email Terdaftar</label>
-                        <input type="email" id="forgotEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
+                        <input type="email" id="forgotEmail" placeholder="contoh@gmail.com" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
                     </div>
-                    <button onclick="processResetPassword()" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-bold text-sm transition mt-2 hover:scale-[1.02]">Kirim Link Reset</button>
+                    <button onclick="processResetPassword()" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-bold text-sm transition mt-2 hover:scale-[1.02]">
+                        <i class="fa-solid fa-paper-plane mr-1"></i> Kirim Link Reset Password
+                    </button>
                     <div class="text-center text-xs mt-4 text-slate-400 pt-3 border-t border-slate-700/50">
                         Kembali ke <button type="button" onclick="switchAuthTab('login')" class="text-primary font-bold hover:underline transition">Login</button>
                     </div>
@@ -841,7 +856,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
         import { 
-            getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence
+            getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup
         } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
         import { 
             getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, serverTimestamp, orderBy
@@ -860,13 +875,34 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
         
         window.db = db;
         window.currentUserData = null;
         window.activeTicketId = null;
         window.unsubscribeChat = null;
         window.unsubscribeAdminTickets = null;
-        window.chatContext = 'user'; // FIX: Penanda sesi obrolan (menghindari tumpang tindih status)
+        window.chatContext = 'user';
+
+        // SISTEM AUTO-LOGOUT 30 MENIT (AFK PROTECTION)
+        window.inactivityTimer = null;
+        const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
+
+        window.resetInactivityTimer = function() {
+            if(window.inactivityTimer) clearTimeout(window.inactivityTimer);
+            window.inactivityTimer = setTimeout(() => {
+                if (window.currentUserData && window.currentUserData.role !== 'owner') {
+                    alert("Sesi Anda telah berakhir karena tidak ada aktivitas selama 30 menit. Silakan login kembali.");
+                    window.logout();
+                }
+            }, INACTIVITY_LIMIT_MS);
+        };
+
+        ['mousemove', 'mousedown', 'keypress', 'touchstart', 'scroll'].forEach(evt => {
+            document.addEventListener(evt, window.resetInactivityTimer, { passive: true });
+        });
+
+        window.resetInactivityTimer();
 
         onAuthStateChanged(auth, async (user) => {
             const welcomeModal = document.getElementById('welcomeModal');
@@ -876,26 +912,38 @@
 
             if (user) {
                 try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    let userDoc = await getDoc(doc(db, "users", user.uid));
+                    
+                    if (!userDoc.exists()) {
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        userDoc = await getDoc(doc(db, "users", user.uid));
+                    }
+
                     if (userDoc.exists()) {
                         window.currentUserData = { uid: user.uid, ...userDoc.data() };
                     } else {
-                        // FIX EMAIL OWNER
-                        const isOwner = (user.email === "rakadimas226@gmail.com" || user.email === "marcurapikk@gmail.com");
-                        window.currentUserData = {
-                            uid: user.uid,
+                        const isOwner = (user.email === "marcurapikk@gmail.com");
+                        const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : "User");
+                        const cleanUsername = fallbackName.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+                        const fallbackData = {
+                            name: fallbackName,
+                            username: cleanUsername || "user" + Math.floor(Math.random() * 1000),
                             email: user.email,
-                            name: user.displayName || "User",
-                            username: user.email.split('@')[0],
                             role: isOwner ? 'owner' : 'user',
                             level: isOwner ? 'Supreme 👑' : 'Bronze',
-                            balance: isOwner ? 999999999 : 0
+                            balance: isOwner ? 999999999 : 0,
+                            totalSpent: 0,
+                            income: isOwner ? 89574843 : 0,
+                            cashout: isOwner ? 12500000 : 0
                         };
+                        
+                        await setDoc(doc(db, "users", user.uid), fallbackData);
+                        window.currentUserData = { uid: user.uid, ...fallbackData };
                     }
                     
                     welcomeModal.classList.add('hidden');
                     welcomeModal.classList.remove('flex');
-                    
                     appContent.classList.remove('hidden');
                     setTimeout(() => appContent.classList.remove('opacity-0'), 50);
 
@@ -906,14 +954,94 @@
             } else {
                 window.currentUserData = null;
                 appContent.classList.add('hidden', 'opacity-0');
-                
                 authLoadingState.classList.add('hidden');
                 authFormArea.classList.remove('hidden');
-                
                 welcomeModal.classList.remove('hidden');
                 welcomeModal.classList.add('flex');
             }
         });
+
+        // LOGIN DENGAN GOOGLE
+        window.processGoogleLogin = async function() {
+            try {
+                await setPersistence(auth, browserLocalPersistence);
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                
+                if(!userDoc.exists()) {
+                    const isOwner = (user.email === "marcurapikk@gmail.com");
+                    const baseUsername = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
+                    
+                    const newUserData = {
+                        name: user.displayName || "Google User",
+                        username: baseUsername,
+                        email: user.email,
+                        role: isOwner ? 'owner' : 'user',
+                        level: isOwner ? 'Supreme 👑' : 'Bronze',
+                        avatar: user.photoURL || null,
+                        totalSpent: 0,
+                        balance: isOwner ? 999999999 : 0,
+                        income: isOwner ? 89574843 : 0,
+                        cashout: isOwner ? 12500000 : 0
+                    };
+                    await setDoc(userDocRef, newUserData);
+                }
+                window.showToast("Login Google Berhasil!");
+            } catch(error) {
+                alert("Gagal Login via Google: " + error.message);
+            }
+        };
+
+        // REGISTRASI USER + CEK UNIK USERNAME (1 AKUN 1 USERNAME)
+        window.processRegister = async function() {
+            const name = document.getElementById('regName').value.trim();
+            const username = document.getElementById('regUsername').value.trim().toLowerCase().replace(/\s+/g, '');
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value;
+
+            if(!name || !username || !email || !password) return alert("Mohon isi semua bidang!");
+            if(username.length < 3) return alert("Username minimal 3 karakter!");
+
+            try {
+                // CEK DB APAKAH USERNAME SUDAH DIPAKAI
+                const qUsername = query(collection(db, "users"), where("username", "==", username));
+                const snapUsername = await getDocs(qUsername);
+                if(!snapUsername.empty) {
+                    return alert(`Maaf, Username "${username}" sudah dipakai akun lain. Silakan pilih username lain!`);
+                }
+
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                const isOwner = (email === "marcurapikk@gmail.com" || username === "xbee");
+                const role = isOwner ? 'owner' : 'user';
+                const level = isOwner ? 'Supreme 👑' : 'Bronze';
+
+                const userData = {
+                    name, username, email, role, level, avatar: null,
+                    totalSpent: 0, balance: isOwner ? 999999999 : 0, income: isOwner ? 89574843 : 0, cashout: isOwner ? 12500000 : 0
+                };
+
+                await setDoc(doc(db, "users", user.uid), userData);
+                window.showToast("Registrasi Berhasil!");
+            } catch (error) { alert("Gagal Registrasi: " + error.message); }
+        };
+
+        // RESET PASSWORD KE EMAIL USER
+        window.processResetPassword = async function() {
+            const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
+            if(!email) return alert("Masukkan email Anda terlebih dahulu!");
+            try { 
+                await sendPasswordResetEmail(auth, email); 
+                alert(`Link reset password berhasil dikirim ke email ${email}. Silakan cek Inbox atau folder Spam email Anda!`); 
+                window.switchAuthTab('login'); 
+            } catch (error) { 
+                alert("Gagal Kirim Link Reset: " + error.message); 
+            }
+        };
 
         // NATIVE BASE64 AVATAR
         window.handleAvatarUpload = async function(event) {
@@ -940,7 +1068,7 @@
         // REALTIME CHAT CS SUPPORT SYSTEM
         window.openChatWidget = async function() {
             if(!window.currentUserData) return alert("Silakan login dulu.");
-            window.chatContext = 'user'; // SET MODE USER
+            window.chatContext = 'user';
             const modal = document.getElementById('liveChatModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -965,7 +1093,6 @@
         window.subscribeToChat = function(ticketId, isAdminMode = false) {
             window.activeTicketId = ticketId;
             const chatArea = document.getElementById('chatMessagesArea');
-            
             if(window.unsubscribeChat) window.unsubscribeChat();
             
             window.unsubscribeChat = onSnapshot(doc(db, "tickets", ticketId), (docSnapshot) => {
@@ -1008,33 +1135,18 @@
             const input = document.getElementById('chatInputMessage');
             const text = input.value.trim();
             if(!text) return;
-            
             input.value = '';
             
-            // FIX LOGIKA SENDER
             const isSenderAdmin = (window.chatContext === 'admin');
-            
-            const newMessage = {
-                sender: isSenderAdmin ? 'admin' : 'user',
-                text: text,
-                timestamp: Date.now()
-            };
+            const newMessage = { sender: isSenderAdmin ? 'admin' : 'user', text: text, timestamp: Date.now() };
             
             try {
                 if (window.activeTicketId) {
-                    await updateDoc(doc(db, "tickets", window.activeTicketId), {
-                        messages: arrayUnion(newMessage),
-                        updatedAt: Date.now()
-                    });
+                    await updateDoc(doc(db, "tickets", window.activeTicketId), { messages: arrayUnion(newMessage), updatedAt: Date.now() });
                 } else {
                     const newTicketRef = await addDoc(collection(db, "tickets"), {
-                        uid: window.currentUserData.uid,
-                        userName: window.currentUserData.name,
-                        userEmail: window.currentUserData.email,
-                        status: 'open',
-                        messages: [newMessage],
-                        createdAt: Date.now(),
-                        updatedAt: Date.now()
+                        uid: window.currentUserData.uid, userName: window.currentUserData.name, userEmail: window.currentUserData.email,
+                        status: 'open', messages: [newMessage], createdAt: Date.now(), updatedAt: Date.now()
                     });
                     window.subscribeToChat(newTicketRef.id, false);
                 }
@@ -1042,10 +1154,7 @@
         };
 
         document.getElementById('chatInputMessage').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                window.sendChatMessage();
-            }
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.sendChatMessage(); }
         });
 
         window.closeChatModal = function() {
@@ -1054,24 +1163,19 @@
             if(window.unsubscribeChat) { window.unsubscribeChat(); window.activeTicketId = null; }
         };
 
-        // REALTIME TICKET LIST UNTUK OWNER (WHATSAPP STYLE)
         window.fetchAdminTicketsRealtime = function() {
             const listContainer = document.getElementById('adminTicketList');
             const countBadge = document.getElementById('activeTicketCount');
-            
             if(window.unsubscribeAdminTickets) window.unsubscribeAdminTickets();
             
             const q = query(collection(db, "tickets"), orderBy("updatedAt", "desc"));
-            
             window.unsubscribeAdminTickets = onSnapshot(q, (querySnapshot) => {
                 listContainer.innerHTML = '';
                 countBadge.innerText = `${querySnapshot.size} Antrean`;
-                
                 if(querySnapshot.empty) {
                     listContainer.innerHTML = '<p class="text-[10px] text-slate-500 italic text-center py-4">Tidak ada obrolan aktif saat ini.</p>';
                     return;
                 }
-                
                 querySnapshot.forEach((docSnap) => {
                     const ticketId = docSnap.id;
                     const t = docSnap.data();
@@ -1099,76 +1203,35 @@
                                     <i class="fa-solid fa-check-double mr-1"></i>Selesai
                                 </button>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
             });
         };
 
         window.openAdminChat = function(ticketId, userName) {
             window.closeProfileDashboard();
-            window.chatContext = 'admin'; // SET MODE ADMIN
+            window.chatContext = 'admin';
             const modal = document.getElementById('liveChatModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            
             document.getElementById('chatHeaderTitle').innerHTML = `CS - <span class="text-slate-300 font-normal">${userName}</span>`;
             window.subscribeToChat(ticketId, true);
         };
 
         window.closeAndResolveTicket = async function(ticketId) {
             if(!confirm("Yakin masalah user ini sudah selesai? Tiket chat akan ditutup dan dihapus secara permanen.")) return;
-            try {
-                await deleteDoc(doc(db, "tickets", ticketId));
-                window.showToast("Tiket chat berhasil diselesaikan & dihapus!");
-            } catch(e) { alert("Gagal menghapus tiket: " + e.message); }
-        };
-
-        // AUTH & DB FUNCTIONS
-        window.processRegister = async function() {
-            const name = document.getElementById('regName').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const email = document.getElementById('regEmail').value.trim().toLowerCase();
-            const password = document.getElementById('regPassword').value;
-
-            if(!name || !username || !email || !password) return alert("Mohon isi semua bidang!");
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                // FIX REGISTRASI OWNER EMAIL
-                const isOwner = (email === "rakadimas226@gmail.com" || email === "marcurapikk@gmail.com" || username.toLowerCase() === "xbee");
-                const role = isOwner ? 'owner' : 'user';
-                const level = isOwner ? 'Supreme 👑' : 'Bronze';
-
-                const userData = {
-                    name, username, email, role, level, avatar: null,
-                    totalSpent: 0, balance: isOwner ? 999999999 : 0, income: isOwner ? 89574843 : 0, cashout: isOwner ? 12500000 : 0
-                };
-
-                await setDoc(doc(db, "users", user.uid), userData);
-                window.showToast("Registrasi Berhasil!");
-            } catch (error) { alert("Gagal Registrasi: " + error.message); }
+            try { await deleteDoc(doc(db, "tickets", ticketId)); window.showToast("Tiket chat diselesaikan!"); } catch(e) { alert("Gagal: " + e.message); }
         };
 
         window.processLogin = async function() {
             const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
             const passIn = document.getElementById('loginPassword').value;
             if(!emailInput || !passIn) return alert("Isi Email dan Password!");
-            
             try {
                 await setPersistence(auth, browserLocalPersistence);
                 await signInWithEmailAndPassword(auth, emailInput, passIn);
                 window.showToast("Login Berhasil!");
             } catch (error) { alert("Login Gagal: " + error.message); }
-        };
-
-        window.processResetPassword = async function() {
-            const email = document.getElementById('forgotEmail').value.trim();
-            if(!email) return alert("Masukkan email!");
-            try { await sendPasswordResetEmail(auth, email); alert("Link reset terkirim!"); window.switchAuthTab('login'); }
-            catch (error) { alert("Gagal Reset Password: " + error.message); }
         };
 
         window.logout = async function() { await signOut(auth); location.reload(); };
@@ -1177,7 +1240,6 @@
             const targetEmail = document.getElementById('topupUserEmail').value.trim().toLowerCase();
             const addAmount = parseInt(document.getElementById('topupUserAmount').value);
             if(!targetEmail || isNaN(addAmount) || addAmount <= 0) return alert("Isi Email & Nominal!");
-            
             try {
                 const q = query(collection(db, "users"), where("email", "==", targetEmail));
                 const querySnapshot = await getDocs(q);
@@ -1191,8 +1253,7 @@
                     }
                     window.showToast(`Tambah Rp ${window.formatRupiah(addAmount)} sukses!`);
                 }
-                document.getElementById('topupUserAmount').value = ''; 
-                document.getElementById('topupUserEmail').value = '';
+                document.getElementById('topupUserAmount').value = ''; document.getElementById('topupUserEmail').value = '';
             } catch(e) { alert("Error: " + e.message); }
         };
 
@@ -1215,10 +1276,7 @@
         };
 
         window.updateOrderStatusFirebase = async function(docId, newStatus) {
-            try { 
-                await updateDoc(doc(db, "orders", docId), { status: newStatus }); 
-                window.showToast(`Status diset ke ${newStatus}`); 
-            } catch (e) { alert("Gagal: " + e.message); }
+            try { await updateDoc(doc(db, "orders", docId), { status: newStatus }); window.showToast(`Status diset ke ${newStatus}`); } catch (e) { alert("Gagal: " + e.message); }
         };
 
         window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
@@ -1228,8 +1286,7 @@
                 if(paymentMethod === 'Saldo Akun') {
                     if((userData.balance || 0) < totalHarga) return { success: false, message: `Saldo tidak mencukupi!` };
                     await updateDoc(doc(db, "users", userData.uid), { balance: increment(-totalHarga), totalSpent: increment(totalHarga) });
-                    window.currentUserData.balance -= totalHarga; 
-                    window.currentUserData.totalSpent += totalHarga;
+                    window.currentUserData.balance -= totalHarga; window.currentUserData.totalSpent += totalHarga;
                     statusOrder = 'Diproses';
                 }
                 
@@ -1254,12 +1311,10 @@
                 if(userData.role === 'owner' || userData.role === 'admin') q = query(collection(db, "orders"));
                 
                 const querySnapshot = await getDocs(q);
-                let orders = []; 
-                querySnapshot.forEach((doc) => { orders.push({ id: doc.id, ...doc.data() }); });
+                let orders = []; querySnapshot.forEach((doc) => { orders.push({ id: doc.id, ...doc.data() }); });
                 orders.sort((a, b) => b.createdAt - a.createdAt);
 
-                document.getElementById('dashTotalOrders').innerText = `${orders.length} Transaksi`; 
-                container.innerHTML = '';
+                document.getElementById('dashTotalOrders').innerText = `${orders.length} Transaksi`; container.innerHTML = '';
                 if(orders.length === 0) return container.innerHTML = `<p class="text-[10px] text-slate-400 text-center py-6">Belum ada transaksi.</p>`;
 
                 orders.forEach(order => {
@@ -1378,8 +1433,7 @@
             document.getElementById('adminTopupBox').classList.add('hidden');
             document.getElementById('adminSupportBox').classList.add('hidden');
 
-            // FIX: TAMBAHKAN EMAIL OWNER BARU KE LOGIKA UI DASHBOARD
-            if (userData.role === 'owner' || (userData.username && userData.username.toLowerCase() === 'xbee') || userData.email === 'rakadimas226@gmail.com' || userData.email === 'marcurapikk@gmail.com') {
+            if (userData.role === 'owner' || (userData.username && userData.username.toLowerCase() === 'xbee') || userData.email === 'marcurapikk@gmail.com') {
                 document.getElementById('dashCrown').classList.remove('hidden'); 
                 document.getElementById('dashBluetick').classList.remove('hidden'); 
                 document.getElementById('dashRoleTag').classList.remove('hidden');
