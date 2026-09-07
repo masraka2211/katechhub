@@ -63,9 +63,12 @@
         div::-webkit-scrollbar { width: 6px; }
         div::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
         div::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 4px; }
+        
+        /* Toast Animations */
         .toast-slide { animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, fadeOut 0.4s 3.6s forwards; }
         @keyframes slideIn { from { transform: translateY(-100%) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
+        
         .gradient-border-box { position: relative; border-radius: 1.5rem; background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(7, 12, 24, 0.96)); }
         .gradient-border-box::before { content: ''; position: absolute; inset: -1px; border-radius: 1.5rem; padding: 1px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.5), rgba(129, 140, 248, 0.2), rgba(14, 165, 233, 0.6)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
         .typewriter-cursor { border-right: 3px solid #38BDF8; padding-right: 4px; animation: blink 1s step-end infinite; }
@@ -74,6 +77,10 @@
         .faq-content > div { overflow: hidden; }
         .faq-icon { transition: transform 0.3s ease; }
         .faq-btn.active .faq-icon { transform: rotate(180deg); color: #38BDF8; }
+        
+        /* Chat UI Styles */
+        .chat-bubble-user { background: linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%); color: white; border-radius: 16px 16px 0 16px; margin-left: auto; max-width: 85%; }
+        .chat-bubble-admin { background: #1E293B; border: 1px solid #334155; color: #E2E8F0; border-radius: 16px 16px 16px 0; margin-right: auto; max-width: 85%; }
     </style>
 </head>
 <body class="antialiased selection:bg-primary selection:text-white pb-32 md:pb-12 relative pt-8">
@@ -95,7 +102,10 @@
     <!-- WELCOME & AUTH MODAL -->
     <div id="welcomeModal" class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4 transition-all duration-300">
         <div class="glass-card max-w-md w-full p-6 sm:p-8 relative border-primary/30 shadow-glow-strong transform scale-100 transition-transform overflow-hidden">
-            <div class="text-center mb-6">
+            <button onclick="closeWelcomeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center bg-slate-800 rounded-full z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-6 mt-2">
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mx-auto mb-4 shadow-glow border border-white/20">
                     <i class="fa-solid fa-shield-halved text-white text-3xl"></i>
                 </div>
@@ -103,55 +113,52 @@
                 <p class="text-slate-400 text-xs mt-1">Silakan masuk untuk mengakses layanan.</p>
             </div>
 
-            <!-- FORM LOGIN DENGAN SHOW PASSWORD & REMEMBER ME -->
+            <!-- FORM LOGIN -->
             <div id="formLogin" class="block space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">Email Terdaftar</label>
-                    <input type="email" id="loginUsername" placeholder="email@contoh.com" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none">
+                    <input type="email" id="loginUsername" placeholder="email@contoh.com" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none transition">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
                     <div class="relative">
-                        <input type="password" id="loginPassword" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-primary focus:outline-none">
+                        <input type="password" id="loginPassword" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-primary focus:outline-none transition">
                         <i class="fa-regular fa-eye absolute right-4 top-3.5 text-slate-400 cursor-pointer hover:text-primary transition" onclick="togglePassword('loginPassword', this)"></i>
                     </div>
                 </div>
-                
                 <div class="flex justify-between items-center text-xs mt-1 text-slate-400 px-1">
                     <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-300 transition group">
                         <input type="checkbox" id="rememberMe" checked class="accent-primary w-3.5 h-3.5 rounded cursor-pointer">
                         <span class="group-hover:text-primary transition-colors">Ingat Saya</span>
                     </label>
-                    <button onclick="switchAuthTab('forgot')" class="hover:text-primary transition">Lupa Password?</button>
+                    <button type="button" onclick="switchAuthTab('forgot')" class="hover:text-primary transition">Lupa Password?</button>
                 </div>
-                
                 <button onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-lg mt-3 transition hover:scale-[1.02]">
                     <i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk Cloud
                 </button>
-                
                 <div class="text-center text-xs mt-5 text-slate-400 pt-3 border-t border-slate-700/50">
-                    Belum punya akun? <button onclick="switchAuthTab('register')" class="text-primary font-bold hover:underline transition">Daftar Akun</button>
+                    Belum punya akun? <button type="button" onclick="switchAuthTab('register')" class="text-primary font-bold hover:underline transition">Daftar Akun</button>
                 </div>
             </div>
 
-            <!-- FORM REGISTER DENGAN SHOW PASSWORD -->
+            <!-- FORM REGISTER -->
             <div id="formRegister" class="hidden space-y-3.5">
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">Nama Lengkap</label>
-                    <input type="text" id="regName" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm">
+                    <input type="text" id="regName" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">Username</label>
-                    <input type="text" id="regUsername" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm">
+                    <input type="text" id="regUsername" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">Email</label>
-                    <input type="email" id="regEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm">
+                    <input type="email" id="regEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
                     <div class="relative">
-                        <input type="password" id="regPassword" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-primary focus:outline-none">
+                        <input type="password" id="regPassword" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-primary focus:outline-none transition">
                         <i class="fa-regular fa-eye absolute right-4 top-3.5 text-slate-400 cursor-pointer hover:text-primary transition" onclick="togglePassword('regPassword', this)"></i>
                     </div>
                 </div>
@@ -159,7 +166,7 @@
                     <i class="fa-solid fa-user-plus mr-1"></i> Daftar Sekarang
                 </button>
                 <div class="text-center text-xs mt-4 text-slate-400 pt-3 border-t border-slate-700/50">
-                    Sudah punya akun? <button onclick="switchAuthTab('login')" class="text-primary font-bold hover:underline transition">Login Disini</button>
+                    Sudah punya akun? <button type="button" onclick="switchAuthTab('login')" class="text-primary font-bold hover:underline transition">Login Disini</button>
                 </div>
             </div>
 
@@ -168,11 +175,11 @@
                 <p class="text-xs text-slate-300 mb-4 text-center">Masukkan Email terdaftar untuk kirim link reset password.</p>
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1">Email Terdaftar</label>
-                    <input type="email" id="forgotEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm">
+                    <input type="email" id="forgotEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
                 </div>
                 <button onclick="processResetPassword()" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-bold text-sm transition mt-2 hover:scale-[1.02]">Kirim Link Reset</button>
                 <div class="text-center text-xs mt-4 text-slate-400 pt-3 border-t border-slate-700/50">
-                    Kembali ke <button onclick="switchAuthTab('login')" class="text-primary font-bold hover:underline transition">Login</button>
+                    Kembali ke <button type="button" onclick="switchAuthTab('login')" class="text-primary font-bold hover:underline transition">Login</button>
                 </div>
             </div>
         </div>
@@ -180,7 +187,7 @@
 
     <!-- USER PROFILE DASHBOARD MODAL -->
     <div id="profileDashboardModal" class="fixed inset-0 z-[250] hidden items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 transition-all">
-        <div class="glass-card w-full max-w-3xl h-full max-h-[96vh] sm:max-h-[90vh] flex flex-col relative border-slate-700 shadow-2xl overflow-hidden my-auto">
+        <div class="glass-card w-full max-w-4xl h-full max-h-[96vh] sm:max-h-[90vh] flex flex-col relative border-slate-700 shadow-2xl overflow-hidden my-auto">
             
             <div class="flex-shrink-0 bg-slate-900/50">
                 <div class="h-20 sm:h-28 bg-gradient-to-r from-slate-900 via-primary/20 to-slate-900 relative">
@@ -192,22 +199,18 @@
                 <div class="px-4 sm:px-6 relative pb-4 border-b border-slate-700/60">
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center sm:items-end -mt-10 sm:-mt-12 relative z-10">
                         
-                        <!-- AVATAR UPLOAD FITUR KEREN -->
+                        <!-- AVATAR UPLOAD -->
                         <div class="relative group cursor-pointer flex-shrink-0" onclick="document.getElementById('avatarUpload').click()" title="Klik untuk ubah foto profil">
                             <div id="profileAvatar" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 shadow-lg transition-all overflow-hidden bg-cover bg-center"></div>
-                            <!-- Efek Blur Kamera Saat Hover -->
                             <div class="absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] border-4 border-transparent">
                                 <i class="fa-solid fa-camera text-white text-xl sm:text-2xl drop-shadow-lg"></i>
                             </div>
-                            <!-- BUG FIX: Accept JPEG specifically to ensure device compatibility -->
                             <input type="file" id="avatarUpload" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleAvatarUpload(event)">
                         </div>
                         
                         <!-- INFO -->
                         <div class="text-center sm:text-left flex-grow pb-1 w-full flex flex-col sm:block items-center">
-                            <!-- SMART GREETING -->
                             <span id="dashGreeting" class="block text-[10px] sm:text-xs text-primary font-bold mb-0.5"></span>
-                            
                             <h2 class="text-lg sm:text-2xl font-bold text-white flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
                                 <span id="dashNameDisplay" class="truncate max-w-[150px] sm:max-w-none">Nama User</span>
                                 <span id="dashRoleTag" class="hidden text-[8px] sm:text-[10px] bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-2 py-0.5 rounded-md border border-yellow-300 shadow-glow-gold uppercase font-extrabold tracking-wider flex-shrink-0">OWNER</span>
@@ -283,6 +286,14 @@
                     </div>
                 </div>
 
+                <!-- ADMIN: MANAJEMEN TIKET SUPPORT -->
+                <div id="adminSupportBox" class="p-3 sm:p-4 bg-sky-900/20 rounded-xl border border-sky-700/50 hidden">
+                    <h4 class="text-[10px] sm:text-xs font-bold text-sky-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-headset mr-1.5"></i>Manajemen Tiket Support</h4>
+                    <div id="adminTicketList" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar">
+                        <!-- Tickets appended here -->
+                    </div>
+                </div>
+
                 <div id="adminTopupBox" class="p-3 sm:p-4 bg-emerald-900/20 rounded-xl border border-emerald-700/50 hidden">
                     <h4 class="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-money-bill-transfer mr-1.5"></i>Top-Up Saldo User</h4>
                     <div class="flex flex-col sm:flex-row gap-2">
@@ -341,6 +352,49 @@
                     </div>
                     <div id="dashboardHistoryItems" class="space-y-2 sm:space-y-3 pb-4"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LIVE CHAT TICKET -->
+    <div id="liveChatModal" class="fixed inset-0 z-[500] hidden items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity p-0 sm:p-4">
+        <div class="glass-card w-full sm:max-w-md h-[85vh] sm:h-[600px] flex flex-col relative border-slate-700 shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden bg-[#070C18]/95">
+            
+            <!-- Chat Header -->
+            <div class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center z-10 shadow-md">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary relative">
+                        <i class="fa-solid fa-headset text-lg"></i>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white" id="chatHeaderTitle">CS Support</h3>
+                        <p class="text-[10px] text-slate-400">Online • Membalas instan</p>
+                    </div>
+                </div>
+                <button onclick="closeChatModal()" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div id="chatMessagesArea" class="flex-grow overflow-y-auto p-4 space-y-3 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-10 flex flex-col no-scrollbar">
+                <div class="text-center text-[10px] text-slate-500 my-2">Memuat percakapan...</div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div id="chatInputContainer" class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2 items-end">
+                <textarea id="chatInputMessage" rows="1" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none no-scrollbar" placeholder="Ketik pesan Anda..."></textarea>
+                <button onclick="sendChatMessage()" class="w-12 h-12 bg-primary hover:bg-accent text-white rounded-xl flex items-center justify-center flex-shrink-0 transition shadow-lg shadow-primary/30">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+            
+            <!-- State: Input Email for non-logged in -->
+            <div id="chatLoginPrompt" class="absolute bottom-0 left-0 w-full p-4 bg-slate-900 border-t border-slate-800 text-center hidden flex-col justify-center items-center h-48">
+                <i class="fa-solid fa-lock text-3xl text-slate-600 mb-2"></i>
+                <p class="text-xs text-slate-400 mb-3">Silakan login untuk memulai Live Chat.</p>
+                <button onclick="closeChatModal(); openWelcomeModal();" class="btn-primary px-6 py-2 rounded-lg text-xs font-bold shadow-lg">Login / Daftar</button>
             </div>
         </div>
     </div>
@@ -537,10 +591,10 @@
                             <span id="mainCalculatedTotal" class="text-2xl sm:text-3xl font-extrabold text-primary">Rp 0</span>
                         </div>
                         <div class="flex gap-3">
-                            <button onclick="addMainToCart()" class="px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold border border-slate-700 transition flex items-center justify-center gap-2 text-sm">
+                            <button onclick="addMainToCart()" class="w-full sm:w-auto px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold border border-slate-700 transition flex items-center justify-center gap-2 text-sm">
                                 <i class="fa-solid fa-cart-plus text-primary"></i> + Keranjang
                             </button>
-                            <button onclick="processDirectOrder()" class="btn-primary px-6 py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 text-sm shadow-lg">
+                            <button onclick="processDirectOrder()" class="w-full sm:w-auto btn-primary px-6 py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 text-sm shadow-lg">
                                 <i class="fa-solid fa-bolt"></i> Order Sekarang
                             </button>
                         </div>
@@ -673,39 +727,18 @@
         </div>
     </section>
 
-    <!-- WHATSAPP WIDGET -->
+    <!-- FLOATING ACTION BUTTONS (WA & LIVE CHAT) -->
+    <div class="fixed bottom-20 md:bottom-8 left-5 z-40 flex flex-col items-start gap-3">
+        <!-- Live Chat Button -->
+        <button onclick="openChatWidget()" class="w-14 h-14 bg-gradient-to-r from-blue-500 to-primary rounded-full flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/30 hover:scale-110 transition-transform floating-action" title="Live Support Chat">
+            <i class="fa-solid fa-comments"></i>
+        </button>
+    </div>
     <div class="fixed bottom-20 md:bottom-8 right-5 z-40 flex flex-col items-end gap-3">
         <a href="https://instagram.com/rakadimas_2211" target="_blank" class="w-12 h-12 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg hover:scale-110 transition-transform floating-action" style="animation-delay: 0.5s;" title="Instagram">
             <i class="fa-brands fa-instagram"></i>
         </a>
-        
-        <div id="waWidgetBox" class="hidden flex-col items-end mb-2 transition-all transform origin-bottom-right scale-0 duration-300">
-            <div class="bg-white rounded-2xl shadow-2xl w-64 overflow-hidden border border-slate-200">
-                <div class="bg-[#25D366] px-4 py-3 flex items-center gap-3">
-                    <div class="relative">
-                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white text-lg"><i class="fa-solid fa-headset"></i></div>
-                        <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-300 border-2 border-[#25D366] rounded-full"></div>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-bold text-sm leading-tight">Admin KA TECH</h4>
-                        <p class="text-green-100 text-[10px]">Biasanya membalas dalam 5 mnt</p>
-                    </div>
-                </div>
-                <div class="p-4 bg-[#E5DDD5]">
-                    <div class="bg-white p-2.5 rounded-lg rounded-tl-none shadow-sm text-xs text-slate-700 relative w-[90%]">
-                        Halo! 👋<br>Ada yang bisa kami bantu seputar pemesanan?
-                        <span class="text-[8px] text-slate-400 absolute bottom-1 right-2">Just now</span>
-                    </div>
-                </div>
-                <div class="p-3 bg-white text-center">
-                    <a href="https://wa.me/6281312185600?text=Halo%20Admin%20KA%20TECH%20HUB,%20saya%20butuh%20bantuan..." target="_blank" class="block w-full bg-[#25D366] hover:bg-[#1DA851] text-white py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-base"></i> Mulai Chat
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <button onclick="toggleWAWidget()" class="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white text-3xl shadow-lg shadow-green-500/30 hover:scale-110 transition-transform floating-action" title="WhatsApp Chat">
+        <button onclick="window.open('https://wa.me/6281312185600', '_blank')" class="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white text-3xl shadow-lg shadow-green-500/30 hover:scale-110 transition-transform floating-action" title="WhatsApp Chat">
             <i class="fa-brands fa-whatsapp"></i>
         </button>
     </div>
@@ -731,7 +764,7 @@
         </button>
     </nav>
 
-    <!-- FOOTER (IPAYMU READY) -->
+    <!-- FOOTER -->
     <footer id="footer" class="border-t border-slate-800 bg-[#040810] pt-16 pb-24 md:pb-8 relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
@@ -823,28 +856,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
         import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            sendPasswordResetEmail, 
-            signOut, 
-            onAuthStateChanged, 
-            setPersistence, 
-            browserLocalPersistence, 
-            browserSessionPersistence
+            getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence
         } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
         import { 
-            getFirestore, 
-            doc, 
-            setDoc, 
-            getDoc, 
-            updateDoc, 
-            collection, 
-            addDoc, 
-            getDocs, 
-            query, 
-            where, 
-            increment
+            getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, serverTimestamp, orderBy
         } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -858,12 +873,15 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const auth = getAuth(app);
         const db = getFirestore(app);
         
         window.db = db;
         window.currentUserData = null;
+        
+        // State for Chat Ticket
+        window.activeTicketId = null;
+        window.unsubscribeChat = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -874,92 +892,245 @@
                 if(window.closeWelcomeModal) window.closeWelcomeModal();
             } else {
                 window.currentUserData = null;
-                if(window.openWelcomeModal) window.openWelcomeModal();
             }
         });
 
-        // BUG FIX: AUTO-COMPRESS CANVAS (Menggunakan JPEG agar tidak blank)
+        // NATIVE BASE64 AVATAR (ANTI BLANK)
         window.handleAvatarUpload = async function(event) {
             const file = event.target.files[0];
             if(!file) return;
             
-            if(file.size > 5 * 1024 * 1024) {
-                return alert("Ukuran file terlalu besar! Maksimal 5MB.");
+            if(file.size > 2 * 1024 * 1024) {
+                return alert("Maaf, ukuran foto maksimal 2MB untuk mencegah gagal upload di sistem.");
             }
             
-            window.showToast("Memproses foto...", "info");
+            window.showToast("Mengunggah foto...", "info");
             
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = async function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 400; 
-                    let width = img.width;
-                    let height = img.height;
+            reader.onload = async function(e) {
+                const base64Data = e.target.result;
+                
+                try {
+                    await updateDoc(doc(db, "users", window.currentUserData.uid), {
+                        avatar: base64Data
+                    });
                     
-                    if (width > height) {
-                        if (width > MAX_SIZE) {
-                            height *= MAX_SIZE / width;
-                            width = MAX_SIZE;
-                        }
-                    } else {
-                        if (height > MAX_SIZE) {
-                            width *= MAX_SIZE / height;
-                            height = MAX_SIZE;
-                        }
-                    }
+                    window.currentUserData.avatar = base64Data;
+                    const avatarEl = document.getElementById('profileAvatar');
                     
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
+                    avatarEl.style.backgroundImage = `url(${base64Data})`;
+                    avatarEl.innerHTML = ''; 
+                    avatarEl.classList.remove('bg-gradient-to-br', 'from-yellow-400', 'via-gold', 'to-amber-600', 'from-accent', 'to-primary', 'from-indigo-500', 'to-blue-600');
                     
-                    // FIX: Beri background putih sebelum foto digambar
-                    // (Mencegah foto transparan/PNG berubah jadi hitam pekat)
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    // Gambar foto di atas background putih
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // FIX: Ubah dari WebP ke JPEG yang didukung 100% oleh semua HP
-                    const base64Data = canvas.toDataURL('image/jpeg', 0.8);
-                    
-                    try {
-                        await updateDoc(doc(db, "users", window.currentUserData.uid), {
-                            avatar: base64Data
-                        });
-                        
-                        window.currentUserData.avatar = base64Data;
-                        const avatarEl = document.getElementById('profileAvatar');
-                        
-                        // Set foto ke elemen HTML
-                        avatarEl.style.backgroundImage = `url(${base64Data})`;
-                        avatarEl.innerHTML = ''; 
-                        
-                        // FIX: Bersihkan class gradient bawaan saat foto terpasang
-                        avatarEl.classList.remove('bg-gradient-to-br', 'from-yellow-400', 'via-gold', 'to-amber-600', 'from-accent', 'to-primary');
-                        
-                        window.showToast("Foto profil berhasil diperbarui!");
-                    } catch(err) {
-                        alert("Gagal menyimpan foto: " + err.message);
-                    }
-                };
-                img.src = e.target.result;
+                    window.showToast("Foto profil berhasil diperbarui!");
+                } catch(err) {
+                    alert("Gagal menyimpan foto (Quota/Jaringan): " + err.message);
+                }
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(file); 
             event.target.value = '';
         };
 
+        // --- LIVE CHAT & TICKET SYSTEM ---
+        window.openChatWidget = async function() {
+            const modal = document.getElementById('liveChatModal');
+            const loginPrompt = document.getElementById('chatLoginPrompt');
+            const chatContainer = document.getElementById('chatInputContainer');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            
+            if(!window.currentUserData) {
+                loginPrompt.classList.remove('hidden');
+                loginPrompt.classList.add('flex');
+                chatContainer.classList.add('hidden');
+                document.getElementById('chatMessagesArea').innerHTML = '';
+                return;
+            }
+            
+            loginPrompt.classList.add('hidden');
+            loginPrompt.classList.remove('flex');
+            chatContainer.classList.remove('hidden');
+            
+            document.getElementById('chatHeaderTitle').innerText = "CS Support (Anda)";
+            
+            const q = query(collection(db, "tickets"), where("uid", "==", window.currentUserData.uid));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                const ticketDoc = querySnapshot.docs[0];
+                window.subscribeToChat(ticketDoc.id);
+            } else {
+                document.getElementById('chatMessagesArea').innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full opacity-50">
+                        <i class="fa-regular fa-comments text-4xl mb-3 text-slate-500"></i>
+                        <p class="text-xs text-slate-400">Kirim pesan pertama untuk memulai percakapan.</p>
+                    </div>`;
+            }
+        };
+
+        window.subscribeToChat = function(ticketId, isAdminMode = false) {
+            window.activeTicketId = ticketId;
+            const chatArea = document.getElementById('chatMessagesArea');
+            
+            if(window.unsubscribeChat) window.unsubscribeChat();
+            
+            window.unsubscribeChat = onSnapshot(doc(db, "tickets", ticketId), (docSnapshot) => {
+                if (docSnapshot.exists()) {
+                    const data = docSnapshot.data();
+                    chatArea.innerHTML = '';
+                    
+                    if(!data.messages || data.messages.length === 0) return;
+                    
+                    data.messages.forEach(msg => {
+                        const isUserMsg = msg.sender === 'user';
+                        const isMe = isAdminMode ? !isUserMsg : isUserMsg;
+                        const time = new Date(msg.timestamp).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+                        
+                        if(isMe) {
+                            chatArea.innerHTML += `
+                            <div class="w-full flex justify-end">
+                                <div class="chat-bubble-user p-3 shadow-lg">
+                                    <p class="text-xs leading-relaxed break-words">${msg.text}</p>
+                                    <span class="text-[9px] text-blue-100 block text-right mt-1">${time}</span>
+                                </div>
+                            </div>`;
+                        } else {
+                            const senderName = isAdminMode ? data.userName : "Admin CS";
+                            chatArea.innerHTML += `
+                            <div class="w-full flex justify-start">
+                                <div class="chat-bubble-admin p-3 shadow-md">
+                                    <span class="text-[9px] text-primary font-bold block mb-1">${senderName}</span>
+                                    <p class="text-xs leading-relaxed break-words">${msg.text}</p>
+                                    <span class="text-[9px] text-slate-500 block text-right mt-1">${time}</span>
+                                </div>
+                            </div>`;
+                        }
+                    });
+                    
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }
+            });
+        };
+
+        window.sendChatMessage = async function() {
+            if(!window.currentUserData) return alert("Harap login");
+            
+            const input = document.getElementById('chatInputMessage');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            input.value = '';
+            const isAdminMode = (window.currentUserData.role === 'owner' || window.currentUserData.role === 'admin') && window.activeTicketId !== null;
+            
+            const newMessage = {
+                sender: isAdminMode ? 'admin' : 'user',
+                text: text,
+                timestamp: Date.now()
+            };
+            
+            try {
+                if (window.activeTicketId) {
+                    await updateDoc(doc(db, "tickets", window.activeTicketId), {
+                        messages: arrayUnion(newMessage),
+                        updatedAt: Date.now()
+                    });
+                } else {
+                    const newTicketRef = await addDoc(collection(db, "tickets"), {
+                        uid: window.currentUserData.uid,
+                        userName: window.currentUserData.name,
+                        userEmail: window.currentUserData.email,
+                        status: 'open',
+                        messages: [newMessage],
+                        createdAt: Date.now(),
+                        updatedAt: Date.now()
+                    });
+                    window.subscribeToChat(newTicketRef.id);
+                }
+            } catch(e) {
+                console.error("Gagal kirim pesan: ", e);
+            }
+        };
+
+        document.getElementById('chatInputMessage').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                window.sendChatMessage();
+            }
+        });
+
+        window.closeChatModal = function() {
+            document.getElementById('liveChatModal').classList.add('hidden');
+            document.getElementById('liveChatModal').classList.remove('flex');
+            document.body.style.overflow = 'auto';
+            if(window.unsubscribeChat) {
+                window.unsubscribeChat();
+                window.activeTicketId = null;
+            }
+        };
+
+        window.fetchAdminTickets = async function() {
+            const listContainer = document.getElementById('adminTicketList');
+            listContainer.innerHTML = '<p class="text-[10px] text-slate-400">Memuat tiket...</p>';
+            
+            try {
+                const q = query(collection(db, "tickets"), orderBy("updatedAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                listContainer.innerHTML = '';
+                if(querySnapshot.empty) {
+                    listContainer.innerHTML = '<p class="text-[10px] text-slate-500 italic">Tidak ada tiket aktif.</p>';
+                    return;
+                }
+                
+                querySnapshot.forEach((docSnap) => {
+                    const t = docSnap.data();
+                    const lastMsg = t.messages.length > 0 ? t.messages[t.messages.length-1] : {text: 'No message'};
+                    const time = new Date(t.updatedAt).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+                    const isUnread = lastMsg.sender === 'user';
+                    
+                    listContainer.innerHTML += `
+                        <div onclick="openAdminChat('${docSnap.id}', '${t.userName}')" class="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50 cursor-pointer hover:bg-slate-800 transition flex items-center justify-between group">
+                            <div class="overflow-hidden">
+                                <h5 class="text-xs font-bold text-white mb-0.5 truncate flex items-center gap-2">
+                                    ${t.userName} ${isUnread ? '<span class="w-2 h-2 rounded-full bg-red-500"></span>' : ''}
+                                </h5>
+                                <p class="text-[10px] text-slate-400 truncate w-48">${lastMsg.text}</p>
+                            </div>
+                            <div class="text-[9px] text-slate-500 flex-shrink-0 group-hover:text-primary transition">
+                                ${time} <i class="fa-solid fa-chevron-right ml-1"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch(e) {
+                listContainer.innerHTML = '<p class="text-[10px] text-red-400">Gagal memuat tiket.</p>';
+            }
+        };
+
+        window.openAdminChat = function(ticketId, userName) {
+            window.closeProfileDashboard();
+            const modal = document.getElementById('liveChatModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            
+            document.getElementById('chatLoginPrompt').classList.add('hidden');
+            document.getElementById('chatInputContainer').classList.remove('hidden');
+            document.getElementById('chatHeaderTitle').innerHTML = `CS - <span class="text-slate-300 font-normal">${userName}</span>`;
+            
+            window.subscribeToChat(ticketId, true); 
+        };
+
+        // --- CORE FIREBASE AUTH & DB FUNCTIONS ---
         window.processRegister = async function() {
             const name = document.getElementById('regName').value.trim();
             const username = document.getElementById('regUsername').value.trim();
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
 
-            if(!name || !username || !email || !password) {
-                return alert("Mohon isi semua bidang!");
-            }
+            if(!name || !username || !email || !password) return alert("Mohon isi semua bidang!");
 
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -971,10 +1142,7 @@
 
                 const userData = {
                     name, username, email, role, level, avatar: null,
-                    totalSpent: 0,
-                    balance: isOwner ? 999999999 : 0, 
-                    income: isOwner ? 89574843 : 0,
-                    cashout: isOwner ? 12500000 : 0
+                    totalSpent: 0, balance: isOwner ? 999999999 : 0, income: isOwner ? 89574843 : 0, cashout: isOwner ? 12500000 : 0
                 };
 
                 await setDoc(doc(db, "users", user.uid), userData);
@@ -993,9 +1161,10 @@
             if(!emailInput || !passIn) return alert("Isi Email dan Password!");
             
             try {
-                await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+                await setPersistence(auth, browserLocalPersistence);
                 await signInWithEmailAndPassword(auth, emailInput, passIn);
                 window.showToast("Berhasil Login Cloud!");
+                window.closeWelcomeModal();
             } catch (error) { 
                 alert("Login Gagal: " + error.message); 
             }
@@ -1007,7 +1176,7 @@
             try { 
                 await sendPasswordResetEmail(auth, email); 
                 alert("Link reset terkirim!"); 
-                if(window.switchAuthTab) window.switchAuthTab('login'); 
+                window.switchAuthTab('login'); 
             } catch (error) { 
                 alert("Gagal Reset Password: " + error.message); 
             }
@@ -1022,9 +1191,7 @@
             const targetEmail = document.getElementById('topupUserEmail').value.trim().toLowerCase();
             const addAmount = parseInt(document.getElementById('topupUserAmount').value);
             
-            if(!targetEmail || isNaN(addAmount) || addAmount <= 0) {
-                return alert("Isi Email & Nominal Saldo!");
-            }
+            if(!targetEmail || isNaN(addAmount) || addAmount <= 0) return alert("Isi Email & Nominal Saldo!");
             
             try {
                 const q = query(collection(db, "users"), where("email", "==", targetEmail));
@@ -1045,46 +1212,6 @@
                 document.getElementById('topupUserEmail').value = '';
             } catch(e) { 
                 alert("Sistem Error: " + e.message); 
-            }
-        };
-
-        window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
-            const userData = window.currentUserData;
-            if(!userData) return { success: false, message: "Harap login!" };
-
-            try {
-                let statusOrder = 'Belum Proses';
-                
-                if(paymentMethod === 'Saldo Akun') {
-                    if((userData.balance || 0) < totalHarga) {
-                        return { success: false, message: `Saldo tidak cukup!` };
-                    }
-                    await updateDoc(doc(db, "users", userData.uid), { 
-                        balance: increment(-totalHarga), 
-                        totalSpent: increment(totalHarga) 
-                    });
-                    
-                    window.currentUserData.balance -= totalHarga; 
-                    window.currentUserData.totalSpent += totalHarga;
-                    statusOrder = 'Diproses';
-                }
-                
-                const orderData = { 
-                    code: orderCode, 
-                    date: new Date().toLocaleString('id-ID'), 
-                    uid: userData.uid, 
-                    username: userData.username, 
-                    items: itemsText, 
-                    total: totalHarga, 
-                    payment: paymentMethod, 
-                    status: statusOrder, 
-                    createdAt: Date.now() 
-                };
-                
-                await addDoc(collection(db, "orders"), orderData);
-                return { success: true, status: statusOrder };
-            } catch (e) { 
-                return { success: false, message: "Gagal menyambung ke server." }; 
             }
         };
 
@@ -1127,13 +1254,36 @@
         window.updateFirebaseCashout = async function(newIncome, newCashout) {
             if(window.currentUserData && window.currentUserData.uid) {
                 try { 
-                    await updateDoc(doc(db, "users", window.currentUserData.uid), { 
-                        income: newIncome, 
-                        cashout: newCashout 
-                    }); 
-                } catch(e) {
-                    console.error("Gagal update cloud data", e);
+                    await updateDoc(doc(db, "users", window.currentUserData.uid), { income: newIncome, cashout: newCashout }); 
+                } catch(e) {}
+            }
+        };
+
+        window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
+            const userData = window.currentUserData;
+            if(!userData) return { success: false, message: "Harap login!" };
+
+            try {
+                let statusOrder = 'Belum Proses';
+                
+                if(paymentMethod === 'Saldo Akun') {
+                    if((userData.balance || 0) < totalHarga) return { success: false, message: `Saldo tidak cukup!` };
+                    await updateDoc(doc(db, "users", userData.uid), { balance: increment(-totalHarga), totalSpent: increment(totalHarga) });
+                    window.currentUserData.balance -= totalHarga; 
+                    window.currentUserData.totalSpent += totalHarga;
+                    statusOrder = 'Diproses';
                 }
+                
+                const orderData = { 
+                    code: orderCode, date: new Date().toLocaleString('id-ID'), uid: userData.uid, 
+                    username: userData.username, items: itemsText, total: totalHarga, payment: paymentMethod, 
+                    status: statusOrder, createdAt: Date.now() 
+                };
+                
+                await addDoc(collection(db, "orders"), orderData);
+                return { success: true, status: statusOrder };
+            } catch (e) { 
+                return { success: false, message: "Gagal menyambung ke server." }; 
             }
         };
 
@@ -1146,24 +1296,17 @@
             
             try {
                 let q = query(collection(db, "orders"), where("uid", "==", userData.uid));
-                if(userData.role === 'owner' || userData.role === 'admin') {
-                    q = query(collection(db, "orders"));
-                }
+                if(userData.role === 'owner' || userData.role === 'admin') q = query(collection(db, "orders"));
                 
                 const querySnapshot = await getDocs(q);
                 let orders = []; 
-                querySnapshot.forEach((doc) => { 
-                    orders.push({ id: doc.id, ...doc.data() }); 
-                });
-                
+                querySnapshot.forEach((doc) => { orders.push({ id: doc.id, ...doc.data() }); });
                 orders.sort((a, b) => b.createdAt - a.createdAt);
 
                 document.getElementById('dashTotalOrders').innerText = `${orders.length} Transaksi`; 
                 container.innerHTML = '';
                 
-                if(orders.length === 0) {
-                    return container.innerHTML = `<p class="text-[10px] text-slate-400 text-center py-6">Belum ada transaksi.</p>`;
-                }
+                if(orders.length === 0) return container.innerHTML = `<p class="text-[10px] text-slate-400 text-center py-6">Belum ada transaksi.</p>`;
 
                 orders.forEach(order => {
                     let colorClass = order.status === 'Diproses' ? 'bg-amber-500/20 text-amber-400' : 
@@ -1200,42 +1343,31 @@
         };
     </script>
 
+    <!-- CORE VANILLA JAVASCRIPT FUNCTIONS (DO NOT REMOVE) -->
     <script>
         const WA_NUMBER = "6281312185600";
-        const products = [
-            { name: "Instagram Followers Global | Max 50K", category: "Instagram", price: 20000, unit: "/1K", min: 100, max: 50000, desc: "Followers global kualitas stabil dengan proses cepat." },
-            { name: "Instagram Likes Global | Fast", category: "Instagram", price: 12000, unit: "/1K", min: 100, max: 20000, desc: "Likes postingan Instagram instan dan aman." },
-            { name: "TikTok Likes | Mix | Max 1M", category: "TikTok", price: 15000, unit: "/1K", min: 100, max: 1000000, desc: "TikTok likes berkualitas tinggi tanpa refill." },
-            { name: "TikTok Story Likes | Global", category: "TikTok", price: 17000, unit: "/1K", min: 50, max: 30000, desc: "Meningkatkan interaksi pada Story TikTok Anda." },
-            { name: "TikTok Saves | Max 100K", category: "TikTok", price: 11000, unit: "/1K", min: 100, max: 100000, desc: "TikTok saves dengan garansi refill 7 hari." },
-            { name: "TikTok Custom Comment", category: "TikTok", price: 75000, unit: "/1K", min: 10, max: 10000, desc: "Komentar kustom sesuai keinginan pada video TikTok." },
-            { name: "Facebook Followers | BOT HQ", category: "Facebook", price: 17000, unit: "/1K", min: 100, max: 10000, desc: "Pengikut halaman Facebook akun HQ." },
-            { name: "Facebook Shares | Post / Photo", category: "Facebook", price: 29000, unit: "/1K", min: 100, max: 1000000, desc: "Bagikan postingan atau foto Facebook secara massal." },
-            { name: "Facebook Reels Short Video Likes", category: "Facebook", price: 26000, unit: "/1K", min: 100, max: 50000, desc: "Likes cepat untuk video pendek Facebook Reels." },
-            { name: "Facebook Views | Reel / Video", category: "Facebook", price: 12000, unit: "/1K", min: 500, max: 1000000, desc: "Views video dan reel Facebook aman." },
-            { name: "Youtube Subscribers REAL [NON DROP]", category: "YouTube", price: 1045000, unit: "/1K", min: 50, max: 5000, desc: "Subscribers YouTube asli non-drop kualitas terbaik." },
-            { name: "Youtube Watch Time | Durasi ≥1 jam", category: "YouTube", price: 567000, unit: "/1K", min: 100, max: 4000, desc: "Jam tayang YouTube untuk syarat monetisasi." },
-            { name: "YouTube Watchtime [Max 4K Organic]", category: "YouTube", price: 897000, unit: "/1K", min: 100, max: 4000, desc: "Layanan jam tayang 100% organik dan aman." },
-            { name: "Telegram Members [Max 1M] HQ", category: "Telegram", price: 19000, unit: "/1K", min: 100, max: 1000000, desc: "Anggota grup atau channel Telegram akun HQ." },
-            { name: "Shopee Followers Indonesia", category: "Shopee", price: 24000, unit: "/1K", min: 50, max: 10000, desc: "Pengikut toko Shopee akun aktif Indonesia." },
-            { name: "Discord Members | Global | Real", category: "Discord", price: 180000, unit: "/1K", min: 50, max: 20000, desc: "Member server Discord global dan real active." },
-            { name: "Roblox Followers | Refill 30 Days", category: "Roblox", price: 32000, unit: "/1K", min: 50, max: 10000, desc: "Followers profil Roblox dengan garansi refill 30 hari." },
-            { name: "Penggantian LCD iPhone / Android", category: "Tech Service", price: 450000, unit: " /Pcs", min: 1, max: 5, desc: "Layanan perbaikan dan penggantian LCD Original bergaransi." },
-            { name: "Gestun SPayLater (Pencairan Limit)", category: "Gestun Shopee", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan Shopee PayLater. Kelipatan 10.000. Wajib isi NAMA BANK & NO REKENING di Target." },
-            { name: "Gestun GoPayLater (Pencairan Limit)", category: "Gestun Gojek", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan GoPayLater. Kelipatan 10.000. Wajib isi NAMA BANK & NO REKENING di Target." },
-            { name: "Gestun Akulaku PayLater (Pencairan Limit)", category: "Gestun Akulaku", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan Akulaku. Kelipatan 10.000. Tulis detail Nama Rekening & Bank di kolom Target." },
-            { name: "Gestun Kredivo (Pencairan Limit)", category: "Gestun Kredivo", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan limit Kredivo. Kelipatan 10.000. Tulis NAMA BANK & NO REKENING pencairan di kolom Target." }
-        ];
-
         let cart = JSON.parse(localStorage.getItem('katech_cart')) || [];
         let selectedProduct = null;
+
+        // UI Helpers
+        window.formatRupiah = function(num) { return new Intl.NumberFormat('id-ID').format(num); };
+        
+        window.showToast = function(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            if(!toastContainer) return;
+            const toast = document.createElement('div');
+            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-green-400 text-xl"></i>' : (type === 'error' ? '<i class="fa-solid fa-circle-xmark text-red-400 text-xl"></i>' : '<i class="fa-solid fa-circle-info text-primary text-xl"></i>');
+            toast.className = `bg-slate-900/90 backdrop-blur-md border border-slate-700 p-4 rounded-xl shadow-2xl flex items-center gap-3 toast-slide w-80 text-sm text-white relative overflow-hidden z-[9999]`;
+            toast.innerHTML = `<div class="absolute left-0 top-0 bottom-0 w-1 ${type === 'success' ? 'bg-green-500' : (type === 'error' ? 'bg-red-500' : 'bg-primary')}"></div>${icon}<span class="font-medium flex-grow">${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 4000);
+        };
 
         window.maskEmail = function(email) {
             if(!email) return '';
             const parts = email.split('@');
             if(parts.length !== 2) return email;
-            const name = parts[0]; 
-            const domain = parts[1];
+            const name = parts[0]; const domain = parts[1];
             if(name.length <= 3) return name[0] + '***@' + domain;
             return name.substring(0, 3) + '***@' + domain;
         };
@@ -1243,73 +1375,54 @@
         window.togglePassword = function(inputId, icon) {
             const input = document.getElementById(inputId);
             if (input.type === 'password') { 
-                input.type = 'text'; 
-                icon.classList.remove('fa-eye'); 
-                icon.classList.add('fa-eye-slash'); 
-                icon.classList.add('text-primary'); 
+                input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); icon.classList.add('text-primary'); 
             } else { 
-                input.type = 'password'; 
-                icon.classList.remove('fa-eye-slash'); 
-                icon.classList.add('fa-eye'); 
-                icon.classList.remove('text-primary'); 
+                input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); icon.classList.remove('text-primary'); 
             }
         };
 
-        window.openPolicyModal = function(type) {
-            const modal = document.getElementById('policyModal'); 
-            const title = document.getElementById('policyTitle'); 
-            const content = document.getElementById('policyContent');
+        // AUTH & MODAL TOGGLERS (FIXED - DO NOT REMOVE)
+        window.switchAuthTab = function(tabName) {
+            document.getElementById('formLogin').classList.add('hidden');
+            document.getElementById('formRegister').classList.add('hidden');
+            document.getElementById('formForgot').classList.add('hidden');
             
-            if(type === 'tnc') {
-                title.innerText = "Syarat & Ketentuan";
-                content.innerHTML = `
-                    <p>Selamat datang di KA TECH HUB. Dengan mendaftar dan menggunakan layanan kami, Anda dianggap telah menyetujui seluruh Syarat & Ketentuan di bawah ini:</p>
-                    <ul class="list-disc pl-5 space-y-2 mt-2">
-                        <li><b>Layanan:</b> Layanan ditujukan untuk tujuan sah secara hukum di Indonesia.</li>
-                        <li><b>Aktivitas Ilegal:</b> Dilarang menggunakan website ini untuk penipuan atau money laundering.</li>
-                        <li><b>Tanggung Jawab Input:</b> Kesalahan data target sepenuhnya tanggung jawab pembeli.</li>
-                        <li><b>Perubahan Harga:</b> Harga dapat berubah sewaktu-waktu tanpa pemberitahuan.</li>
-                    </ul>`;
-            } else if(type === 'privacy') {
-                title.innerText = "Kebijakan Privasi";
-                content.innerHTML = `
-                    <p>Di KA TECH HUB, kami sangat menjaga keamanan dan kerahasiaan data pribadi Anda:</p>
-                    <ul class="list-disc pl-5 space-y-2 mt-2">
-                        <li><b>Pengumpulan Data:</b> Kami hanya mengumpulkan Nama, Email, dan Password untuk transaksi.</li>
-                        <li><b>Keamanan Data (Cloud):</b> Seluruh data diamankan dengan enkripsi Firebase. Password disandikan dan tidak dapat dilihat oleh admin.</li>
-                        <li><b>Berbagi Informasi:</b> Informasi Anda tidak akan kami jual kepada pihak ketiga.</li>
-                    </ul>`;
-            } else if(type === 'refund') {
-                title.innerText = "Kebijakan Pengembalian Dana (Refund)";
-                content.innerHTML = `
-                    <p>Aturan pengembalian dana (refund) kami adalah sebagai berikut:</p>
-                    <ul class="list-disc pl-5 space-y-2 mt-2">
-                        <li><b>Transaksi Final:</b> Secara umum, transaksi bersifat final.</li>
-                        <li><b>Kesalahan Sistem:</b> Refund saldo HANYA diproses apabila terjadi error sistem internal yang menyebabkan pesanan Gagal.</li>
-                        <li><b>Kesalahan Pengguna (No Refund):</b> Kami <b>TIDAK MELAYANI</b> komplain akibat salah ketik username, akun private, atau salah nomor rekening tujuan.</li>
-                        <li><b>Batas Klaim:</b> Komplain maksimal 3x24 jam sejak pesanan dibuat.</li>
-                    </ul>`;
+            document.getElementById('formLogin').classList.remove('block');
+            document.getElementById('formRegister').classList.remove('block');
+            document.getElementById('formForgot').classList.remove('block');
+
+            if (tabName === 'login') {
+                document.getElementById('formLogin').classList.remove('hidden');
+                document.getElementById('formLogin').classList.add('block');
+            } else if (tabName === 'register') {
+                document.getElementById('formRegister').classList.remove('hidden');
+                document.getElementById('formRegister').classList.add('block');
+            } else if (tabName === 'forgot') {
+                document.getElementById('formForgot').classList.remove('hidden');
+                document.getElementById('formForgot').classList.add('block');
             }
-            
-            modal.classList.remove('hidden'); 
-            modal.classList.add('flex'); 
+        };
+
+        window.openWelcomeModal = function() {
+            document.getElementById('welcomeModal').classList.remove('hidden');
+            document.getElementById('welcomeModal').classList.add('flex');
             document.body.style.overflow = 'hidden';
+            window.switchAuthTab('login'); // Default to login
         };
 
-        window.closePolicyModal = function() {
-            document.getElementById('policyModal').classList.add('hidden'); 
-            document.getElementById('policyModal').classList.remove('flex'); 
+        window.closeWelcomeModal = function() {
+            document.getElementById('welcomeModal').classList.add('hidden');
+            document.getElementById('welcomeModal').classList.remove('flex');
             document.body.style.overflow = 'auto';
         };
 
-        window.formatRupiah = function(num) { 
-            return new Intl.NumberFormat('id-ID').format(num); 
-        };
-        
-        // BUG FIX: PERBAIKAN CLASS RENDER AVATAR
+        // PROFILE DASHBOARD LOGIC
         window.openProfileDashboard = function() {
             const userData = window.currentUserData;
-            if(!userData) return window.openWelcomeModal();
+            if(!userData) {
+                window.openWelcomeModal();
+                return;
+            }
             
             document.getElementById('dashNameDisplay').innerText = userData.name;
             document.getElementById('dashUsername').innerText = userData.username;
@@ -1325,68 +1438,54 @@
             document.getElementById('dashGreeting').innerText = greeting;
 
             const avatarEl = document.getElementById('profileAvatar');
-            avatarEl.style.backgroundImage = 'none'; // Reset awal
+            avatarEl.style.backgroundImage = 'none';
             avatarEl.innerHTML = '';
-
-            const dashRoleTag = document.getElementById('dashRoleTag'); 
-            const dashBluetick = document.getElementById('dashBluetick'); 
-            const dashShield = document.getElementById('dashShield'); 
-            const dashCrown = document.getElementById('dashCrown'); 
-            const ownerStatsBox = document.getElementById('ownerStatsBox'); 
-            const ownerActionBox = document.getElementById('ownerActionBox'); 
-            const ownerMutasiBox = document.getElementById('ownerMutasiBox'); 
-            const adminManagementBox = document.getElementById('adminManagementBox'); 
-            const adminTopupBox = document.getElementById('adminTopupBox');
             
-            dashRoleTag.classList.add('hidden'); 
-            dashBluetick.classList.add('hidden'); 
-            dashShield.classList.add('hidden'); 
-            dashCrown.classList.add('hidden');
-            ownerStatsBox.classList.add('hidden'); 
-            ownerActionBox.classList.add('hidden'); 
-            ownerMutasiBox.classList.add('hidden'); 
-            adminManagementBox.classList.add('hidden'); 
-            adminTopupBox.classList.add('hidden');
+            document.getElementById('dashRoleTag').classList.add('hidden'); 
+            document.getElementById('dashBluetick').classList.add('hidden'); 
+            document.getElementById('dashShield').classList.add('hidden'); 
+            document.getElementById('dashCrown').classList.add('hidden');
+            document.getElementById('ownerStatsBox').classList.add('hidden'); 
+            document.getElementById('ownerActionBox').classList.add('hidden'); 
+            document.getElementById('ownerMutasiBox').classList.add('hidden'); 
+            document.getElementById('adminManagementBox').classList.add('hidden'); 
+            document.getElementById('adminTopupBox').classList.add('hidden');
+            document.getElementById('adminSupportBox').classList.add('hidden');
 
             if (userData.role === 'owner' || userData.username.toLowerCase() === 'xbee' || userData.email === 'marcurapikk@gmail.com') {
-                dashCrown.classList.remove('hidden'); 
-                dashBluetick.classList.remove('hidden'); 
-                dashRoleTag.classList.remove('hidden');
+                document.getElementById('dashCrown').classList.remove('hidden'); 
+                document.getElementById('dashBluetick').classList.remove('hidden'); 
+                document.getElementById('dashRoleTag').classList.remove('hidden');
                 document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-server text-primary mr-1.5"></i> Area Supreme Owner`;
                 
-                // Pisahkan class gradient agar tidak menimpa background-image
                 avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-yellow-300 shadow-glow-gold transition-all bg-cover bg-center";
                 if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-yellow-400', 'via-gold', 'to-amber-600');
                 
-                ownerStatsBox.classList.remove('hidden'); 
-                ownerActionBox.classList.remove('hidden'); 
-                ownerMutasiBox.classList.remove('hidden'); 
-                adminManagementBox.classList.remove('hidden'); 
-                adminTopupBox.classList.remove('hidden');
+                document.getElementById('ownerStatsBox').classList.remove('hidden'); 
+                document.getElementById('ownerActionBox').classList.remove('hidden'); 
+                document.getElementById('ownerMutasiBox').classList.remove('hidden'); 
+                document.getElementById('adminManagementBox').classList.remove('hidden'); 
+                document.getElementById('adminTopupBox').classList.remove('hidden');
+                document.getElementById('adminSupportBox').classList.remove('hidden');
+                
                 document.getElementById('dashOwnerIncome').innerText = `Rp ${window.formatRupiah(userData.income || 89574843)}`;
                 document.getElementById('dashOwnerCashout').innerText = `Rp ${window.formatRupiah(userData.cashout || 12500000)}`;
                 window.renderMutasi();
+                window.fetchAdminTickets();
             } else if (userData.role === 'admin') {
-                dashShield.classList.remove('hidden');
+                document.getElementById('dashShield').classList.remove('hidden');
                 document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-user-shield text-indigo-400 mr-1.5"></i> Area Admin Staff`;
-                
                 avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-indigo-400 shadow-glow transition-all bg-cover bg-center";
                 if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-indigo-500', 'to-blue-600');
-                
-                adminTopupBox.classList.remove('hidden');
+                document.getElementById('adminTopupBox').classList.remove('hidden');
             } else {
                 document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-clock-rotate-left text-primary mr-1.5"></i> Riwayat Pesanan Saya`;
-                
                 avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-[#070C18] shadow-lg transition-all bg-cover bg-center";
                 if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-accent', 'to-primary');
             }
 
-            // Jika ada foto terunggah
-            if(userData.avatar) {
-                avatarEl.style.backgroundImage = `url(${userData.avatar})`;
-            } else {
-                avatarEl.innerHTML = userData.name.charAt(0).toUpperCase();
-            }
+            if(userData.avatar) avatarEl.style.backgroundImage = `url(${userData.avatar})`;
+            else avatarEl.innerHTML = userData.name.charAt(0).toUpperCase();
 
             document.getElementById('dashTotalSpent').innerText = `Rp ${window.formatRupiah(userData.totalSpent || 0)}`;
 
@@ -1416,6 +1515,7 @@
             document.body.style.overflow = 'auto'; 
         };
 
+        // UTILITIES & OWNER LOGICS
         window.requestTopUp = function() {
             if(!window.currentUserData) return window.openWelcomeModal();
             const message = `Halo Admin 👋\nSaya mau isi Saldo Akun KA TECH HUB.\n\n👤 *Akun:* ${window.currentUserData.email}\n💰 *Nominal:* Rp ... (Isi Nominal)\n💳 *Bayar Via:* ... (QRIS/Mandiri)\n\nMohon bantuannya Kak!`;
@@ -1473,6 +1573,149 @@
                         </div>
                     </div>`; 
             });
+        };
+
+        // PRODUCTS & CART LOGIC
+        const products = [
+            { name: "Instagram Followers Global | Max 50K", category: "Instagram", price: 20000, unit: "/1K", min: 100, max: 50000, desc: "Followers global kualitas stabil dengan proses cepat." },
+            { name: "Instagram Likes Global | Fast", category: "Instagram", price: 12000, unit: "/1K", min: 100, max: 20000, desc: "Likes postingan Instagram instan dan aman." },
+            { name: "TikTok Likes | Mix | Max 1M", category: "TikTok", price: 15000, unit: "/1K", min: 100, max: 1000000, desc: "TikTok likes berkualitas tinggi tanpa refill." },
+            { name: "TikTok Story Likes | Global", category: "TikTok", price: 17000, unit: "/1K", min: 50, max: 30000, desc: "Meningkatkan interaksi pada Story TikTok Anda." },
+            { name: "TikTok Saves | Max 100K", category: "TikTok", price: 11000, unit: "/1K", min: 100, max: 100000, desc: "TikTok saves dengan garansi refill 7 hari." },
+            { name: "TikTok Custom Comment", category: "TikTok", price: 75000, unit: "/1K", min: 10, max: 10000, desc: "Komentar kustom sesuai keinginan pada video TikTok." },
+            { name: "Facebook Followers | BOT HQ", category: "Facebook", price: 17000, unit: "/1K", min: 100, max: 10000, desc: "Pengikut halaman Facebook akun HQ." },
+            { name: "Facebook Shares | Post / Photo", category: "Facebook", price: 29000, unit: "/1K", min: 100, max: 1000000, desc: "Bagikan postingan atau foto Facebook secara massal." },
+            { name: "Facebook Reels Short Video Likes", category: "Facebook", price: 26000, unit: "/1K", min: 100, max: 50000, desc: "Likes cepat untuk video pendek Facebook Reels." },
+            { name: "Facebook Views | Reel / Video", category: "Facebook", price: 12000, unit: "/1K", min: 500, max: 1000000, desc: "Views video dan reel Facebook aman." },
+            { name: "Youtube Subscribers REAL [NON DROP]", category: "YouTube", price: 1045000, unit: "/1K", min: 50, max: 5000, desc: "Subscribers YouTube asli non-drop kualitas terbaik." },
+            { name: "Youtube Watch Time | Durasi ≥1 jam", category: "YouTube", price: 567000, unit: "/1K", min: 100, max: 4000, desc: "Jam tayang YouTube untuk syarat monetisasi." },
+            { name: "YouTube Watchtime [Max 4K Organic]", category: "YouTube", price: 897000, unit: "/1K", min: 100, max: 4000, desc: "Layanan jam tayang 100% organik dan aman." },
+            { name: "Telegram Members [Max 1M] HQ", category: "Telegram", price: 19000, unit: "/1K", min: 100, max: 1000000, desc: "Anggota grup atau channel Telegram akun HQ." },
+            { name: "Shopee Followers Indonesia", category: "Shopee", price: 24000, unit: "/1K", min: 50, max: 10000, desc: "Pengikut toko Shopee akun aktif Indonesia." },
+            { name: "Discord Members | Global | Real", category: "Discord", price: 180000, unit: "/1K", min: 50, max: 20000, desc: "Member server Discord global dan real active." },
+            { name: "Roblox Followers | Refill 30 Days", category: "Roblox", price: 32000, unit: "/1K", min: 50, max: 10000, desc: "Followers profil Roblox dengan garansi refill 30 hari." },
+            { name: "Penggantian LCD iPhone / Android", category: "Tech Service", price: 450000, unit: " /Pcs", min: 1, max: 5, desc: "Layanan perbaikan dan penggantian LCD Original bergaransi." },
+            { name: "Gestun SPayLater (Pencairan Limit)", category: "Gestun Shopee", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan Shopee PayLater. Kelipatan 10.000. Wajib isi NAMA BANK & NO REKENING di Target." },
+            { name: "Gestun GoPayLater (Pencairan Limit)", category: "Gestun Gojek", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan GoPayLater. Kelipatan 10.000. Wajib isi NAMA BANK & NO REKENING di Target." },
+            { name: "Gestun Akulaku PayLater (Pencairan Limit)", category: "Gestun Akulaku", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan Akulaku. Kelipatan 10.000. Tulis detail Nama Rekening & Bank di kolom Target." },
+            { name: "Gestun Kredivo (Pencairan Limit)", category: "Gestun Kredivo", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan limit Kredivo. Kelipatan 10.000. Tulis NAMA BANK & NO REKENING pencairan di kolom Target." }
+        ];
+
+        window.initCategoryDropdown = function() { 
+            const catSelect = document.getElementById('mainCategorySelect'); 
+            const categories = [...new Set(products.map(p => p.category))]; 
+            catSelect.innerHTML = categories.map(cat => `<option value="${cat}">${cat.toUpperCase()} SERVICES</option>`).join(''); 
+            window.onCategoryChange(); 
+        };
+        
+        window.onCategoryChange = function() { 
+            const serviceSelect = document.getElementById('mainServiceSelect'); 
+            const filtered = products.filter(p => p.category === document.getElementById('mainCategorySelect').value); 
+            serviceSelect.innerHTML = filtered.map(p => `<option value="${p.name}">${p.name}</option>`).join(''); 
+            window.onServiceChange(); 
+        };
+        
+        window.onServiceChange = function() { 
+            selectedProduct = products.find(p => p.name === document.getElementById('mainServiceSelect').value); 
+            if (selectedProduct) { 
+                document.getElementById('selectedDesc').innerText = selectedProduct.desc; 
+                document.getElementById('selectedPrice').innerText = `Rp ${window.formatRupiah(selectedProduct.price)} ${selectedProduct.unit}`; 
+                document.getElementById('selectedMinMax').innerText = `${window.formatRupiah(selectedProduct.min)} / ${window.formatRupiah(selectedProduct.max)}`; 
+                document.getElementById('mainQuantityInput').value = selectedProduct.min; 
+                window.calculateMainTotal(); 
+            } 
+        };
+        
+        window.onSearchInput = function() { 
+            const query = document.getElementById('serviceSearchInput').value.toLowerCase().trim(); 
+            const serviceSelect = document.getElementById('mainServiceSelect'); 
+            if(query === "") { 
+                window.onCategoryChange(); 
+                return; 
+            } 
+            const matchedProducts = products.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)); 
+            if(matchedProducts.length > 0) { 
+                serviceSelect.innerHTML = matchedProducts.map(p => `<option value="${p.name}">${p.name}</option>`).join(''); 
+                window.onServiceChange(); 
+            } 
+        };
+        
+        window.calculateMainTotal = function() { 
+            if (!selectedProduct) return; 
+            const qty = parseFloat(document.getElementById('mainQuantityInput').value) || 0; 
+            let calc = selectedProduct.unit.includes('/1K') ? (qty / 1000) * selectedProduct.price : qty * selectedProduct.price; 
+            document.getElementById('mainCalculatedTotal').innerText = `Rp ${window.formatRupiah(Math.round(calc))}`; 
+        };
+        
+        window.addMainToCart = function() { 
+            if (!selectedProduct) return; 
+            const target = document.getElementById('mainTargetInput').value.trim(); 
+            const quantity = parseInt(document.getElementById('mainQuantityInput').value); 
+            if (target === "") return alert("Mohon isi Target Pesanan!"); 
+            let calculatedTotal = selectedProduct.unit.includes('/1K') ? Math.round((quantity / 1000) * selectedProduct.price) : Math.round(quantity * selectedProduct.price); 
+            cart.push({ 
+                productName: selectedProduct.name, category: selectedProduct.category, price: selectedProduct.price, 
+                quantity: quantity, target: target, total: calculatedTotal, unit: selectedProduct.unit 
+            }); 
+            localStorage.setItem('katech_cart', JSON.stringify(cart)); 
+            window.updateCartUI(); 
+            window.showToast("Masuk keranjang!"); 
+            window.toggleCartModal(true); 
+        };
+        
+        window.removeFromCart = function(index) { 
+            cart.splice(index, 1); 
+            localStorage.setItem('katech_cart', JSON.stringify(cart)); 
+            window.updateCartUI(); 
+        };
+        
+        window.updateCartUI = function() { 
+            const badges = [document.getElementById('desktopCartBadge'), document.getElementById('mobileHeaderCartBadge'), document.getElementById('mobileBottomCartBadge')]; 
+            badges.forEach(badge => { 
+                if(badge) { 
+                    if(cart.length > 0) { badge.innerText = cart.length; badge.classList.remove('hidden'); } 
+                    else { badge.classList.add('hidden'); } 
+                } 
+            }); 
+            
+            const cartItemsContainer = document.getElementById('cartItems'); 
+            const cartTotalEl = document.getElementById('cartTotal'); 
+            cartItemsContainer.innerHTML = ''; 
+            let grandTotal = 0; 
+            
+            if(cart.length === 0) { 
+                cartItemsContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 text-slate-400">
+                        <i class="fa-solid fa-box-open text-4xl mb-3 opacity-40"></i>
+                        <p class="text-sm">Keranjang kosong.</p>
+                    </div>`; 
+            } else { 
+                cart.forEach((item, index) => { 
+                    grandTotal += item.total; 
+                    cartItemsContainer.innerHTML += `
+                        <div class="bg-slate-800/70 p-3 sm:p-4 rounded-xl border border-slate-700/80 relative group">
+                            <button onclick="removeFromCart(${index})" class="absolute top-3 right-3 text-red-400 hover:text-red-500 bg-red-400/10 p-2 rounded-lg transition">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                            <h4 class="text-white font-semibold text-xs sm:text-sm pr-10 mb-1">${item.productName}</h4>
+                            <p class="text-[11px] sm:text-xs text-slate-400 mb-3">Target: ${item.target}</p>
+                            <div class="flex justify-between items-center bg-slate-900/60 p-2 sm:p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-[11px] sm:text-xs text-slate-300">Jumlah: ${window.formatRupiah(item.quantity)}</span>
+                                <span class="text-xs sm:text-sm font-bold text-primary">Rp ${window.formatRupiah(item.total)}</span>
+                            </div>
+                        </div>`; 
+                }); 
+            } 
+            cartTotalEl.innerText = `Rp ${window.formatRupiah(grandTotal)}`; 
+        };
+        
+        window.toggleCartModal = function(forceOpen = false) { 
+            const modal = document.getElementById('cartModal'); 
+            if (forceOpen === true || modal.classList.contains('hidden')) { 
+                modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden'; 
+            } else { 
+                modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = 'auto'; 
+            } 
         };
 
         window.processDirectOrder = async function() {
@@ -1547,196 +1790,76 @@
             }
         };
 
-        window.initCategoryDropdown = function() { 
-            const catSelect = document.getElementById('mainCategorySelect'); 
-            const categories = [...new Set(products.map(p => p.category))]; 
-            catSelect.innerHTML = categories.map(cat => `<option value="${cat}">${cat.toUpperCase()} SERVICES</option>`).join(''); 
-            window.onCategoryChange(); 
-        };
-        
-        window.onCategoryChange = function() { 
-            const serviceSelect = document.getElementById('mainServiceSelect'); 
-            const filtered = products.filter(p => p.category === document.getElementById('mainCategorySelect').value); 
-            serviceSelect.innerHTML = filtered.map(p => `<option value="${p.name}">${p.name}</option>`).join(''); 
-            window.onServiceChange(); 
-        };
-        
-        window.onServiceChange = function() { 
-            selectedProduct = products.find(p => p.name === document.getElementById('mainServiceSelect').value); 
-            if (selectedProduct) { 
-                document.getElementById('selectedDesc').innerText = selectedProduct.desc; 
-                document.getElementById('selectedPrice').innerText = `Rp ${window.formatRupiah(selectedProduct.price)} ${selectedProduct.unit}`; 
-                document.getElementById('selectedMinMax').innerText = `${window.formatRupiah(selectedProduct.min)} / ${window.formatRupiah(selectedProduct.max)}`; 
-                document.getElementById('mainQuantityInput').value = selectedProduct.min; 
-                window.calculateMainTotal(); 
-            } 
-        };
-        
-        window.onSearchInput = function() { 
-            const query = document.getElementById('serviceSearchInput').value.toLowerCase().trim(); 
-            const serviceSelect = document.getElementById('mainServiceSelect'); 
-            if(query === "") { 
-                window.onCategoryChange(); 
-                return; 
-            } 
-            const matchedProducts = products.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)); 
-            if(matchedProducts.length > 0) { 
-                serviceSelect.innerHTML = matchedProducts.map(p => `<option value="${p.name}">${p.name}</option>`).join(''); 
-                window.onServiceChange(); 
-            } 
-        };
-        
-        window.calculateMainTotal = function() { 
-            if (!selectedProduct) return; 
-            const qty = parseFloat(document.getElementById('mainQuantityInput').value) || 0; 
-            let calc = selectedProduct.unit.includes('/1K') ? (qty / 1000) * selectedProduct.price : qty * selectedProduct.price; 
-            document.getElementById('mainCalculatedTotal').innerText = `Rp ${window.formatRupiah(Math.round(calc))}`; 
-        };
-        
-        window.addMainToCart = function() { 
-            if (!selectedProduct) return; 
-            const target = document.getElementById('mainTargetInput').value.trim(); 
-            const quantity = parseInt(document.getElementById('mainQuantityInput').value); 
-            if (target === "") return alert("Mohon isi Target Pesanan!"); 
-            let calculatedTotal = selectedProduct.unit.includes('/1K') ? Math.round((quantity / 1000) * selectedProduct.price) : Math.round(quantity * selectedProduct.price); 
-            cart.push({ 
-                productName: selectedProduct.name, 
-                category: selectedProduct.category, 
-                price: selectedProduct.price, 
-                quantity: quantity, 
-                target: target, 
-                total: calculatedTotal, 
-                unit: selectedProduct.unit 
-            }); 
-            localStorage.setItem('katech_cart', JSON.stringify(cart)); 
-            window.updateCartUI(); 
-            window.showToast("Masuk keranjang!"); 
-            window.toggleCartModal(true); 
-        };
-        
-        window.removeFromCart = function(index) { 
-            cart.splice(index, 1); 
-            localStorage.setItem('katech_cart', JSON.stringify(cart)); 
-            window.updateCartUI(); 
-        };
-        
-        window.updateCartUI = function() { 
-            const badges = [document.getElementById('desktopCartBadge'), document.getElementById('mobileHeaderCartBadge'), document.getElementById('mobileBottomCartBadge')]; 
-            badges.forEach(badge => { 
-                if(badge) { 
-                    if(cart.length > 0) { 
-                        badge.innerText = cart.length; 
-                        badge.classList.remove('hidden'); 
-                    } else { 
-                        badge.classList.add('hidden'); 
-                    } 
-                } 
-            }); 
+        // POLICIES, FAQ & UI WIDGETS
+        window.openPolicyModal = function(type) {
+            const modal = document.getElementById('policyModal'); 
+            const title = document.getElementById('policyTitle'); 
+            const content = document.getElementById('policyContent');
             
-            const cartItemsContainer = document.getElementById('cartItems'); 
-            const cartTotalEl = document.getElementById('cartTotal'); 
-            cartItemsContainer.innerHTML = ''; 
-            let grandTotal = 0; 
-            
-            if(cart.length === 0) { 
-                cartItemsContainer.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-10 text-slate-400">
-                        <i class="fa-solid fa-box-open text-4xl mb-3 opacity-40"></i>
-                        <p class="text-sm">Keranjang kosong.</p>
-                    </div>`; 
-            } else { 
-                cart.forEach((item, index) => { 
-                    grandTotal += item.total; 
-                    cartItemsContainer.innerHTML += `
-                        <div class="bg-slate-800/70 p-3 sm:p-4 rounded-xl border border-slate-700/80 relative group">
-                            <button onclick="removeFromCart(${index})" class="absolute top-3 right-3 text-red-400 hover:text-red-500 bg-red-400/10 p-2 rounded-lg transition">
-                                <i class="fa-solid fa-trash text-xs"></i>
-                            </button>
-                            <h4 class="text-white font-semibold text-xs sm:text-sm pr-10 mb-1">${item.productName}</h4>
-                            <p class="text-[11px] sm:text-xs text-slate-400 mb-3">Target: ${item.target}</p>
-                            <div class="flex justify-between items-center bg-slate-900/60 p-2 sm:p-2.5 rounded-lg border border-slate-800">
-                                <span class="text-[11px] sm:text-xs text-slate-300">Jumlah: ${window.formatRupiah(item.quantity)}</span>
-                                <span class="text-xs sm:text-sm font-bold text-primary">Rp ${window.formatRupiah(item.total)}</span>
-                            </div>
-                        </div>`; 
-                }); 
-            } 
-            cartTotalEl.innerText = `Rp ${window.formatRupiah(grandTotal)}`; 
+            if(type === 'tnc') {
+                title.innerText = "Syarat & Ketentuan";
+                content.innerHTML = `
+                    <p>Selamat datang di KA TECH HUB. Dengan mendaftar dan menggunakan layanan kami, Anda dianggap telah menyetujui seluruh Syarat & Ketentuan di bawah ini:</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-2">
+                        <li><b>Layanan:</b> Layanan ditujukan untuk tujuan sah secara hukum di Indonesia.</li>
+                        <li><b>Aktivitas Ilegal:</b> Dilarang menggunakan website ini untuk penipuan atau money laundering.</li>
+                        <li><b>Tanggung Jawab Input:</b> Kesalahan data target sepenuhnya tanggung jawab pembeli.</li>
+                        <li><b>Perubahan Harga:</b> Harga dapat berubah sewaktu-waktu tanpa pemberitahuan.</li>
+                    </ul>`;
+            } else if(type === 'privacy') {
+                title.innerText = "Kebijakan Privasi";
+                content.innerHTML = `
+                    <p>Di KA TECH HUB, kami sangat menjaga keamanan dan kerahasiaan data pribadi Anda:</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-2">
+                        <li><b>Pengumpulan Data:</b> Kami hanya mengumpulkan Nama, Email, dan Password untuk transaksi.</li>
+                        <li><b>Keamanan Data (Cloud):</b> Seluruh data diamankan dengan enkripsi Firebase. Password disandikan dan tidak dapat dilihat oleh admin.</li>
+                        <li><b>Berbagi Informasi:</b> Informasi Anda tidak akan kami jual kepada pihak ketiga.</li>
+                    </ul>`;
+            } else if(type === 'refund') {
+                title.innerText = "Kebijakan Pengembalian Dana (Refund)";
+                content.innerHTML = `
+                    <p>Aturan pengembalian dana (refund) kami adalah sebagai berikut:</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-2">
+                        <li><b>Transaksi Final:</b> Secara umum, transaksi bersifat final.</li>
+                        <li><b>Kesalahan Sistem:</b> Refund saldo HANYA diproses apabila terjadi error sistem internal yang menyebabkan pesanan Gagal.</li>
+                        <li><b>Kesalahan Pengguna (No Refund):</b> Kami <b>TIDAK MELAYANI</b> komplain akibat salah ketik username, akun private, atau salah nomor rekening tujuan.</li>
+                        <li><b>Batas Klaim:</b> Komplain maksimal 3x24 jam sejak pesanan dibuat.</li>
+                    </ul>`;
+            }
+            modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden';
         };
-        
-        window.toggleCartModal = function(forceOpen = false) { 
-            const modal = document.getElementById('cartModal'); 
-            if (forceOpen === true || modal.classList.contains('hidden')) { 
-                modal.classList.remove('hidden'); 
-                modal.classList.add('flex'); 
-                document.body.style.overflow = 'hidden'; 
-            } else { 
-                modal.classList.add('hidden'); 
-                modal.classList.remove('flex'); 
-                document.body.style.overflow = 'auto'; 
-            } 
+
+        window.closePolicyModal = function() {
+            document.getElementById('policyModal').classList.add('hidden'); document.getElementById('policyModal').classList.remove('flex'); document.body.style.overflow = 'auto';
         };
-        
+
         window.copyToClipboard = function(text, name) { 
-            navigator.clipboard.writeText(text); 
-            window.showToast(`${name} disalin!`); 
+            navigator.clipboard.writeText(text); window.showToast(`${name} disalin!`); 
         };
         
-        window.openQrisModal = function() { 
-            document.getElementById('qrisModal').classList.remove('hidden'); 
-            document.getElementById('qrisModal').classList.add('flex'); 
-        };
-        
-        window.closeQrisModal = function() { 
-            document.getElementById('qrisModal').classList.add('hidden'); 
-            document.getElementById('qrisModal').classList.remove('flex'); 
-        };
-        
-        window.toggleWAWidget = function() { 
-            const widget = document.getElementById('waWidgetBox'); 
-            if (widget.classList.contains('hidden')) { 
-                widget.classList.remove('hidden'); 
-                setTimeout(() => widget.classList.remove('scale-0'), 10); 
-            } else { 
-                widget.classList.add('scale-0'); 
-                setTimeout(() => widget.classList.add('hidden'), 300); 
-            } 
-        };
+        window.openQrisModal = function() { document.getElementById('qrisModal').classList.remove('hidden'); document.getElementById('qrisModal').classList.add('flex'); };
+        window.closeQrisModal = function() { document.getElementById('qrisModal').classList.add('hidden'); document.getElementById('qrisModal').classList.remove('flex'); };
         
         window.toggleFAQ = function(element) { 
             element.classList.toggle('active'); 
             const content = element.nextElementSibling; 
-            if (content.classList.contains('open')) { 
-                content.classList.remove('open'); 
-            } else { 
-                content.classList.add('open'); 
-            } 
+            if (content.classList.contains('open')) content.classList.remove('open'); 
+            else content.classList.add('open'); 
         };
 
+        // ANIMATIONS & REALTIME CLOCK
         let typeIndex = 0, charIndex = 0, isDeleting = false; 
         const typingTexts = ["Layanan Digital", "Top Up Game", "Social Media Boost", "Solusi Teknologi"];
-        
         function typeWriter() { 
             const currentText = typingTexts[typeIndex]; 
             const typeEl = document.getElementById('typewriter-text'); 
             
-            if (isDeleting) { 
-                typeEl.textContent = currentText.substring(0, charIndex - 1); 
-                charIndex--; 
-            } else { 
-                typeEl.textContent = currentText.substring(0, charIndex + 1); 
-                charIndex++; 
-            } 
+            if (isDeleting) { typeEl.textContent = currentText.substring(0, charIndex - 1); charIndex--; } 
+            else { typeEl.textContent = currentText.substring(0, charIndex + 1); charIndex++; } 
             
             let typingSpeed = isDeleting ? 50 : 100; 
-            if (!isDeleting && charIndex === currentText.length) { 
-                typingSpeed = 2000; 
-                isDeleting = true; 
-            } else if (isDeleting && charIndex === 0) { 
-                isDeleting = false; 
-                typeIndex = (typeIndex + 1) % typingTexts.length; 
-                typingSpeed = 500; 
-            } 
+            if (!isDeleting && charIndex === currentText.length) { typingSpeed = 2000; isDeleting = true; } 
+            else if (isDeleting && charIndex === 0) { isDeleting = false; typeIndex = (typeIndex + 1) % typingTexts.length; typingSpeed = 500; } 
             setTimeout(typeWriter, typingSpeed); 
         }
         
@@ -1783,35 +1906,23 @@
             popup.innerHTML = `
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/30 flex-shrink-0 relative">
                     <i class="fa-solid fa-cart-arrow-down text-lg"></i>
-                    <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full w-4 h-4 flex items-center justify-center text-white text-[8px] border-2 border-slate-900">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
+                    <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full w-4 h-4 flex items-center justify-center text-white text-[8px] border-2 border-slate-900"><i class="fa-solid fa-check"></i></div>
                 </div>
                 <div class="flex-grow">
                     <div class="flex justify-between items-center mb-0.5">
                         <span class="font-bold text-white text-xs sm:text-sm tracking-tight">${randomName} <span class="font-normal text-slate-400">di</span> ${randomCity}</span>
                     </div>
                     <span class="text-[10px] sm:text-xs text-slate-300 leading-tight block mb-1">Membeli <b class="text-primary">${itemString}</b></span>
-                    <span class="text-[8px] sm:text-[9px] text-slate-500 flex items-center gap-1">
-                        <i class="fa-regular fa-clock"></i> ${randomTime}
-                    </span>
+                    <span class="text-[8px] sm:text-[9px] text-slate-500 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${randomTime}</span>
                 </div>`; 
             
             container.appendChild(popup); 
-            
-            setTimeout(() => { 
-                popup.classList.remove('animate-slide-in-left'); 
-                popup.classList.add('animate-slide-out-left'); 
-                setTimeout(() => popup.remove(), 500); 
-            }, 5000); 
+            setTimeout(() => { popup.classList.remove('animate-slide-in-left'); popup.classList.add('animate-slide-out-left'); setTimeout(() => popup.remove(), 500); }, 5000); 
         }
         
         function scheduleNextPopup() { 
             const randomDelay = Math.floor(Math.random() * (15000 - 8000 + 1) + 8000); 
-            setTimeout(() => { 
-                triggerSocialProof(); 
-                scheduleNextPopup(); 
-            }, randomDelay); 
+            setTimeout(() => { triggerSocialProof(); scheduleNextPopup(); }, randomDelay); 
         }
         
         window.trackOrderReal = function() { 
@@ -1828,9 +1939,7 @@
             setTimeout(() => { 
                 document.getElementById('resBadge').innerText = "Diproses"; 
                 document.getElementById('resBadge').className = "px-2.5 py-1 rounded-full text-[10px] font-bold border bg-amber-500/20 text-amber-400 border-amber-500/20"; 
-                
-                const now = new Date(); 
-                const waktu = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`; 
+                const now = new Date(); const waktu = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`; 
                 document.getElementById('resTime').innerText = waktu; 
                 document.getElementById('resItemDetail').innerText = "Pesanan sedang dalam antrean server. Harap tunggu sesuai estimasi."; 
             }, 1200); 
@@ -1844,17 +1953,10 @@
             const locationString = `Jakarta, Indonesia 🇮🇩`; 
             
             const profClock = document.getElementById('profileClock'); 
-            if(profClock) profClock.innerHTML = `
-                <span class="text-primary font-bold tracking-wide"><i class="fa-regular fa-clock mr-1 animate-pulse"></i>${timeString}</span> 
-                <span class="hidden sm:inline mx-2 text-slate-500">|</span> 
-                <span class="block sm:inline mt-1 sm:mt-0 text-slate-400"><i class="fa-solid fa-location-dot mr-1 text-red-400"></i>${locationString}</span>`; 
+            if(profClock) profClock.innerHTML = `<span class="text-primary font-bold tracking-wide"><i class="fa-regular fa-clock mr-1 animate-pulse"></i>${timeString}</span> <span class="hidden sm:inline mx-2 text-slate-500">|</span> <span class="block sm:inline mt-1 sm:mt-0 text-slate-400"><i class="fa-solid fa-location-dot mr-1 text-red-400"></i>${locationString}</span>`; 
                 
             const dashClock = document.getElementById('dashboardClock'); 
-            if(dashClock) dashClock.innerHTML = `
-                <i class="fa-regular fa-clock text-primary animate-pulse"></i> 
-                <span class="tracking-wide">${timeString}</span> 
-                <span class="mx-1.5 text-slate-500">|</span> 
-                <span class="text-slate-400">${locationString}</span>`; 
+            if(dashClock) dashClock.innerHTML = `<i class="fa-regular fa-clock text-primary animate-pulse"></i> <span class="tracking-wide">${timeString}</span> <span class="mx-1.5 text-slate-500">|</span> <span class="text-slate-400">${locationString}</span>`; 
         };
 
         window.onload = function() {
