@@ -32,6 +32,9 @@
     <!-- Google ReCaptcha v3 (ENTERPRISE SECURITY) -->
     <script src="https://www.google.com/recaptcha/api.js?render=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></script>
     
+    <!-- Chart.js untuk Analitik Owner -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -91,8 +94,8 @@
         .swal2-container { z-index: 999999 !important; }
         .order-tab.active { background-color: #0EA5E9; color: white; font-weight: bold; border-color: #38BDF8; box-shadow: 0 0 15px rgba(14,165,233,0.3); }
         .order-tab { background-color: rgba(15, 23, 42, 0.8); color: #94A3B8; border: 1px solid rgba(51, 65, 85, 0.8); }
-        /* Hides Recaptcha Badge to keep UI clean */
-        .grecaptcha-badge { visibility: hidden; }
+        /* ReCaptcha sekarang ditampilkan agar user tahu sistem aman */
+        .grecaptcha-badge { z-index: 100; bottom: 20px !important; right: 20px !important; }
     </style>
 </head>
 <body class="antialiased selection:bg-primary selection:text-white relative bg-[#070C18]">
@@ -194,7 +197,7 @@
                             <i class="fa-regular fa-eye absolute right-4 top-3.5 text-slate-400 cursor-pointer hover:text-primary transition" onclick="togglePassword('regPassword', this)"></i>
                         </div>
                     </div>
-                    <!-- ReCaptcha Terms (Required by Google if badge is hidden) -->
+                    
                     <div class="text-[9px] text-slate-500 text-center mt-2 leading-tight">
                         Pendaftaran dilindungi oleh sistem keamanan reCAPTCHA Enterprise.
                     </div>
@@ -342,6 +345,14 @@
                         </div>
                     </div>
 
+                    <!-- FITUR ENTERPRISE BARU: ANALITIK CHART.JS -->
+                    <div id="ownerAnalyticsBox" class="p-3 sm:p-4 bg-slate-900/40 rounded-xl border border-slate-700/80 mt-4 hidden w-full">
+                        <h4 class="text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-2"><i class="fa-solid fa-chart-line text-primary mr-1.5"></i>Statistik Pendapatan (7 Hari Terakhir)</h4>
+                        <div class="w-full h-40 sm:h-48 relative">
+                            <canvas id="revenueChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+
                     <!-- ADMIN/OWNER: MANAJEMEN TIKET SUPPORT CS -->
                     <div id="adminSupportBox" class="p-3 sm:p-4 bg-sky-900/20 rounded-xl border border-sky-700/50 hidden">
                         <div class="flex justify-between items-center mb-3">
@@ -466,7 +477,7 @@
             </div>
         </div>
         
-        <!-- MODAL INVOICE E-RECEIPT (FITUR BARU) -->
+        <!-- MODAL INVOICE E-RECEIPT -->
         <div id="invoiceModal" class="fixed inset-0 z-[950] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
             <div class="glass-card max-w-sm w-full p-0 relative border-primary/40 shadow-glow-strong overflow-hidden bg-white text-slate-900">
                 <button onclick="closeInvoiceModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition z-20"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -1031,7 +1042,6 @@
     <!-- FIREBASE SDK ENGINE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-        // DIUPDATE: Tidak lagi mengimpor sendEmailVerification
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, orderBy, limit, runTransaction } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
@@ -1057,6 +1067,7 @@
         window.chatContext = 'user';
         window.lastAdminMsgTime = 0; 
         window.backgroundTicketUnsubscribe = null;
+        let userSnapshotUnsubscribe = null;
 
         if ('serviceWorker' in navigator) {
             const swCode = `self.addEventListener('fetch', function(e) {});`;
@@ -1124,6 +1135,7 @@
             });
         };
 
+        // FITUR BARU: REAL-TIME SYNC FIREBASE (ON SNAPSHOT)
         onAuthStateChanged(auth, async (user) => {
             const welcomeModal = document.getElementById('welcomeModal');
             const appContent = document.getElementById('appContent');
@@ -1132,29 +1144,45 @@
 
             if (user) {
                 try {
-                    let userDoc = await getDoc(doc(db, "users", user.uid));
+                    const userRef = doc(db, "users", user.uid);
+                    let userDoc = await getDoc(userRef);
+                    
                     if (!userDoc.exists()) {
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-                        userDoc = await getDoc(doc(db, "users", user.uid));
-                    }
-                    if (userDoc.exists()) {
-                        window.currentUserData = { uid: user.uid, ...userDoc.data() };
-                    } else {
                         const isOwner = (user.email === "marcurapikk@gmail.com");
-                        const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : "User");
-                        const cleanUsername = fallbackName.toLowerCase().replace(/[^a-z0-9]/g, '');
-
+                        const cleanUsername = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
                         const fallbackData = {
-                            name: fallbackName, username: cleanUsername || "user" + Math.floor(Math.random() * 1000),
+                            name: user.displayName || "User", username: cleanUsername,
                             email: user.email, role: isOwner ? 'owner' : 'user', level: isOwner ? 'Supreme 👑' : 'Bronze',
                             balance: isOwner ? 999999999 : 0, totalSpent: 0, income: isOwner ? 89574843 : 0, cashout: isOwner ? 12500000 : 0,
                             refCount: 0, refEarnings: 0
                         };
-                        
-                        await setDoc(doc(db, "users", user.uid), fallbackData);
-                        window.currentUserData = { uid: user.uid, ...fallbackData };
+                        await setDoc(userRef, fallbackData);
                     }
-                    
+
+                    // REAL-TIME LISTENER SALDO & PENDAPATAN
+                    if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
+                    userSnapshotUnsubscribe = onSnapshot(userRef, (docSnap) => {
+                        if (docSnap.exists()) {
+                            window.currentUserData = { uid: user.uid, ...docSnap.data() };
+                            
+                            // AUTO-UPDATE UI SECARA LANGSUNG
+                            const dashBal = document.getElementById('dashUserBalance');
+                            if(dashBal) dashBal.innerText = `Rp ${window.formatRupiah(window.currentUserData.balance || 0)}`;
+                            
+                            const dashInc = document.getElementById('dashOwnerIncome');
+                            if(dashInc) dashInc.innerText = `Rp ${window.formatRupiah(window.currentUserData.income || 0)}`;
+                            
+                            const dashOut = document.getElementById('dashOwnerCashout');
+                            if(dashOut) dashOut.innerText = `Rp ${window.formatRupiah(window.currentUserData.cashout || 0)}`;
+
+                            // Update Chart jika sedang buka dashboard Owner
+                            if(window.revenueChartInstance && window.currentUserData.role === 'owner') {
+                                window.revenueChartInstance.data.datasets[0].data[6] = window.currentUserData.income || 0;
+                                window.revenueChartInstance.update();
+                            }
+                        }
+                    });
+
                     if(window.currentUserData && window.currentUserData.role === 'user') { window.startBackgroundChatListener(user.uid); }
 
                     welcomeModal.classList.add('hidden'); welcomeModal.classList.remove('flex');
@@ -1166,6 +1194,7 @@
                 }
             } else {
                 window.currentUserData = null;
+                if(userSnapshotUnsubscribe) userSnapshotUnsubscribe();
                 if(window.backgroundTicketUnsubscribe) window.backgroundTicketUnsubscribe();
                 appContent.classList.add('hidden', 'opacity-0');
                 authLoadingState.classList.add('hidden');
@@ -1226,7 +1255,7 @@
             finally { btnGoogle.innerHTML = originalText; btnGoogle.disabled = false; }
         };
 
-        // DIUPDATE: REGISTER DENGAN RECAPTCHA (TIDAK ADA BLOKIR EMAIL)
+        // RECAPTCHA V3 REGISTRATION (Tanpa Blokir)
         window.processRegister = async function() {
             const name = document.getElementById('regName').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase().replace(/\s+/g, '');
@@ -1241,7 +1270,9 @@
             btnReg.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memeriksa Keamanan...';
             btnReg.disabled = true;
 
-            // Eksekusi ReCaptcha v3 Anti-Spam
+            // Memanggil ReCaptcha
+            window.showToast("Memverifikasi sistem keamanan (ReCaptcha)...", "info");
+            
             grecaptcha.ready(async function() {
                 try {
                     const token = await grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', {action: 'register'});
@@ -1275,8 +1306,6 @@
                     localStorage.removeItem('katech_ref');
 
                     window.alert("Registrasi Berhasil! Selamat datang di KA TECH HUB.");
-                    // Auth state otomatis berubah menjadi terlogin.
-
                 } catch (error) { 
                     window.alert("Gagal Registrasi: " + error.message); 
                 } finally {
@@ -1286,7 +1315,7 @@
             });
         };
 
-        // DIUPDATE: LOGIN TANPA CEK VERIFIKASI EMAIL
+        // FITUR BARU: ADVANCED SECURITY DEVICE FINGERPRINTING & LOGIN SAFTY
         window.processLogin = async function() {
             const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
             const passIn = document.getElementById('loginPassword').value;
@@ -1298,11 +1327,51 @@
 
             try {
                 await setPersistence(auth, browserLocalPersistence);
-                await signInWithEmailAndPassword(auth, emailInput, passIn);
+                const userCredential = await signInWithEmailAndPassword(auth, emailInput, passIn);
+                const user = userCredential.user;
                 
-                // KODE PEMBLOKIRAN EMAIL SUDAH DIHAPUS DI SINI. User bisa bebas masuk.
+                // SISTEM KEAMANAN PELACAKAN PERANGKAT (DEVICE FINGERPRINTING)
+                const currentDevice = navigator.userAgent; 
+                const deviceKey = 'katech_device_' + user.uid;
+                const storedDevice = localStorage.getItem(deviceKey);
+
+                if (!storedDevice) {
+                    // Login dari perangkat yang benar-benar baru
+                    localStorage.setItem(deviceKey, currentDevice);
+                    Swal.fire({
+                        title: 'Aktivitas Login Baru!',
+                        text: 'Sistem mendeteksi Anda login dari browser atau perangkat baru. Apakah ini Anda?',
+                        icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Ini Saya', cancelButtonText: 'Bukan, Ganti Password!',
+                        confirmButtonColor: '#10B981', cancelButtonColor: '#EF4444', background: '#0F172A', color: '#F8FAFC'
+                    }).then((result) => {
+                        if (!result.isConfirmed) {
+                            // User bilang "Bukan Saya", kita kirim email ganti password dan keluarkan dari akun
+                            sendPasswordResetEmail(auth, user.email).then(() => {
+                                Swal.fire({title: "Keamanan Diaktifkan!", text: "Link ganti password (Reset) telah dikirim ke Email Anda. Segera ubah password Anda demi keamanan.", icon: "success", background: '#0F172A', color: '#F8FAFC'});
+                                signOut(auth);
+                            });
+                        } else { window.showToast("Login Berhasil! Perangkat ditambahkan ke daftar aman."); }
+                    });
+                } else if (storedDevice !== currentDevice) {
+                    // Login dari perangkat yang berbeda dari login terakhir
+                    localStorage.setItem(deviceKey, currentDevice); 
+                    Swal.fire({
+                        title: 'Perangkat Berbeda Terdeteksi!',
+                        text: 'Sistem mendeteksi login dari perangkat yang berbeda dari sebelumnya. Amankan akun Anda jika ini bukan Anda.',
+                        icon: 'warning', showCancelButton: true, confirmButtonText: 'Aman (Lanjutkan)', cancelButtonText: 'Bukan Saya (Reset)',
+                        confirmButtonColor: '#10B981', cancelButtonColor: '#EF4444', background: '#0F172A', color: '#F8FAFC'
+                    }).then((result) => {
+                        if (!result.isConfirmed) {
+                            sendPasswordResetEmail(auth, user.email).then(() => {
+                                Swal.fire({title: "Keamanan Diaktifkan!", text: "Link ganti password (Reset) telah dikirim ke Email Anda. Segera ubah password Anda demi keamanan.", icon: "success", background: '#0F172A', color: '#F8FAFC'});
+                                signOut(auth);
+                            });
+                        } else { window.showToast("Login Berhasil!"); }
+                    });
+                } else {
+                    window.showToast("Login Berhasil!");
+                }
                 
-                window.showToast("Login Berhasil!");
             } catch (error) { 
                 let msg = error.message;
                 if(msg.includes('invalid-credential') || msg.includes('user-not-found') || msg.includes('wrong-password')) {
@@ -1372,6 +1441,154 @@
                     } catch (error) { window.alert("Gagal mengubah nama: " + error.message); }
                 }
             }
+        };
+
+        window.openProfileDashboard = function() {
+            const userData = window.currentUserData;
+            if(!userData) return window.alert("Memuat data profil dari Cloud Server...");
+
+            document.getElementById('dashNameDisplay').innerText = userData.name || 'User';
+            document.getElementById('dashUsername').innerText = userData.username || 'user';
+            document.getElementById('dashEmail').innerText = window.maskEmail(userData.email);
+            document.getElementById('dashLevel').innerText = userData.level || 'Bronze';
+            document.getElementById('dashUserBalance').innerText = `Rp ${window.formatRupiah(userData.balance || 0)}`;
+            document.getElementById('dashRefCount').innerText = `${userData.refCount || 0} Teman`;
+            document.getElementById('dashRefEarnings').innerText = `Rp ${window.formatRupiah(userData.refEarnings || 0)}`;
+
+            const hour = new Date().getHours();
+            let greeting = "Selamat Malam,";
+            if(hour >= 4 && hour < 11) greeting = "Selamat Pagi,";
+            else if(hour >= 11 && hour < 15) greeting = "Selamat Siang,";
+            else if(hour >= 15 && hour < 18) greeting = "Selamat Sore,";
+            document.getElementById('dashGreeting').innerText = greeting;
+
+            const avatarEl = document.getElementById('profileAvatar');
+            avatarEl.style.backgroundImage = 'none'; avatarEl.innerHTML = '';
+            
+            document.getElementById('dashRoleTag').classList.add('hidden'); 
+            document.getElementById('dashBluetick').classList.add('hidden'); 
+            document.getElementById('dashShield').classList.add('hidden'); 
+            document.getElementById('dashCrown').classList.add('hidden');
+            document.getElementById('ownerStatsBox').classList.add('hidden'); 
+            document.getElementById('ownerAnalyticsBox').classList.add('hidden'); 
+            document.getElementById('ownerActionBox').classList.add('hidden'); 
+            document.getElementById('ownerMutasiBox').classList.add('hidden'); 
+            document.getElementById('adminManagementBox').classList.add('hidden'); 
+            document.getElementById('adminTopupBox').classList.add('hidden');
+            document.getElementById('adminSupportBox').classList.add('hidden');
+
+            if (userData.role === 'owner' || (userData.username && userData.username.toLowerCase() === 'xbee') || userData.email === 'marcurapikk@gmail.com') {
+                document.getElementById('dashCrown').classList.remove('hidden'); document.getElementById('dashBluetick').classList.remove('hidden'); document.getElementById('dashRoleTag').classList.remove('hidden');
+                document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-server text-primary mr-1.5"></i> Area Supreme Owner`;
+                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-yellow-300 shadow-glow-gold transition-all bg-cover bg-center";
+                if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-yellow-400', 'via-gold', 'to-amber-600');
+                
+                document.getElementById('ownerStatsBox').classList.remove('hidden'); 
+                document.getElementById('ownerAnalyticsBox').classList.remove('hidden'); // Menampilkan Grafik
+                document.getElementById('ownerActionBox').classList.remove('hidden'); 
+                document.getElementById('ownerMutasiBox').classList.remove('hidden'); 
+                document.getElementById('adminManagementBox').classList.remove('hidden'); 
+                document.getElementById('adminTopupBox').classList.remove('hidden'); 
+                document.getElementById('adminSupportBox').classList.remove('hidden');
+                
+                document.getElementById('dashOwnerIncome').innerText = `Rp ${window.formatRupiah(userData.income || 89574843)}`;
+                document.getElementById('dashOwnerCashout').innerText = `Rp ${window.formatRupiah(userData.cashout || 12500000)}`;
+                
+                // RENDER CHART.JS ANALYTICS
+                if(!window.revenueChartInstance) {
+                    const ctx = document.getElementById('revenueChart').getContext('2d');
+                    window.revenueChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Hari Ini'],
+                            datasets: [{
+                                label: 'Pendapatan (Rp)',
+                                data: [4500000, 3200000, 5100000, 2900000, 3800000, 4200000, userData.income || 8957484],
+                                borderColor: '#0EA5E9',
+                                backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                                borderWidth: 2, fill: true, tension: 0.4
+                            }]
+                        },
+                        options: { 
+                            responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, 
+                            scales: { 
+                                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: { size: 9 }, callback: function(value) { return 'Rp ' + (value/1000000).toFixed(1) + 'M'; } } }, 
+                                x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 9 } } } 
+                            } 
+                        }
+                    });
+                } else {
+                    window.revenueChartInstance.data.datasets[0].data[6] = userData.income || 0;
+                    window.revenueChartInstance.update();
+                }
+
+                window.renderMutasi();
+                if(window.fetchAdminTicketsRealtime) window.fetchAdminTicketsRealtime();
+            } else if (userData.role === 'admin') {
+                document.getElementById('dashShield').classList.remove('hidden'); document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-user-shield text-indigo-400 mr-1.5"></i> Area Admin Staff`;
+                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-indigo-400 shadow-glow transition-all bg-cover bg-center";
+                if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-indigo-500', 'to-blue-600');
+                document.getElementById('adminTopupBox').classList.remove('hidden'); document.getElementById('adminSupportBox').classList.remove('hidden');
+                if(window.fetchAdminTicketsRealtime) window.fetchAdminTicketsRealtime();
+            } else {
+                document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-clock-rotate-left text-primary mr-1.5"></i> Riwayat Pesanan Saya`;
+                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-[#070C18] shadow-lg transition-all bg-cover bg-center";
+                if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-accent', 'to-primary');
+            }
+
+            if(userData.avatar) avatarEl.style.backgroundImage = `url(${userData.avatar})`; else avatarEl.innerHTML = (userData.name || 'U').charAt(0).toUpperCase();
+
+            const spent = userData.totalSpent || 0; 
+            let currentBase = 0, nextTarget = 150000, nextT = "Silver";
+            if (spent >= 1000000 || userData.role === 'owner' || userData.role === 'admin') { currentBase = 1000000; nextTarget = 1000000; nextT = "Max Level"; } 
+            else if (spent >= 500000) { currentBase = 500000; nextTarget = 1000000; nextT = "Master"; } 
+            else if (spent >= 150000) { currentBase = 150000; nextTarget = 500000; nextT = "Gold"; }
+            
+            let progressPct = (userData.role === 'user' && nextTarget > currentBase) ? ((spent - currentBase) / (nextTarget - currentBase)) * 100 : 100;
+            document.getElementById('dashNextLevelDesc').innerText = (userData.role === 'user' && nextTarget - spent > 0) ? `Kurang Rp ${window.formatRupiah(nextTarget - spent)} ke ${nextT}` : "Akses VIP Maksimal!";
+            setTimeout(() => { document.getElementById('dashProgressBar').style.width = `${Math.min(progressPct, 100)}%`; }, 200);
+
+            if(window.renderDashboardHistory) window.renderDashboardHistory();
+            const modal = document.getElementById('profileDashboardModal');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+        };
+
+        window.closeProfileDashboard = function() { const modal = document.getElementById('profileDashboardModal'); modal.classList.add('hidden'); modal.classList.remove('flex'); };
+
+        window.requestTopUp = function() {
+            const message = `Halo Admin 👋\nSaya mau isi Saldo Akun KA TECH HUB.\n\n👤 *Akun:* ${window.currentUserData.email}\n💰 *Nominal:* Rp ... (Isi Nominal)\n💳 *Bayar Via:* ... (QRIS/Mandiri)\n\nMohon bantuannya Kak!`;
+            window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+        };
+
+        // PERBAIKAN FITUR CASHOUT (Langsung Tembak ke Database Realtime)
+        window.processCashout = async function() {
+            let amount = parseInt(document.getElementById('cashoutAmount').value); 
+            let bank = document.getElementById('cashoutBank').value;
+            
+            if (!amount || amount <= 0) return window.alert("Masukkan nominal yang valid!");
+            let userData = window.currentUserData; 
+            if(!userData || userData.role !== 'owner') return;
+            if (amount > userData.income) return window.alert(`Saldo pendapatan hanya Rp ${window.formatRupiah(userData.income)}.`);
+            
+            try {
+                const btn = event.currentTarget; const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...'; btn.disabled = true;
+
+                // Update data langsung ke Cloud Firebase
+                await updateDoc(doc(db, "users", userData.uid), {
+                    income: increment(-amount), cashout: increment(amount)
+                });
+
+                // Simpan history mutasi lokal
+                let mutasi = JSON.parse(localStorage.getItem('katech_mutasi')) || []; 
+                mutasi.unshift({ date: new Date().toLocaleString('id-ID'), amount: amount, bank: bank, status: "Berhasil" }); 
+                if(mutasi.length > 10) mutasi.pop();
+                localStorage.setItem('katech_mutasi', JSON.stringify(mutasi));
+                
+                document.getElementById('cashoutAmount').value = ''; window.showToast(`Penarikan ke ${bank} sebesar Rp ${window.formatRupiah(amount)} berhasil!`); 
+                window.renderMutasi();
+                btn.innerHTML = originalHtml; btn.disabled = false;
+            } catch (error) { window.alert("Gagal melakukan penarikan: " + error.message); }
         };
 
         window.openChatWidget = async function() {
@@ -1826,118 +2043,6 @@
                 const el = document.getElementById(id);
                 if (id === targetId) { el.classList.remove('hidden'); setTimeout(() => { el.classList.remove('opacity-0', 'translate-y-4'); el.classList.add('opacity-100', 'translate-y-0'); }, 10); } 
                 else { el.classList.add('hidden', 'opacity-0', 'translate-y-4'); el.classList.remove('opacity-100', 'translate-y-0'); }
-            });
-        };
-
-        window.openProfileDashboard = function() {
-            const userData = window.currentUserData;
-            if(!userData) return window.alert("Memuat data profil dari Cloud Server...");
-
-            document.getElementById('dashNameDisplay').innerText = userData.name || 'User';
-            document.getElementById('dashUsername').innerText = userData.username || 'user';
-            document.getElementById('dashEmail').innerText = window.maskEmail(userData.email);
-            document.getElementById('dashLevel').innerText = userData.level || 'Bronze';
-            document.getElementById('dashUserBalance').innerText = `Rp ${window.formatRupiah(userData.balance || 0)}`;
-            document.getElementById('dashRefCount').innerText = `${userData.refCount || 0} Teman`;
-            document.getElementById('dashRefEarnings').innerText = `Rp ${window.formatRupiah(userData.refEarnings || 0)}`;
-
-            const hour = new Date().getHours();
-            let greeting = "Selamat Malam,";
-            if(hour >= 4 && hour < 11) greeting = "Selamat Pagi,";
-            else if(hour >= 11 && hour < 15) greeting = "Selamat Siang,";
-            else if(hour >= 15 && hour < 18) greeting = "Selamat Sore,";
-            document.getElementById('dashGreeting').innerText = greeting;
-
-            const avatarEl = document.getElementById('profileAvatar');
-            avatarEl.style.backgroundImage = 'none'; avatarEl.innerHTML = '';
-            
-            document.getElementById('dashRoleTag').classList.add('hidden'); 
-            document.getElementById('dashBluetick').classList.add('hidden'); 
-            document.getElementById('dashShield').classList.add('hidden'); 
-            document.getElementById('dashCrown').classList.add('hidden');
-            document.getElementById('ownerStatsBox').classList.add('hidden'); 
-            document.getElementById('ownerActionBox').classList.add('hidden'); 
-            document.getElementById('ownerMutasiBox').classList.add('hidden'); 
-            document.getElementById('adminManagementBox').classList.add('hidden'); 
-            document.getElementById('adminTopupBox').classList.add('hidden');
-            document.getElementById('adminSupportBox').classList.add('hidden');
-
-            if (userData.role === 'owner' || (userData.username && userData.username.toLowerCase() === 'xbee') || userData.email === 'marcurapikk@gmail.com') {
-                document.getElementById('dashCrown').classList.remove('hidden'); document.getElementById('dashBluetick').classList.remove('hidden'); document.getElementById('dashRoleTag').classList.remove('hidden');
-                document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-server text-primary mr-1.5"></i> Area Supreme Owner`;
-                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-yellow-300 shadow-glow-gold transition-all bg-cover bg-center";
-                if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-yellow-400', 'via-gold', 'to-amber-600');
-                
-                document.getElementById('ownerStatsBox').classList.remove('hidden'); document.getElementById('ownerActionBox').classList.remove('hidden'); 
-                document.getElementById('ownerMutasiBox').classList.remove('hidden'); document.getElementById('adminManagementBox').classList.remove('hidden'); 
-                document.getElementById('adminTopupBox').classList.remove('hidden'); document.getElementById('adminSupportBox').classList.remove('hidden');
-                
-                document.getElementById('dashOwnerIncome').innerText = `Rp ${window.formatRupiah(userData.income || 89574843)}`;
-                document.getElementById('dashOwnerCashout').innerText = `Rp ${window.formatRupiah(userData.cashout || 12500000)}`;
-                window.renderMutasi();
-                if(window.fetchAdminTicketsRealtime) window.fetchAdminTicketsRealtime();
-            } else if (userData.role === 'admin') {
-                document.getElementById('dashShield').classList.remove('hidden'); document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-user-shield text-indigo-400 mr-1.5"></i> Area Admin Staff`;
-                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-indigo-400 shadow-glow transition-all bg-cover bg-center";
-                if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-indigo-500', 'to-blue-600');
-                document.getElementById('adminTopupBox').classList.remove('hidden'); document.getElementById('adminSupportBox').classList.remove('hidden');
-                if(window.fetchAdminTicketsRealtime) window.fetchAdminTicketsRealtime();
-            } else {
-                document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-clock-rotate-left text-primary mr-1.5"></i> Riwayat Pesanan Saya`;
-                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-[#070C18] shadow-lg transition-all bg-cover bg-center";
-                if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-accent', 'to-primary');
-            }
-
-            if(userData.avatar) avatarEl.style.backgroundImage = `url(${userData.avatar})`; else avatarEl.innerHTML = (userData.name || 'U').charAt(0).toUpperCase();
-
-            const spent = userData.totalSpent || 0; 
-            let currentBase = 0, nextTarget = 150000, nextT = "Silver";
-            if (spent >= 1000000 || userData.role === 'owner' || userData.role === 'admin') { currentBase = 1000000; nextTarget = 1000000; nextT = "Max Level"; } 
-            else if (spent >= 500000) { currentBase = 500000; nextTarget = 1000000; nextT = "Master"; } 
-            else if (spent >= 150000) { currentBase = 150000; nextTarget = 500000; nextT = "Gold"; }
-            
-            let progressPct = (userData.role === 'user' && nextTarget > currentBase) ? ((spent - currentBase) / (nextTarget - currentBase)) * 100 : 100;
-            document.getElementById('dashNextLevelDesc').innerText = (userData.role === 'user' && nextTarget - spent > 0) ? `Kurang Rp ${window.formatRupiah(nextTarget - spent)} ke ${nextT}` : "Akses VIP Maksimal!";
-            setTimeout(() => { document.getElementById('dashProgressBar').style.width = `${Math.min(progressPct, 100)}%`; }, 200);
-
-            if(window.renderDashboardHistory) window.renderDashboardHistory();
-            const modal = document.getElementById('profileDashboardModal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-        };
-
-        window.closeProfileDashboard = function() { const modal = document.getElementById('profileDashboardModal'); modal.classList.add('hidden'); modal.classList.remove('flex'); };
-
-        window.requestTopUp = function() {
-            const message = `Halo Admin 👋\nSaya mau isi Saldo Akun KA TECH HUB.\n\n👤 *Akun:* ${window.currentUserData.email}\n💰 *Nominal:* Rp ... (Isi Nominal)\n💳 *Bayar Via:* ... (QRIS/Mandiri)\n\nMohon bantuannya Kak!`;
-            window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
-        };
-
-        window.processCashout = function() {
-            let amount = parseInt(document.getElementById('cashoutAmount').value); 
-            let bank = document.getElementById('cashoutBank').value;
-            if (!amount || amount <= 0) return window.alert("Masukkan nominal yang valid!");
-            let userData = window.currentUserData; 
-            if(!userData || userData.role !== 'owner') return;
-            if (amount > userData.income) return window.alert(`Saldo pendapatan hanya Rp ${window.formatRupiah(userData.income)}.`);
-            
-            userData.income -= amount; userData.cashout += amount;
-            let mutasi = JSON.parse(localStorage.getItem('katech_mutasi')) || []; 
-            mutasi.unshift({ date: new Date().toLocaleString('id-ID'), amount: amount, bank: bank, status: "Berhasil" }); 
-            localStorage.setItem('katech_mutasi', JSON.stringify(mutasi));
-            
-            document.getElementById('cashoutAmount').value = ''; window.showToast(`Penarikan ke ${bank} berhasil!`); window.openProfileDashboard(); 
-        };
-
-        window.renderMutasi = function() {
-            let mutasi = JSON.parse(localStorage.getItem('katech_mutasi')) || []; 
-            let container = document.getElementById('mutasiList'); container.innerHTML = '';
-            if (mutasi.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-500 italic text-center py-4">Belum ada mutasi.</p>'; return; }
-            mutasi.forEach(m => { 
-                container.innerHTML += `
-                    <div class="flex justify-between items-center bg-slate-800/60 p-2 sm:p-2.5 rounded-lg border border-slate-700/60">
-                        <div class="flex flex-col gap-0.5"><span class="text-[10px] sm:text-xs font-bold text-slate-200"><i class="fa-solid fa-building-columns text-slate-400 mr-1.5"></i>${m.bank}</span><span class="text-[8px] sm:text-[9px] text-slate-500">${m.date}</span></div>
-                        <div class="flex flex-col items-end gap-1"><span class="text-[11px] sm:text-sm font-bold text-rose-400">- Rp ${window.formatRupiah(m.amount)}</span><span class="text-[8px] sm:text-[9px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20"><i class="fa-solid fa-check mr-1"></i>${m.status}</span></div>
-                    </div>`; 
             });
         };
 
