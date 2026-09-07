@@ -43,14 +43,10 @@
                     animation: {
                         'marquee': 'marquee 25s linear infinite',
                         'blink': 'blink 1s step-end infinite',
-                        'slide-in-left': 'slideInLeft 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
-                        'slide-out-left': 'slideOutLeft 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards',
                     },
                     keyframes: {
                         marquee: { '0%': { transform: 'translateX(100%)' }, '100%': { transform: 'translateX(-100%)' } },
-                        blink: { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0 } },
-                        slideInLeft: { '0%': { transform: 'translateX(-100%)', opacity: 0 }, '100%': { transform: 'translateX(0)', opacity: 1 } },
-                        slideOutLeft: { '0%': { transform: 'translateX(0)', opacity: 1 }, '100%': { transform: 'translateX(-100%)', opacity: 0 } }
+                        blink: { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0 } }
                     }
                 }
             }
@@ -97,9 +93,7 @@
     <!-- TOAST CONTAINER -->
     <div id="toastContainer" class="fixed top-24 right-5 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- ========================================== -->
-    <!-- AUTHENTICATION GATE (FORCED LOGIN SCREEN)  -->
-    <!-- ========================================== -->
+    <!-- AUTHENTICATION GATE (FORCED LOGIN SCREEN) -->
     <div id="welcomeModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-[#070C18] overflow-hidden transition-all duration-500">
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div class="absolute top-[-10%] left-[-10%] w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-primary/20 rounded-full blur-[100px] md:blur-[140px]"></div>
@@ -214,9 +208,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MAIN APPLICATION CONTENT                  -->
-    <!-- ========================================== -->
+    <!-- MAIN APPLICATION CONTENT -->
     <div id="appContent" class="hidden opacity-0 transition-opacity duration-700 pb-32 md:pb-12 pt-8 relative w-full min-h-screen">
 
         <!-- RUNNING TEXT PROMO -->
@@ -892,7 +884,7 @@
             </div>
         </div>
 
-    </div> <!-- END APP CONTENT -->
+    </div>
 
     <!-- FIREBASE SDK ENGINE -->
     <script type="module">
@@ -901,7 +893,7 @@
             getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup
         } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
         import { 
-            getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, serverTimestamp, orderBy, limit
+            getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, orderBy, limit
         } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -933,26 +925,6 @@
             localStorage.setItem('katech_ref', refParam.toLowerCase());
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-
-        // SISTEM AUTO-LOGOUT 30 MENIT (AFK PROTECTION)
-        window.inactivityTimer = null;
-        const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
-
-        window.resetInactivityTimer = function() {
-            if(window.inactivityTimer) clearTimeout(window.inactivityTimer);
-            window.inactivityTimer = setTimeout(() => {
-                if (window.currentUserData && window.currentUserData.role !== 'owner') {
-                    window.alert("Sesi Anda telah berakhir karena tidak ada aktivitas selama 30 menit. Silakan login kembali.");
-                    window.logout();
-                }
-            }, INACTIVITY_LIMIT_MS);
-        };
-
-        ['mousemove', 'mousedown', 'keypress', 'touchstart', 'scroll'].forEach(evt => {
-            document.addEventListener(evt, window.resetInactivityTimer, { passive: true });
-        });
-
-        window.resetInactivityTimer();
 
         // TAMPILKAN NOTIFIKASI REFERRAL DI FORM DAFTAR
         const savedRef = localStorage.getItem('katech_ref');
@@ -1033,14 +1005,12 @@
                     const referrerDoc = snapRef.docs[0];
                     const referrerId = referrerDoc.id;
                     
-                    // Tambah saldo & statistik pengajak
                     await updateDoc(doc(db, "users", referrerId), {
                         balance: increment(2000),
                         refCount: increment(1),
                         refEarnings: increment(2000)
                     });
 
-                    // Simpan ke riwayat transaksi agar muncul di tabel history
                     await addDoc(collection(db, "orders"), {
                         code: `REF-${Date.now().toString().slice(-5)}`,
                         date: new Date().toLocaleString('id-ID'),
@@ -1056,14 +1026,13 @@
             } catch (err) { console.log("Gagal memproses bonus referral: ", err); }
         };
 
-        // LOGIN DENGAN GOOGLE (TERMASUK CEK REFERRAL BONUS)
+        // LOGIN DENGAN GOOGLE
         window.processGoogleLogin = async function() {
             const btnGoogle = document.getElementById('btnGoogleLogin');
             const originalText = btnGoogle.innerHTML;
             
             btnGoogle.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Membuka Google...';
             btnGoogle.disabled = true;
-            btnGoogle.classList.add('opacity-70', 'cursor-not-allowed');
 
             try {
                 await setPersistence(auth, browserLocalPersistence);
@@ -1077,7 +1046,6 @@
                     const isOwner = (user.email === "marcurapikk@gmail.com");
                     const baseUsername = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
                     
-                    // CEK LOGIKA REFERRAL SAAT DAFTAR GOOGLE
                     const refUsername = localStorage.getItem('katech_ref');
                     let initialBalance = isOwner ? 999999999 : 0;
                     let appliedRef = false;
@@ -1103,11 +1071,10 @@
                     };
                     await setDoc(userDocRef, newUserData);
                     
-                    // JALANKAN TRANSFER BONUS KE PENGAJAK
                     if (appliedRef) {
                         await window.processReferrerBonus(refUsername, baseUsername);
                     }
-                    localStorage.removeItem('katech_ref'); // Hapus memori referral
+                    localStorage.removeItem('katech_ref');
                     window.alert("Login Google Berhasil! Anda mendapat bonus pendaftaran.");
                 } else {
                     window.showToast("Login Google Berhasil!");
@@ -1116,11 +1083,10 @@
                 window.alert("Gagal Login via Google: " + error.message);
                 btnGoogle.innerHTML = originalText;
                 btnGoogle.disabled = false;
-                btnGoogle.classList.remove('opacity-70', 'cursor-not-allowed');
             }
         };
 
-        // REGISTRASI EMAIL MANUAL (TERMASUK CEK REFERRAL BONUS)
+        // REGISTRASI EMAIL MANUAL
         window.processRegister = async function() {
             const name = document.getElementById('regName').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase().replace(/\s+/g, '');
@@ -1131,11 +1097,10 @@
             if(username.length < 3) return window.alert("Username minimal 3 karakter!");
 
             try {
-                // CEK DB APAKAH USERNAME SUDAH DIPAKAI
                 const qUsername = query(collection(db, "users"), where("username", "==", username));
                 const snapUsername = await getDocs(qUsername);
                 if(!snapUsername.empty) {
-                    return window.alert(`Maaf, Username "${username}" sudah dipakai akun lain. Silakan pilih username lain!`);
+                    return window.alert(`Maaf, Username "${username}" sudah dipakai. Silakan pilih username lain!`);
                 }
 
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -1145,7 +1110,6 @@
                 const role = isOwner ? 'owner' : 'user';
                 const level = isOwner ? 'Supreme 👑' : 'Bronze';
 
-                // CEK LOGIKA REFERRAL SAAT DAFTAR EMAIL
                 const refUsername = localStorage.getItem('katech_ref');
                 let initialBalance = isOwner ? 999999999 : 0;
                 let appliedRef = false;
@@ -1163,48 +1127,59 @@
 
                 await setDoc(doc(db, "users", user.uid), userData);
 
-                // JALANKAN TRANSFER BONUS KE PENGAJAK
                 if (appliedRef) {
                     await window.processReferrerBonus(refUsername, username);
                 }
-                localStorage.removeItem('katech_ref'); // Hapus memori referral
+                localStorage.removeItem('katech_ref');
                 window.alert("Registrasi Berhasil! Anda mendapat bonus pendaftaran awal.");
             } catch (error) { window.alert("Gagal Registrasi: " + error.message); }
         };
 
-        // FUNGSI SHARE LINK
+        window.processLogin = async function() {
+            const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
+            const passIn = document.getElementById('loginPassword').value;
+            if(!emailInput || !passIn) return window.alert("Isi Email dan Password!");
+            try {
+                await setPersistence(auth, browserLocalPersistence);
+                await signInWithEmailAndPassword(auth, emailInput, passIn);
+                window.showToast("Login Berhasil!");
+            } catch (error) { 
+                window.alert("Login Gagal: Silakan periksa kembali email dan password Anda."); 
+            }
+        };
+
+        window.logout = async function() { await signOut(auth); location.reload(); };
+
         window.shareReferralLink = function() {
             if(!window.currentUserData) return;
             const refLink = `https://katechhub.netlify.app/?ref=${window.currentUserData.username}`;
             navigator.clipboard.writeText(refLink);
-            Swal.fire({
-                title: 'Berhasil Disalin!',
-                text: 'Link Referral Anda siap dibagikan ke teman/grup.',
-                icon: 'success',
-                background: 'rgba(15, 23, 42, 0.95)',
-                color: '#F8FAFC',
-                confirmButtonColor: '#0EA5E9'
-            });
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Berhasil Disalin!',
+                    text: 'Link Referral Anda siap dibagikan ke teman/grup.',
+                    icon: 'success',
+                    background: '#0F172A',
+                    color: '#F8FAFC',
+                    confirmButtonColor: '#0EA5E9'
+                });
+            } else { window.showToast("Link Referral berhasil disalin!"); }
         };
 
-        // RESET PASSWORD KE EMAIL USER
         window.processResetPassword = async function() {
             const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
             if(!email) return window.alert("Masukkan email Anda terlebih dahulu!");
             try { 
                 await sendPasswordResetEmail(auth, email); 
-                window.alert(`Link reset password berhasil dikirim ke email ${email}. Silakan cek Inbox atau folder Spam email Anda!`); 
+                window.alert(`Link reset password telah dikirim ke ${email}. Cek Inbox/Spam Anda!`); 
                 window.switchAuthTab('login'); 
-            } catch (error) { 
-                window.alert("Gagal Kirim Link Reset: " + error.message); 
-            }
+            } catch (error) { window.alert("Gagal Kirim Reset: " + error.message); }
         };
 
-        // NATIVE BASE64 AVATAR
         window.handleAvatarUpload = async function(event) {
             const file = event.target.files[0];
             if(!file) return;
-            if(file.size > 2 * 1024 * 1024) return window.alert("Maaf, ukuran foto maksimal 2MB!");
+            if(file.size > 2 * 1024 * 1024) return window.alert("Ukuran foto maksimal 2MB!");
             
             window.showToast("Mengunggah foto...", "info");
             const reader = new FileReader();
@@ -1222,39 +1197,35 @@
             reader.readAsDataURL(file);
         };
 
-        // FITUR EDIT NAMA
         window.editUserName = async function() {
             if(!window.currentUserData) return;
             const currentName = window.currentUserData.name || "";
             
-            const { value: newName } = await Swal.fire({
-                title: 'Ubah Nama Lengkap',
-                input: 'text',
-                inputValue: currentName,
-                showCancelButton: true,
-                background: 'rgba(15, 23, 42, 0.95)',
-                color: '#F8FAFC',
-                confirmButtonColor: '#0EA5E9',
-                cancelButtonColor: '#ef4444',
-                inputValidator: (value) => {
-                    if (!value || value.trim() === '') {
-                        return 'Nama tidak boleh kosong!'
-                    }
+            if (typeof Swal !== 'undefined') {
+                const { value: newName } = await Swal.fire({
+                    title: 'Ubah Nama Lengkap',
+                    input: 'text',
+                    inputValue: currentName,
+                    showCancelButton: true,
+                    background: '#0F172A',
+                    color: '#F8FAFC',
+                    confirmButtonColor: '#0EA5E9',
+                    cancelButtonColor: '#ef4444',
+                    inputValidator: (value) => { if (!value || value.trim() === '') return 'Nama tidak boleh kosong!' }
+                });
+                
+                if (newName && newName.trim() !== currentName) {
+                    try {
+                        window.showToast("Menyimpan nama baru...", "info");
+                        await updateDoc(doc(db, "users", window.currentUserData.uid), { name: newName.trim() });
+                        window.currentUserData.name = newName.trim();
+                        document.getElementById('dashNameDisplay').innerText = newName.trim();
+                        window.showToast("Nama berhasil diperbarui!");
+                    } catch (error) { window.alert("Gagal mengubah nama: " + error.message); }
                 }
-            });
-            
-            if (newName && newName.trim() !== currentName) {
-                try {
-                    window.showToast("Menyimpan nama baru...", "info");
-                    await updateDoc(doc(db, "users", window.currentUserData.uid), { name: newName.trim() });
-                    window.currentUserData.name = newName.trim();
-                    document.getElementById('dashNameDisplay').innerText = newName.trim();
-                    window.showToast("Nama berhasil diperbarui!");
-                } catch (error) { window.alert("Gagal mengubah nama: " + error.message); }
             }
         };
 
-        // REALTIME CHAT CS SUPPORT SYSTEM
         window.openChatWidget = async function() {
             if(!window.currentUserData) return window.alert("Silakan login dulu.");
             window.chatContext = 'user';
@@ -1388,7 +1359,7 @@
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0">
                                 <span class="text-[9px] text-slate-500">${time}</span>
-                                <button onclick="closeAndResolveTicket('${ticketId}')" title="Selesaikan & Hapus Tiket" class="px-2 py-1 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/30 rounded border border-emerald-500/20 text-[10px] transition">
+                                <button onclick="closeAndResolveTicket('${ticketId}')" title="Selesaikan Tiket" class="px-2 py-1 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/30 rounded border border-emerald-500/20 text-[10px] transition">
                                     <i class="fa-solid fa-check-double mr-1"></i>Selesai
                                 </button>
                             </div>
@@ -1408,38 +1379,27 @@
         };
 
         window.closeAndResolveTicket = async function(ticketId) {
-            Swal.fire({
-                title: 'Selesaikan Tiket?',
-                text: "Yakin masalah user ini sudah selesai? Tiket chat akan ditutup dan dihapus secara permanen.",
-                icon: 'warning',
-                showCancelButton: true,
-                background: 'rgba(15, 23, 42, 0.95)',
-                color: '#F8FAFC',
-                confirmButtonColor: '#10B981',
-                cancelButtonColor: '#ef4444',
-                confirmButtonText: 'Ya, Selesaikan'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try { 
-                        await deleteDoc(doc(db, "tickets", ticketId)); 
-                        window.showToast("Tiket chat diselesaikan!"); 
-                    } catch(e) { window.alert("Gagal: " + e.message); }
-                }
-            });
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Selesaikan Tiket?',
+                    text: "Yakin obrolan ini sudah selesai? Tiket akan dihapus.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    background: '#0F172A',
+                    color: '#F8FAFC',
+                    confirmButtonColor: '#10B981',
+                    cancelButtonColor: '#ef4444',
+                    confirmButtonText: 'Ya, Selesaikan'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        try { 
+                            await deleteDoc(doc(db, "tickets", ticketId)); 
+                            window.showToast("Tiket chat diselesaikan!"); 
+                        } catch(e) { window.alert("Gagal: " + e.message); }
+                    }
+                });
+            }
         };
-
-        window.processLogin = async function() {
-            const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
-            const passIn = document.getElementById('loginPassword').value;
-            if(!emailInput || !passIn) return window.alert("Isi Email dan Password!");
-            try {
-                await setPersistence(auth, browserLocalPersistence);
-                await signInWithEmailAndPassword(auth, emailInput, passIn);
-                window.showToast("Login Berhasil!");
-            } catch (error) { window.alert("Login Gagal: " + error.message); }
-        };
-
-        window.logout = async function() { await signOut(auth); location.reload(); };
 
         window.adminAddBalance = async function() {
             const targetEmail = document.getElementById('topupUserEmail').value.trim().toLowerCase();
@@ -1470,7 +1430,7 @@
                 const querySnapshot = await getDocs(q);
                 if(querySnapshot.empty) return window.alert("User tidak ditemukan.");
                 for (const docSnap of querySnapshot.docs) {
-                    if(docSnap.data().role === 'owner') return window.alert("Maaf, akses Supreme Owner tidak bisa diubah!");
+                    if(docSnap.data().role === 'owner') return window.alert("Akses Supreme Owner tidak bisa diubah!");
                     await updateDoc(doc(db, "users", docSnap.id), { 
                         role: actionRole === 'admin' ? 'admin' : 'user', 
                         level: actionRole === 'admin' ? 'Admin Staff 🛡️' : 'Bronze' 
@@ -1568,46 +1528,41 @@
         };
     </script>
 
-    <!-- CORE VANILLA JS -->
+    <!-- CORE VANILLA JS (AMAT SANGAT AMAN DARI ERROR) -->
     <script>
         const WA_NUMBER = "6281312185600";
         let cart = JSON.parse(localStorage.getItem('katech_cart')) || [];
         let selectedProduct = null;
 
-        window.formatRupiah = function(num) { return new Intl.NumberFormat('id-ID').format(num); };
+        window.formatRupiah = function(num) { return new Intl.NumberFormat('id-ID').format(num || 0); };
         
-        // OVERRIDE ALERT BAWAAN BROWSER JADI POPUP PREMIUM SWEETALERT2
+        // OVERRIDE ALERT DENGAN FUNGSI PENJAGA ANTI-CRASH
         window.alert = function(message) {
-            let type = 'warning'; 
-            let title = 'Perhatian';
+            let iconType = 'warning';
+            let titleText = 'Informasi';
+            const msgLower = (message || '').toLowerCase();
 
-            const msgLower = message.toLowerCase();
-            if(msgLower.includes('gagal') || msgLower.includes('maaf') || msgLower.includes('salah') || msgLower.includes('tidak boleh') || msgLower.includes('kosong')) {
-                type = 'error'; title = 'Oops! Akses Ditolak';
+            if(msgLower.includes('gagal') || msgLower.includes('maaf') || msgLower.includes('salah') || msgLower.includes('error')) {
+                iconType = 'error';
+                titleText = 'Oops! Gagal';
             } else if (msgLower.includes('berhasil') || msgLower.includes('sukses')) {
-                type = 'success'; title = 'Berhasil!';
-            } else if (msgLower.includes('mohon') || msgLower.includes('harap') || msgLower.includes('silakan')) {
-                type = 'info'; title = 'Informasi';
+                iconType = 'success';
+                titleText = 'Berhasil!';
             }
 
-            Swal.fire({
-                title: title,
-                text: message,
-                icon: type,
-                background: 'rgba(15, 23, 42, 0.95)', 
-                color: '#F8FAFC',
-                backdrop: 'rgba(7, 12, 24, 0.85)', 
-                confirmButtonText: '<i class="fa-solid fa-check mr-2"></i>Mengerti',
-                buttonsStyling: false,
-                customClass: {
-                    popup: 'border border-primary/30 rounded-2xl shadow-[0_0_40px_rgba(56,189,248,0.2)] backdrop-blur-xl',
-                    title: 'text-xl font-extrabold text-white tracking-tight',
-                    htmlContainer: 'text-sm text-slate-300 font-medium',
-                    confirmButton: 'bg-gradient-to-r from-accent to-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-primary/30 hover:scale-105 transition-transform mt-2'
-                },
-                showClass: { popup: 'animate-slide-in-left' },
-                hideClass: { popup: 'animate-slide-out-left' }
-            });
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: titleText,
+                    text: message,
+                    icon: iconType,
+                    background: '#0F172A',
+                    color: '#F8FAFC',
+                    confirmButtonColor: '#0EA5E9',
+                    confirmButtonText: 'Mengerti'
+                });
+            } else {
+                console.log("Pesan Alert:", message);
+            }
         };
 
         window.showToast = function(message, type = 'success') {
@@ -1633,9 +1588,9 @@
         window.togglePassword = function(inputId, icon) {
             const input = document.getElementById(inputId);
             if (input.type === 'password') { 
-                input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); icon.classList.add('text-primary'); 
+                input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash', 'text-primary'); 
             } else { 
-                input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); icon.classList.remove('text-primary'); 
+                input.type = 'password'; icon.classList.remove('fa-eye-slash', 'text-primary'); icon.classList.add('fa-eye'); 
             }
         };
 
@@ -1655,7 +1610,7 @@
 
         window.openProfileDashboard = function() {
             const userData = window.currentUserData;
-            if(!userData) return window.alert("Sistem sedang memuat data profil. Mohon tunggu sebentar...");
+            if(!userData) return window.alert("Memuat data profil...");
 
             document.getElementById('dashNameDisplay').innerText = userData.name || 'User';
             document.getElementById('dashUsername').innerText = userData.username || 'user';
@@ -1663,7 +1618,6 @@
             document.getElementById('dashLevel').innerText = userData.level || 'Bronze';
             document.getElementById('dashUserBalance').innerText = `Rp ${window.formatRupiah(userData.balance || 0)}`;
             
-            // STATISTIK REFERRAL
             document.getElementById('dashRefCount').innerText = `${userData.refCount || 0} Teman`;
             document.getElementById('dashRefEarnings').innerText = `Rp ${window.formatRupiah(userData.refEarnings || 0)}`;
 
@@ -1757,11 +1711,11 @@
         window.processCashout = function() {
             let amount = parseInt(document.getElementById('cashoutAmount').value); 
             let bank = document.getElementById('cashoutBank').value;
-            if (!amount || amount <= 0) return window.alert("Maaf, Masukkan nominal yang valid!");
+            if (!amount || amount <= 0) return window.alert("Masukkan nominal yang valid!");
             let userData = window.currentUserData; 
             
             if(!userData || userData.role !== 'owner') return;
-            if (amount > userData.income) return window.alert(`Maaf, Saldo pendapatan hanya Rp ${window.formatRupiah(userData.income)}.`);
+            if (amount > userData.income) return window.alert(`Saldo pendapatan hanya Rp ${window.formatRupiah(userData.income)}.`);
             
             userData.income -= amount; 
             userData.cashout += amount;
@@ -1927,7 +1881,6 @@
             else { modal.classList.add('hidden'); modal.classList.remove('flex'); } 
         };
 
-        // PESANAN LANGSUNG DENGAN KONFIRMASI SWEETALERT
         window.processDirectOrder = async function() {
             if (!selectedProduct) return window.alert("Pilih layanan terlebih dahulu!");
             const target = document.getElementById('mainTargetInput').value.trim(); 
@@ -1937,80 +1890,65 @@
             
             let calculatedTotal = selectedProduct.unit.includes('/1K') ? Math.round((quantity / 1000) * selectedProduct.price) : Math.round(quantity * selectedProduct.price);
             
-            // Pop-up Konfirmasi Pesanan Anti Salah
-            const resultConfirm = await Swal.fire({
-                title: 'Konfirmasi Pesanan',
-                html: `
-                    <div class="text-left bg-slate-800/80 p-4 rounded-xl border border-slate-700 mt-2 text-[13px] leading-relaxed">
-                        <span class="block text-slate-400 mb-1">Produk Layanan:</span>
-                        <b class="text-white block mb-3">${selectedProduct.name}</b>
-                        
-                        <div class="grid grid-cols-2 gap-2 mb-3">
-                            <div>
-                                <span class="block text-slate-400">Target URL/User:</span>
-                                <b class="text-primary truncate block">${target}</b>
+            if (typeof Swal !== 'undefined') {
+                const resultConfirm = await Swal.fire({
+                    title: 'Konfirmasi Pesanan',
+                    html: `
+                        <div class="text-left bg-slate-800/80 p-4 rounded-xl border border-slate-700 mt-2 text-[13px] leading-relaxed">
+                            <span class="block text-slate-400 mb-1">Produk Layanan:</span>
+                            <b class="text-white block mb-3">${selectedProduct.name}</b>
+                            
+                            <div class="grid grid-cols-2 gap-2 mb-3">
+                                <div>
+                                    <span class="block text-slate-400">Target URL/User:</span>
+                                    <b class="text-primary truncate block">${target}</b>
+                                </div>
+                                <div>
+                                    <span class="block text-slate-400">Jumlah Beli:</span>
+                                    <b class="text-white">${window.formatRupiah(quantity)}</b>
+                                </div>
                             </div>
-                            <div>
-                                <span class="block text-slate-400">Jumlah Beli:</span>
-                                <b class="text-white">${window.formatRupiah(quantity)}</b>
+                            
+                            <div class="border-t border-slate-600 pt-3 flex justify-between items-center">
+                                <span class="text-slate-400">Total Harga:</span>
+                                <b class="text-lg text-emerald-400">Rp ${window.formatRupiah(calculatedTotal)}</b>
                             </div>
                         </div>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    background: '#0F172A',
+                    color: '#F8FAFC',
+                    confirmButtonColor: '#0EA5E9',
+                    cancelButtonColor: '#334155',
+                    confirmButtonText: 'Ya, Proses!',
+                    cancelButtonText: 'Batal'
+                });
+
+                if(resultConfirm.isConfirmed) {
+                    const orderCode = `KATH-${Date.now().toString().slice(-6)}`; 
+                    const itemsText = `${window.formatRupiah(quantity)}x ${selectedProduct.name} (${target})`;
+
+                    if(window.checkoutWithFirebase) {
+                        const result = await window.checkoutWithFirebase(orderCode, itemsText, calculatedTotal, paymentMethod); 
+                        if(!result.success) return window.alert(result.message);
                         
-                        <div class="border-t border-slate-600 pt-3 flex justify-between items-center">
-                            <span class="text-slate-400">Total Harga:</span>
-                            <b class="text-lg text-emerald-400">Rp ${window.formatRupiah(calculatedTotal)}</b>
-                        </div>
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="text-slate-400">Metode Bayar:</span>
-                            <b class="text-white">${paymentMethod.split('(')[0]}</b>
-                        </div>
-                    </div>
-                    <p class="text-[11px] text-amber-400 mt-4"><i class="fa-solid fa-circle-exclamation mr-1"></i> Pastikan target tidak salah, pesanan tidak dapat dibatalkan!</p>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                background: 'rgba(15, 23, 42, 0.95)',
-                color: '#F8FAFC',
-                confirmButtonColor: '#0EA5E9',
-                cancelButtonColor: '#334155',
-                confirmButtonText: '<i class="fa-solid fa-bolt mr-1"></i> Ya, Proses!',
-                cancelButtonText: 'Batal',
-                buttonsStyling: false,
-                customClass: {
-                    popup: 'border border-primary/30 rounded-2xl backdrop-blur-xl',
-                    confirmButton: 'bg-primary hover:bg-accent text-white px-6 py-2.5 rounded-xl font-bold transition-colors ml-2',
-                    cancelButton: 'bg-slate-700 hover:bg-slate-600 text-white px-6 py-2.5 rounded-xl font-bold transition-colors mr-2'
-                }
-            });
-
-            if(resultConfirm.isConfirmed) {
-                const orderCode = `KATH-${Date.now().toString().slice(-6)}`; 
-                const itemsText = `${window.formatRupiah(quantity)}x ${selectedProduct.name} (${target})`;
-
-                if(window.checkoutWithFirebase) {
-                    // Loading State
-                    Swal.fire({ title: 'Memproses Pesanan...', allowOutsideClick: false, background: 'rgba(15, 23, 42, 0.95)', color: '#fff', didOpen: () => { Swal.showLoading(); } });
-
-                    const result = await window.checkoutWithFirebase(orderCode, itemsText, calculatedTotal, paymentMethod); 
-                    if(!result.success) return window.alert(result.message);
-                    
-                    if(paymentMethod === 'Saldo Akun') { 
-                        Swal.fire({ title: 'Berhasil!', text: 'Pesanan sukses diproses pakai Saldo!', icon: 'success', background: 'rgba(15, 23, 42, 0.95)', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
-                        document.getElementById('mainTargetInput').value = ''; 
-                        window.openProfileDashboard(); 
-                    } else { 
-                        Swal.close(); // Tutup loading
-                        const message = `Halo Admin KA TECH HUB 👋\n\nPesanan Baru:\n🆔 *Kode:* #${orderCode}\n📦 *Produk:* ${selectedProduct.name}\n🎯 *Target:* ${target}\n🔢 *Jumlah:* ${window.formatRupiah(quantity)}\n💳 *Total:* Rp ${window.formatRupiah(calculatedTotal)}\n💰 *Via:* ${paymentMethod}`; 
-                        window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); 
-                        window.openProfileDashboard(); 
+                        if(paymentMethod === 'Saldo Akun') { 
+                            Swal.fire({ title: 'Berhasil!', text: 'Pesanan sukses diproses!', icon: 'success', background: '#0F172A', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
+                            document.getElementById('mainTargetInput').value = ''; 
+                            window.openProfileDashboard(); 
+                        } else { 
+                            const message = `Halo Admin KA TECH HUB 👋\n\nPesanan Baru:\n🆔 *Kode:* #${orderCode}\n📦 *Produk:* ${selectedProduct.name}\n🎯 *Target:* ${target}\n🔢 *Jumlah:* ${window.formatRupiah(quantity)}\n💳 *Total:* Rp ${window.formatRupiah(calculatedTotal)}\n💰 *Via:* ${paymentMethod}`; 
+                            window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); 
+                            window.openProfileDashboard(); 
+                        }
                     }
                 }
             }
         };
 
-        // KERANJANG CHECKOUT DENGAN KONFIRMASI SWEETALERT
         window.processCartCheckout = async function() {
-            if(cart.length === 0) return window.alert("Maaf, Keranjang masih kosong!");
+            if(cart.length === 0) return window.alert("Keranjang masih kosong!");
             const paymentMethod = document.getElementById('paymentMethod').value; 
             const orderCode = `KATH-${Date.now().toString().slice(-6)}`; 
             let grandTotal = 0; let itemSummary = [];
@@ -2021,44 +1959,20 @@
                 return `*${i+1}. ${item.productName}*\n   • T: ${item.target}\n   • Qty: ${window.formatRupiah(item.quantity)}\n   • Rp ${window.formatRupiah(item.total)}`; 
             }).join('\n\n');
             
-            const resultConfirm = await Swal.fire({
-                title: 'Konfirmasi Keranjang',
-                text: `Anda akan checkout ${cart.length} layanan dengan total Rp ${window.formatRupiah(grandTotal)}. Lanjutkan?`,
-                icon: 'question',
-                showCancelButton: true,
-                background: 'rgba(15, 23, 42, 0.95)',
-                color: '#F8FAFC',
-                confirmButtonColor: '#0EA5E9',
-                cancelButtonColor: '#334155',
-                confirmButtonText: 'Ya, Checkout',
-                cancelButtonText: 'Batal',
-                buttonsStyling: false,
-                customClass: {
-                    popup: 'border border-primary/30 rounded-2xl backdrop-blur-xl',
-                    confirmButton: 'bg-primary hover:bg-accent text-white px-6 py-2.5 rounded-xl font-bold transition-colors ml-2',
-                    cancelButton: 'bg-slate-700 hover:bg-slate-600 text-white px-6 py-2.5 rounded-xl font-bold transition-colors mr-2'
-                }
-            });
-
-            if (resultConfirm.isConfirmed) {
-                if(window.checkoutWithFirebase) {
-                    Swal.fire({ title: 'Memproses Checkout...', allowOutsideClick: false, background: 'rgba(15, 23, 42, 0.95)', color: '#fff', didOpen: () => { Swal.showLoading(); } });
-                    
-                    const result = await window.checkoutWithFirebase(orderCode, itemSummary.join(' | '), grandTotal, paymentMethod); 
-                    if(!result.success) return window.alert(result.message);
-                    
-                    cart = []; localStorage.setItem('katech_cart', JSON.stringify(cart)); 
-                    window.updateCartUI(); window.toggleCartModal();
-                    
-                    if(paymentMethod === 'Saldo Akun') { 
-                        Swal.fire({ title: 'Berhasil!', text: 'Pembayaran Keranjang via Saldo sukses!', icon: 'success', background: 'rgba(15, 23, 42, 0.95)', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
-                        window.openProfileDashboard(); 
-                    } else { 
-                        Swal.close();
-                        const message = `Halo Admin KA TECH HUB 👋\n\nCheckout KERANJANG:\n\n🆔 *Pesanan:* #${orderCode}\n\n${orderDetails}\n\n💳 *TOTAL:* Rp ${window.formatRupiah(grandTotal)}\n💰 *VIA:* ${paymentMethod}`; 
-                        window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); 
-                        window.openProfileDashboard(); 
-                    }
+            if(window.checkoutWithFirebase) {
+                const result = await window.checkoutWithFirebase(orderCode, itemSummary.join(' | '), grandTotal, paymentMethod); 
+                if(!result.success) return window.alert(result.message);
+                
+                cart = []; localStorage.setItem('katech_cart', JSON.stringify(cart)); 
+                window.updateCartUI(); window.toggleCartModal();
+                
+                if(paymentMethod === 'Saldo Akun') { 
+                    window.alert('Pembayaran Keranjang via Saldo sukses!');
+                    window.openProfileDashboard(); 
+                } else { 
+                    const message = `Halo Admin KA TECH HUB 👋\n\nCheckout KERANJANG:\n\n🆔 *Pesanan:* #${orderCode}\n\n${orderDetails}\n\n💳 *TOTAL:* Rp ${window.formatRupiah(grandTotal)}\n💰 *VIA:* ${paymentMethod}`; 
+                    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); 
+                    window.openProfileDashboard(); 
                 }
             }
         };
@@ -2078,33 +1992,13 @@
             
             if(type === 'tnc') {
                 title.innerText = "Syarat & Ketentuan";
-                content.innerHTML = `
-                    <p>Selamat datang di KA TECH HUB. Dengan mendaftar dan menggunakan layanan kami, Anda dianggap telah menyetujui seluruh Syarat & Ketentuan di bawah ini:</p>
-                    <ul class="list-disc pl-5 space-y-2 mt-2">
-                        <li><b>Layanan:</b> Layanan ditujukan untuk tujuan sah secara hukum di Indonesia.</li>
-                        <li><b>Aktivitas Ilegal:</b> Dilarang menggunakan website ini untuk penipuan atau pencucian uang.</li>
-                        <li><b>Tanggung Jawab Input:</b> Kesalahan data target sepenuhnya tanggung jawab pembeli.</li>
-                        <li><b>Perubahan Harga:</b> Harga dapat berubah sewaktu-waktu tanpa pemberitahuan.</li>
-                    </ul>`;
+                content.innerHTML = `<p>Dengan mendaftar dan menggunakan layanan kami, Anda dianggap menyetujui seluruh aturan layanan KA TECH HUB.</p>`;
             } else if(type === 'privacy') {
                 title.innerText = "Kebijakan Privasi";
-                content.innerHTML = `
-                    <p>Di KA TECH HUB, kami sangat menjaga keamanan dan kerahasiaan data pribadi Anda:</p>
-                    <ul class="list-disc pl-5 space-y-2 mt-2">
-                        <li><b>Pengumpulan Data:</b> Kami hanya mengumpulkan Nama, Email, dan Password untuk transaksi.</li>
-                        <li><b>Keamanan Data (Cloud):</b> Seluruh data diamankan dengan enkripsi Firebase. Password disandikan dan tidak dapat dilihat oleh admin.</li>
-                        <li><b>Berbagi Informasi:</b> Informasi Anda tidak akan kami jual kepada pihak ketiga mana pun.</li>
-                    </ul>`;
+                content.innerHTML = `<p>Seluruh data pengguna diamankan dengan enkripsi cloud dan tidak akan disebarluaskan.</p>`;
             } else if(type === 'refund') {
-                title.innerText = "Kebijakan Pengembalian Dana (Refund)";
-                content.innerHTML = `
-                    <p>Aturan pengembalian dana (refund) kami adalah sebagai berikut:</p>
-                    <ul class="list-disc pl-5 space-y-2 mt-2">
-                        <li><b>Transaksi Final:</b> Secara umum, transaksi bersifat final.</li>
-                        <li><b>Kesalahan Sistem:</b> Refund saldo HANYA diproses apabila terjadi error sistem internal yang menyebabkan pesanan Gagal.</li>
-                        <li><b>Kesalahan Pengguna (No Refund):</b> Kami <b>TIDAK MELAYANI</b> komplain akibat salah ketik username, akun di private, atau salah nomor rekening tujuan.</li>
-                        <li><b>Batas Klaim:</b> Komplain maksimal 3x24 jam sejak pesanan dibuat.</li>
-                    </ul>`;
+                title.innerText = "Kebijakan Refund";
+                content.innerHTML = `<p>Refund saldo hanya diproses jika terjadi kesalahan sistem yang membuat status pesanan Gagal.</p>`;
             }
             modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden';
         };
@@ -2117,8 +2011,6 @@
             const targets = { orders: 58420, users: 12400, satisfy: 99 }; 
             let c = { orders: 0, users: 0, satisfy: 0 }; 
             const countOrders = document.getElementById('countOrders'); 
-            const countUsers = document.getElementById('countUsers'); 
-            const countSatisfy = document.getElementById('countSatisfy'); 
             
             if(!countOrders) return; 
             
@@ -2127,17 +2019,16 @@
                 if(c.users < targets.users) c.users += 300; 
                 if(c.satisfy < targets.satisfy) c.satisfy += 2; 
                 
-                countOrders.innerText = window.formatRupiah(Math.min(c.orders, targets.orders)); 
-                countUsers.innerText = window.formatRupiah(Math.min(c.users, targets.users)); 
-                countSatisfy.innerText = Math.min(c.satisfy, targets.satisfy) + '%'; 
+                document.getElementById('countOrders').innerText = window.formatRupiah(Math.min(c.orders, targets.orders)); 
+                document.getElementById('countUsers').innerText = window.formatRupiah(Math.min(c.users, targets.users)); 
+                document.getElementById('countSatisfy').innerText = Math.min(c.satisfy, targets.satisfy) + '%'; 
                 
                 if(c.orders >= targets.orders && c.users >= targets.users && c.satisfy >= targets.satisfy) clearInterval(t); 
             }, 30); 
         }
 
-        const indoNames = ["Bagas P.", "Nadia Safitri", "Reza Aditya", "Citra K.", "Rizky F.", "Ayu Lestari", "Dimas Anggara", "Putri M.", "Dedi Santoso", "Siska W.", "Tegar P.", "Rina Amelia", "Budi S.", "Andi Irawan", "Maya Sari", "Fajar H."]; 
-        const indoCities = ["Jakarta", "Bandung", "Surabaya", "Medan", "Semarang", "Yogyakarta", "Makassar", "Palembang", "Balikpapan", "Denpasar", "Malang", "Banjarmasin", "Bogor", "Depok", "Tangerang"]; 
-        const indoTimes = ["Baru saja", "12 detik yang lalu", "45 detik yang lalu", "1 menit yang lalu", "2 menit yang lalu"];
+        const indoNames = ["Bagas P.", "Nadia Safitri", "Reza Aditya", "Citra K.", "Rizky F.", "Ayu Lestari", "Dimas Anggara", "Putri M."]; 
+        const indoCities = ["Jakarta", "Bandung", "Surabaya", "Medan", "Semarang", "Yogyakarta"]; 
         
         function triggerSocialProof() { 
             const container = document.getElementById('socialProofContainer'); 
@@ -2145,54 +2036,23 @@
             
             const randomName = indoNames[Math.floor(Math.random() * indoNames.length)]; 
             const randomCity = indoCities[Math.floor(Math.random() * indoCities.length)]; 
-            const randomTime = indoTimes[Math.floor(Math.random() * indoTimes.length)]; 
             const randomProduct = products[Math.floor(Math.random() * products.length)]; 
             const randomQty = Math.floor(Math.random() * (5000 - 100 + 1) + 100); 
-            const itemString = randomProduct.unit.includes('Pcs') ? `Layanan ${randomProduct.name}` : `${window.formatRupiah(randomQty)}x ${randomProduct.name}`; 
             
             const popup = document.createElement('div'); 
-            popup.className = "bg-slate-900/85 backdrop-blur-md p-3 sm:p-4 rounded-xl flex items-center gap-3 sm:gap-4 border-l-4 border-l-primary border-t border-r border-b border-white/10 shadow-[0_8px_30px_rgba(56,189,248,0.15)] relative overflow-hidden animate-slide-in-left min-w-[280px] max-w-[320px]"; 
+            popup.className = "bg-slate-900/85 backdrop-blur-md p-3 sm:p-4 rounded-xl flex items-center gap-3 border-l-4 border-l-primary border border-white/10 shadow-lg min-w-[280px]"; 
             popup.innerHTML = `
-                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/30 flex-shrink-0 relative">
-                    <i class="fa-solid fa-cart-arrow-down text-lg"></i>
-                    <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full w-4 h-4 flex items-center justify-center text-white text-[8px] border-2 border-slate-900"><i class="fa-solid fa-check"></i></div>
+                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold flex-shrink-0">
+                    <i class="fa-solid fa-cart-arrow-down"></i>
                 </div>
-                <div class="flex-grow">
-                    <div class="flex justify-between items-center mb-0.5">
-                        <span class="font-bold text-white text-xs sm:text-sm tracking-tight">${randomName} <span class="font-normal text-slate-400">di</span> ${randomCity}</span>
-                    </div>
-                    <span class="text-[10px] sm:text-xs text-slate-300 leading-tight block mb-1">Membeli <b class="text-primary">${itemString}</b></span>
-                    <span class="text-[8px] sm:text-[9px] text-slate-500 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${randomTime}</span>
+                <div>
+                    <span class="font-bold text-white text-xs block">${randomName} (${randomCity})</span>
+                    <span class="text-[10px] text-slate-300">Membeli <b class="text-primary">${window.formatRupiah(randomQty)}x ${randomProduct.name}</b></span>
                 </div>`; 
             
             container.appendChild(popup); 
-            setTimeout(() => { popup.classList.remove('animate-slide-in-left'); popup.classList.add('animate-slide-out-left'); setTimeout(() => popup.remove(), 500); }, 5000); 
+            setTimeout(() => { popup.remove(); }, 4000); 
         }
-        
-        function scheduleNextPopup() { 
-            const randomDelay = Math.floor(Math.random() * (15000 - 8000 + 1) + 8000); 
-            setTimeout(() => { triggerSocialProof(); scheduleNextPopup(); }, randomDelay); 
-        }
-        
-        window.trackOrderReal = function() { 
-            const val = document.getElementById('trackInput').value.trim(); 
-            if(!val) return window.alert("Masukkan kode pesanan Anda terlebih dahulu!"); 
-            
-            document.getElementById('trackResult').classList.remove('hidden'); 
-            document.getElementById('resCode').innerText = val; 
-            document.getElementById('resBadge').innerText = "Mencari..."; 
-            document.getElementById('resBadge').className = "px-2.5 py-1 rounded-full text-[10px] font-bold border bg-slate-500/20 text-slate-400 border-slate-500/20 animate-pulse"; 
-            document.getElementById('resTime').innerText = "Memuat data..."; 
-            document.getElementById('resItemDetail').innerText = "..."; 
-            
-            setTimeout(() => { 
-                document.getElementById('resBadge').innerText = "Diproses"; 
-                document.getElementById('resBadge').className = "px-2.5 py-1 rounded-full text-[10px] font-bold border bg-amber-500/20 text-amber-400 border-amber-500/20"; 
-                const now = new Date(); const waktu = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`; 
-                document.getElementById('resTime').innerText = waktu; 
-                document.getElementById('resItemDetail').innerText = "Pesanan sedang dalam antrean server. Harap tunggu sesuai estimasi."; 
-            }, 1200); 
-        };
 
         let typeIndex = 0, charIndex = 0, isDeleting = false; 
         const typingTexts = ["Layanan Digital", "Top Up Game", "Social Media Boost", "Solusi Teknologi"];
@@ -2210,9 +2070,7 @@
 
         window.updateRealtimeClock = function() { 
             const now = new Date(); 
-            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']; 
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']; 
-            const timeString = `${days[now.getDay()]}, ${String(now.getDate()).padStart(2, '0')} ${months[now.getMonth()]} ${now.getFullYear()} • ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} WIB`; 
+            const timeString = `${now.toLocaleDateString('id-ID')} • ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} WIB`; 
             
             const profClock = document.getElementById('profileClock'); 
             if(profClock) profClock.innerHTML = `<span class="text-primary font-bold"><i class="fa-regular fa-clock mr-1 animate-pulse"></i>${timeString}</span>`; 
@@ -2225,7 +2083,7 @@
             window.updateCartUI(); 
             typeWriter(); 
             animateCounters();
-            scheduleNextPopup();
+            setInterval(triggerSocialProof, 12000);
             window.updateRealtimeClock(); 
             setInterval(window.updateRealtimeClock, 1000);
         };
