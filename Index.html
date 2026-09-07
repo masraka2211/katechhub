@@ -66,7 +66,7 @@
         
         /* Running Text (Marquee) Premium */
         .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; }
-        .marquee-content { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; }
+        .marquee-content { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
         /* App Icon Style (Squircle) */
@@ -75,6 +75,15 @@
         /* Smooth Slide Down Custom Order */
         #quickOrderSection { transition: max-height 0.5s ease-in-out, opacity 0.4s ease; max-height: 0; opacity: 0; overflow: hidden; }
         #quickOrderSection.active { max-height: 1200px; opacity: 1; padding-top: 1rem; }
+
+        /* Custom Dropdown Services */
+        .custom-select-list { max-height: 250px; overflow-y: auto; }
+        .dropdown-item { border-bottom: 1px solid rgba(30, 58, 95, 0.5); }
+        .dropdown-item:last-child { border-bottom: none; }
+        
+        /* Chat Bubbles */
+        .chat-bubble-user { background: linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%); color: white; border-radius: 16px 16px 0 16px; margin-left: auto; max-width: 85%; }
+        .chat-bubble-admin { background: #13233F; border: 1px solid #1E3A5F; color: #E2E8F0; border-radius: 16px 16px 16px 0; margin-right: auto; max-width: 85%; }
     </style>
 </head>
 <body class="antialiased selection:bg-primary selection:text-white relative show-recaptcha bg-lightbg dark:bg-darkbg text-slate-800 dark:text-slate-200">
@@ -83,8 +92,8 @@
     <audio id="csNotifSound" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg"></audio>
     <div id="toastContainer" class="fixed top-5 right-5 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- ==================== 1. MODAL AUTHENTICATION (LOGIN/REGISTER) ==================== -->
-    <div id="welcomeModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-darkbg overflow-hidden transition-all duration-500">
+    <!-- ==================== MODAL LOGIN / REGISTER ==================== -->
+    <div id="welcomeModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-[#070D19] overflow-hidden transition-all duration-500">
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div class="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] bg-primary/10 rounded-full blur-[120px]"></div>
             <div class="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-accent/10 rounded-full blur-[120px]"></div>
@@ -122,17 +131,21 @@
                         <label class="flex items-center gap-1.5 cursor-pointer hover:text-white transition"><input type="checkbox" checked class="accent-primary rounded"><span>Ingat Saya</span></label>
                         <button type="button" onclick="switchAuthTab('formForgot')" class="hover:text-primary transition">Lupa Password?</button>
                     </div>
+                    
                     <button id="btnLoginBtn" onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-glow mt-2">Masuk Dashboard</button>
+                    
                     <div class="relative my-4"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-700/80"></div></div><div class="relative flex justify-center text-xs"><span class="bg-darkcard px-2 text-slate-400">Atau</span></div></div>
+                    
                     <button id="btnGoogleLogin" onclick="processGoogleLogin()" type="button" class="w-full bg-[#070D19] hover:bg-slate-800 text-slate-200 border border-slate-700 py-3 rounded-xl font-semibold text-xs transition flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.4 0 15.2s.7 5.5 1.9 7.9l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg> Masuk dengan Google
                     </button>
+                    
                     <div class="text-center text-xs mt-5 text-slate-400 pt-3 border-t border-slate-700/50">
                         Belum punya akun? <button type="button" onclick="switchAuthTab('formRegister')" class="text-primary font-bold hover:underline">Daftar Akun</button>
                     </div>
                 </div>
 
-                <!-- Form Register (Hidden) ... -->
+                <!-- Form Register -->
                 <div id="formRegister" class="hidden space-y-3.5">
                     <div id="refNotification" class="hidden bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] p-2 rounded-lg text-center font-bold mb-2"></div>
                     <div><label class="block text-xs font-bold text-slate-400 mb-1">Nama</label><input type="text" id="regName" class="w-full bg-[#070D19] border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none"></div>
@@ -143,7 +156,7 @@
                     <div class="text-center text-xs mt-4 text-slate-400 pt-3 border-t border-slate-700/50">Sudah punya akun? <button type="button" onclick="switchAuthTab('formLogin')" class="text-primary font-bold hover:underline">Login Disini</button></div>
                 </div>
 
-                <!-- Form Forgot (Hidden) ... -->
+                <!-- Form Forgot Password -->
                 <div id="formForgot" class="hidden space-y-4">
                     <p class="text-xs text-slate-300 text-center">Masukkan Email untuk verifikasi reset password.</p>
                     <div><input type="email" id="forgotEmail" placeholder="email@contoh.com" class="w-full bg-[#070D19] border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none"></div>
@@ -154,12 +167,13 @@
         </div>
     </div>
 
-    <!-- ==================== 2. MAIN DASHBOARD APP ==================== -->
+    <!-- ==================== MAIN DASHBOARD APP ==================== -->
     <div id="appContent" class="hidden h-screen w-full flex bg-lightbg dark:bg-darkbg">
         
-        <!-- SIDEBAR KIRI -->
+        <!-- ==================== SIDEBAR KIRI ==================== -->
         <aside id="sidebarMenu" class="fixed md:static inset-y-0 left-0 z-[100] w-72 bg-white dark:bg-[#0B1528] border-r border-slate-200 dark:border-slate-800 transform -translate-x-full md:translate-x-0 transition-all duration-300 flex flex-col h-full overflow-y-auto no-scrollbar shadow-2xl md:shadow-none">
             
+            <!-- Logo Header -->
             <div class="p-5 flex items-center justify-between sticky top-0 bg-white dark:bg-[#0B1528] z-20 border-b border-slate-200 dark:border-slate-800">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-glow"><i class="fa-solid fa-bolt text-white text-lg"></i></div>
@@ -169,38 +183,43 @@
             </div>
 
             <div class="p-4 space-y-4 flex-grow">
+                
                 <!-- Profil User Sidebar -->
                 <div class="bg-lightcard dark:bg-darkcard rounded-2xl p-4 border border-slate-200 dark:border-slate-800 text-center relative overflow-hidden group shadow-sm">
-                    <div class="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-[9px] font-bold px-2 py-0.5 rounded text-white flex items-center gap-1 cursor-pointer" onclick="document.getElementById('avatarUpload').click()" title="Ubah Foto"><i class="fa-solid fa-camera"></i> FOTO</div>
+                    <div class="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-[9px] font-bold px-2 py-0.5 rounded text-white flex items-center gap-1 cursor-pointer shadow-glow-orange" onclick="document.getElementById('avatarUpload').click()" title="Ubah Foto"><i class="fa-solid fa-camera"></i> FOTO</div>
                     <input type="file" id="avatarUpload" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleAvatarUpload(event)">
                     
                     <button onclick="logout()" class="absolute top-3 right-3 w-6 h-6 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-red-500 hover:text-white hover:bg-red-500 transition" title="Logout"><i class="fa-solid fa-power-off text-[10px]"></i></button>
 
                     <div id="sbAvatar" class="w-16 h-16 rounded-full mx-auto mt-2 mb-3 bg-slate-200 dark:bg-slate-800 border-2 border-primary shadow-glow flex items-center justify-center text-2xl font-bold text-slate-800 dark:text-white bg-cover bg-center">U</div>
                     
-                    <h3 id="sbUsername" class="text-slate-800 dark:text-white font-bold text-sm mb-1 flex items-center justify-center gap-1 cursor-pointer" onclick="editUserName()">User</h3>
+                    <h3 id="sbUsername" class="text-slate-800 dark:text-white font-bold text-sm mb-1 flex items-center justify-center gap-1 cursor-pointer" onclick="editUserName()">User <i class="fa-solid fa-pen-to-square text-[10px] text-slate-400 ml-1"></i></h3>
                     <div class="bg-slate-100 dark:bg-slate-800/80 inline-block px-3 py-1 rounded-full text-primary font-bold text-xs mb-2 border border-slate-200 dark:border-slate-700" id="sbBalance">Rp 0</div>
                     <div><span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] px-3 py-1 rounded-full inline-flex items-center gap-1 border border-slate-200 dark:border-slate-700"><i class="fa-solid fa-star text-yellow-500"></i> <span id="sbLevel">Bronze</span></span></div>
                 </div>
 
-                <!-- Navigasi Menu -->
+                <!-- Navigasi Menu 1: Dashboard -->
                 <div class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase px-3 py-2">Dashboard</div>
                     <a href="#" onclick="switchView('view-home')" id="nav-view-home" class="menu-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-robot w-5 text-center text-lg"></i> Halaman Utama</a>
                 </div>
 
+                <!-- Navigasi Menu 2: Orders -->
                 <div class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase px-3 py-2">Orders</div>
+                    <a href="#" onclick="switchView('view-order')" id="nav-view-order" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-cart-plus w-5 text-center text-lg"></i> Pesanan Lama (Massal)</a>
                     <a href="#" onclick="switchView('view-history')" id="nav-view-history" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-clock-rotate-left w-5 text-center text-lg"></i> Riwayat Order</a>
                     <a href="#" onclick="switchView('view-track')" id="nav-view-track" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-magnifying-glass w-5 text-center text-lg"></i> Lacak Status</a>
                 </div>
 
+                <!-- Navigasi Menu 3: Payment & Affiliate -->
                 <div class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase px-3 py-2">Payment & Affiliate</div>
                     <a href="#" onclick="switchView('view-deposit')" id="nav-view-deposit" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-money-bill-transfer w-5 text-center text-lg"></i> Isi Saldo</a>
                     <a href="#" onclick="switchView('view-referral')" id="nav-view-referral" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-users w-5 text-center text-lg"></i> Program Referral</a>
                 </div>
 
+                <!-- Navigasi Menu 4: Support -->
                 <div class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase px-3 py-2">Support & Request</div>
                     <a href="#" onclick="openChatWidget()" class="menu-item flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300">
@@ -210,53 +229,67 @@
                     <a href="#" onclick="processFloatingWA()" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-brands fa-whatsapp w-5 text-center text-lg text-green-500 dark:text-green-400"></i> WhatsApp</a>
                 </div>
 
-                <!-- Admin Menu (Hidden by default) -->
+                <!-- Navigasi Menu 5: Admin Area (Hidden by default) -->
                 <div id="adminMenuBox" class="bg-lightcard dark:bg-darkcard rounded-2xl p-2 border border-slate-200 dark:border-slate-800 hidden shadow-sm">
                     <div class="text-[10px] font-bold text-yellow-600 dark:text-yellow-500 uppercase px-3 py-2">Owner Features</div>
                     <a href="#" onclick="switchView('view-admin')" id="nav-view-admin" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-chart-line w-5 text-center text-lg"></i> Panel Admin</a>
                     <a href="#" onclick="openApiDocs()" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300"><i class="fa-solid fa-code w-5 text-center text-lg"></i> API Dokumentasi</a>
                 </div>
+
+                <div class="pb-10 text-center text-[9px] text-slate-400 dark:text-slate-500 pt-4">
+                    &copy; 2026 KA TECH HUB<br>Ver. 3.0 (Enterprise Server)
+                </div>
             </div>
         </aside>
 
+        <!-- Overlay Sidebar Mobile -->
         <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-[90] hidden md:hidden backdrop-blur-sm" onclick="toggleSidebar()"></div>
 
-        <!-- AREA KONTEN UTAMA KANAN -->
+        <!-- ==================== AREA KONTEN UTAMA KANAN ==================== -->
         <div class="flex-1 flex flex-col h-screen overflow-hidden relative w-full">
             
+            <!-- Header Nav Kanan Atas -->
             <header class="bg-white/95 dark:bg-[#0B1528]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-4 sm:px-6 z-40 flex-shrink-0 transition-colors">
                 <div class="flex items-center gap-3">
                     <button onclick="toggleSidebar()" class="md:hidden text-slate-600 dark:text-slate-300 hover:text-primary p-1"><i class="fa-solid fa-bars text-xl"></i></button>
                     <span id="headerTitle" class="text-slate-800 dark:text-white font-bold text-lg hidden sm:block">Halaman Utama</span>
                 </div>
+                
                 <div class="flex items-center gap-4">
-                    <!-- Tema Toggle (Bulan/Matahari) -->
-                    <button onclick="toggleTheme()" class="text-slate-500 dark:text-slate-300 hover:text-primary transition w-9 h-9 bg-slate-100 dark:bg-darkcard rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-full cursor-help">
+                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+                        <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">System Online</span>
+                    </div>
+
+                    <!-- Tombol Toggle Tema Terang/Gelap -->
+                    <button onclick="toggleTheme()" class="text-slate-500 dark:text-slate-300 hover:text-primary transition w-9 h-9 bg-slate-100 dark:bg-darkcard rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700" title="Ganti Tema">
                         <i id="themeIcon" class="fa-solid fa-moon"></i>
                     </button>
                     
+                    <!-- Tombol Keranjang Belanja -->
                     <button onclick="toggleCartModal()" class="relative text-slate-500 dark:text-slate-300 hover:text-primary transition w-9 h-9 bg-slate-100 dark:bg-darkcard rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700">
                         <i class="fa-solid fa-cart-shopping"></i>
-                        <span id="topCartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden">0</span>
+                        <span id="topCartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden border border-slate-800">0</span>
                     </button>
                 </div>
             </header>
 
-            <!-- Marquee Running Text Premium -->
-            <div class="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border-b border-primary/20 text-primary flex items-center h-8 flex-shrink-0">
-                <div class="bg-primary text-white text-[10px] font-bold px-3 h-full flex items-center z-10 shadow-md whitespace-nowrap"><i class="fa-solid fa-bullhorn mr-1.5"></i> INFO PUSAT</div>
-                <div class="marquee-container h-full flex items-center text-[10px] font-bold tracking-wide">
-                    <div class="marquee-content">🚀 PROMO SUPER: Diskon Reseller up to 50% untuk layanan TikTok & Instagram minggu ini! | 💎 Fitur API H2H Aktif 24 Jam | 💸 Dapatkan komisi Rp 2.000 dengan invite teman!</div>
+            <!-- Marquee Running Text Premium (Iklan Berjalan) -->
+            <div class="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border-b border-primary/20 text-primary flex items-center h-8 flex-shrink-0 relative overflow-hidden">
+                <div class="bg-primary text-white text-[10px] font-bold px-3 h-full flex items-center z-10 shadow-md whitespace-nowrap absolute left-0 top-0"><i class="fa-solid fa-bullhorn mr-1.5"></i> INFO PUSAT</div>
+                <div class="marquee-container h-full flex items-center text-[10px] font-bold tracking-wide pl-24">
+                    <div class="marquee-content">🚀 PROMO SUPER: Diskon Reseller up to 50% untuk layanan TikTok & Instagram minggu ini! | 💎 Fitur API H2H Aktif 24 Jam Non-Stop | 💸 Dapatkan komisi Rp 2.000 dengan invite teman!</div>
                 </div>
             </div>
 
+            <!-- Kontainer Seluruh View (Halaman) -->
             <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-4 sm:p-6 pb-24 md:pb-6 scroll-smooth w-full relative">
                 
-                <!-- VIEW 1: HOME (DESAIN DJURAGAN + QUICK ORDER) -->
+                <!-- ==================== VIEW 1: HOME (DASHBOARD DJURAGAN) ==================== -->
                 <div id="view-home" class="view-section block animate-[slideIn_0.3s_ease]">
                     <div class="max-w-5xl mx-auto">
                         
-                        <!-- Header & Waktu -->
+                        <!-- Header & Waktu Realtime -->
                         <div class="flex justify-between items-center mb-5">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2">Hai, <span id="dashHomeName" class="text-primary">User</span> <span class="text-2xl animate-bounce">👋</span></h2>
@@ -268,8 +301,8 @@
                             </div>
                         </div>
 
-                        <!-- Saldo Card Premium -->
-                        <div class="bg-gradient-to-r from-[#0F1E36] to-[#1A3059] dark:from-[#13233F] dark:to-[#1E3A8A] border border-blue-900/50 rounded-2xl p-5 mb-6 flex justify-between items-center shadow-lg relative overflow-hidden group text-white">
+                        <!-- Saldo Card Premium (Biru Gelap Elegan) -->
+                        <div class="bg-gradient-to-r from-[#0F1E36] to-[#1A3059] dark:from-[#13233F] dark:to-[#1E3A8A] border border-blue-900/50 rounded-2xl p-5 sm:p-6 mb-6 flex justify-between items-center shadow-lg relative overflow-hidden group text-white">
                             <div class="absolute -right-4 -top-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors"></div>
                             <div class="relative z-10">
                                 <div class="flex items-center gap-2 mb-1">
@@ -283,7 +316,7 @@
                             </button>
                         </div>
 
-                        <!-- 4 Quick Navs (Shortcut) -->
+                        <!-- 4 Quick Shortcuts -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                             <div onclick="document.getElementById('searchServiceInput').focus()" class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition shadow-sm">
                                 <div class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-500 dark:text-blue-400 flex items-center justify-center text-sm"><i class="fa-solid fa-cart-plus"></i></div>
@@ -303,11 +336,11 @@
                             </div>
                         </div>
 
-                        <!-- KATEGORI & QUICK ORDER SECTION (MIMIC DJURAGAN) -->
+                        <!-- Grid Kategori & Slide Down Quick Order (Konsep One-Page Action) -->
                         <div class="bg-lightcard dark:bg-[#13233F] border border-slate-200 dark:border-slate-700 rounded-2xl p-5 sm:p-6 mb-6 shadow-sm">
                             <h3 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2"><i class="fa-solid fa-layer-group text-primary"></i> Pilih Kategori</h3>
                             
-                            <!-- Grid Ikon Sosmed Apps -->
+                            <!-- Ikon Aplikasi -->
                             <div class="grid grid-cols-4 sm:grid-cols-8 gap-y-5 gap-x-2 text-center" id="homeCategoryGrid">
                                 <div onclick="openQuickOrder('Instagram')" class="cursor-pointer group"><div class="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 app-icon flex items-center justify-center text-white text-2xl group-hover:scale-105 transition"><i class="fa-brands fa-instagram"></i></div><span class="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 mt-2 block font-medium group-hover:text-primary">Instagram</span></div>
                                 <div onclick="openQuickOrder('TikTok')" class="cursor-pointer group"><div class="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-black app-icon flex items-center justify-center text-white text-2xl border border-slate-800 group-hover:scale-105 transition"><i class="fa-brands fa-tiktok"></i></div><span class="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 mt-2 block font-medium group-hover:text-primary">TikTok</span></div>
@@ -319,13 +352,13 @@
                                 <div onclick="openQuickOrder('Games')" class="cursor-pointer group"><div class="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-orange-500 app-icon flex items-center justify-center text-white text-2xl group-hover:scale-105 transition"><i class="fa-solid fa-gamepad"></i></div><span class="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 mt-2 block font-medium group-hover:text-primary">Topup Game</span></div>
                             </div>
 
-                            <!-- Baris Pencarian Layanan (Search Bar) -->
+                            <!-- Fitur Search Bar Premium -->
                             <div class="relative mt-6">
                                 <input type="text" id="searchServiceInput" placeholder="Atau cari layanan (ex: Followers IG)..." onkeyup="searchServices(this.value)" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl pl-12 pr-4 py-3.5 text-sm focus:outline-none focus:border-primary shadow-inner transition-colors">
                                 <i class="fa-solid fa-magnifying-glass absolute left-5 top-4 text-slate-400 dark:text-slate-500 text-lg"></i>
                             </div>
 
-                            <!-- MENU ORDER MUNCUL DI SINI SECARA DINAMIS (SLIDE DOWN) -->
+                            <!-- MENU ORDER (SLIDE DOWN DINAMIS DI BAWAH IKON) -->
                             <div id="quickOrderSection" class="border-t border-slate-200 dark:border-slate-700 mt-6 pt-4 relative">
                                 <div class="flex justify-between items-center mb-4">
                                     <h4 class="font-bold text-primary text-sm uppercase flex items-center gap-2"><i class="fa-solid fa-bolt"></i> Buat Pesanan <span id="quickOrderTitle" class="text-slate-800 dark:text-white"></span></h4>
@@ -333,17 +366,17 @@
                                 </div>
                                 
                                 <div class="space-y-4">
-                                    <!-- Dropdown Layanan -->
+                                    <!-- Dropdown Layanan (Custom UI) -->
                                     <div class="relative">
-                                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Pilih Layanan</label>
+                                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Pilih Layanan <span class="text-red-500">*</span></label>
                                         <div class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 text-xs sm:text-sm cursor-pointer flex justify-between items-center shadow-inner" onclick="toggleCustomSelect('servListQuick', event)">
-                                            <span id="servSelectedTextQuick" class="truncate pr-4 font-semibold">Pilih Layanan...</span>
+                                            <span id="servSelectedTextQuick" class="truncate pr-4 font-semibold">Memuat Layanan...</span>
                                             <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
                                         </div>
                                         <div id="servListQuick" class="hidden absolute top-[105%] left-0 w-full bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-600 rounded-xl shadow-2xl custom-select-list z-[60]"></div>
                                     </div>
 
-                                    <!-- Deskripsi Layanan -->
+                                    <!-- Info Deskripsi -->
                                     <div id="serviceDetailBoxQuick" class="p-4 bg-slate-100 dark:bg-[#070D19]/80 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 relative overflow-hidden">
                                         <div class="absolute right-0 top-0 w-1.5 h-full bg-gradient-to-b from-primary to-accent"></div>
                                         <p id="selectedDescQuick" class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed pr-2">Deskripsi layanan akan muncul di sini.</p>
@@ -353,19 +386,19 @@
                                         </div>
                                     </div>
 
-                                    <!-- Form Target & Jumlah -->
+                                    <!-- Input Target & Jumlah -->
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Target (Link/Username) <span class="text-red-500">*</span></label>
                                             <input type="text" id="targetInputQuick" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary shadow-inner">
                                         </div>
                                         <div>
-                                            <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Jumlah Beli</label>
+                                            <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Jumlah Beli <span class="text-red-500">*</span></label>
                                             <input type="number" id="qtyInputQuick" oninput="calculateTotalQuick()" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-primary font-bold rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary shadow-inner">
                                         </div>
                                     </div>
 
-                                    <!-- Metode & Proses -->
+                                    <!-- Total & Eksekusi -->
                                     <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-end gap-4 pt-2">
                                         <div class="flex-1">
                                             <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Metode Bayar</label>
@@ -380,12 +413,19 @@
                                         </div>
                                     </div>
                                     
-                                    <button onclick="processQuickOrder()" class="w-full btn-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm shadow-glow mt-2"><i class="fa-solid fa-paper-plane"></i> Pesan Sekarang</button>
+                                    <div class="flex gap-2 sm:gap-3 mt-4">
+                                        <!-- Tombol Tambah ke Keranjang (Cart) -->
+                                        <button onclick="addQuickToCart()" class="w-14 sm:w-auto px-4 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-xl transition flex items-center justify-center border border-slate-300 dark:border-slate-600 shadow-sm" title="Masuk Keranjang">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                        <!-- Tombol Pesan Langsung -->
+                                        <button onclick="processQuickOrder()" class="flex-1 w-full btn-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm shadow-glow"><i class="fa-solid fa-paper-plane"></i> Pesan Sekarang</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 4 Grid Statistik -->
+                        <!-- Kotak Info / Statistik Tambahan -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                             <div class="bg-lightcard dark:bg-[#13233F] p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-3 shadow-sm">
                                 <div class="w-9 h-9 rounded-lg bg-orange-100 dark:bg-orange-500/20 text-orange-500 dark:text-orange-400 flex items-center justify-center"><i class="fa-solid fa-star"></i></div>
@@ -408,179 +448,1216 @@
                     </div>
                 </div>
 
-                <!-- SISANYA (VIEW HISTORY, TRACK, DEPOSIT, REF, ADMIN) TETAP SAMA NAMUN DISESUAIKAN CLASS DARK/LIGHT NYA -->
-                <!-- Untuk menghemat karakter respon, view lain (History, dll) tidak saya tulis ulang secara penuh HTML-nya, KARENA ANDA HANYA PERLU MENGGANTI BAGIAN <main> UTAMA SEPERTI DI ATAS. 
-                     *NAMUN*, karena Anda meminta FULL SCRIPT tanpa hapus, saya sertakan kodenya di bawah dengan class responsif ringan. -->
-                
-                <!-- VIEW 3: RIWAYAT ORDER -->
-                <div id="view-history" class="view-section hidden animate-[slideIn_0.3s_ease]">
-                    <div class="max-w-5xl mx-auto">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-primary"></i> Riwayat Transaksi</h3>
-                            <span id="dashTotalOrders" class="text-[10px] bg-lightcard dark:bg-darkcard px-3 py-1 rounded-full text-slate-500 border border-slate-200 dark:border-slate-700">Memuat...</span>
+                <!-- ==================== VIEW 2: ORDER TRADISIONAL (BUAT MASSAL) ==================== -->
+                <!-- Ini tetap dipertahankan untuk fitur pesanan massal yang tidak ada di Quick Order -->
+                <div id="view-order" class="view-section hidden animate-[slideIn_0.3s_ease]">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="flex bg-lightcard dark:bg-darkcard p-1 rounded-xl mb-6 shadow-inner border border-slate-200 dark:border-slate-700">
+                            <button onclick="switchOrderType('single')" id="tabSingle" class="flex-1 py-2.5 rounded-lg text-sm font-bold bg-primary text-white transition"><i class="fa-solid fa-user-plus mr-1"></i> Pesanan Tunggal</button>
+                            <button onclick="switchOrderType('mass')" id="tabMass" class="flex-1 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-800 dark:hover:text-white transition"><i class="fa-solid fa-users-viewfinder mr-1"></i> Pesanan Massal</button>
                         </div>
-                        <div id="dashboardHistoryItems" class="space-y-3 pb-4"></div>
-                    </div>
-                </div>
 
-                <!-- VIEW 4: LACAK STATUS -->
-                <div id="view-track" class="view-section hidden animate-[slideIn_0.3s_ease]">
-                    <div class="max-w-2xl mx-auto">
-                        <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 rounded-2xl p-6 text-center shadow-lg">
-                            <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary text-2xl mx-auto mb-4"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
-                            <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Lacak Pesanan</h2>
-                            <p class="text-xs text-slate-500 mb-6">Masukkan Kode Order (KATH-...) untuk melihat status realtime.</p>
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <input type="text" id="trackInput" placeholder="KATH-..." class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 text-sm">
-                                <button onclick="trackOrderReal()" class="btn-primary px-6 py-3 rounded-xl font-bold text-sm">Cari</button>
+                        <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 rounded-2xl p-5 sm:p-6 shadow-lg relative z-20">
+                            <!-- Bagian Dropdown Kategori & Layanan Utama -->
+                            <div class="space-y-5 mb-5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="relative">
+                                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5"><i class="fa-solid fa-layer-group text-primary mr-1"></i> Kategori</label>
+                                        <div class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 text-xs sm:text-sm cursor-pointer flex justify-between items-center transition shadow-inner" onclick="toggleCustomSelect('catList', event)">
+                                            <span id="catSelectedText" class="truncate pr-4 font-semibold">Memuat Kategori...</span>
+                                            <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+                                        </div>
+                                        <div id="catList" class="hidden absolute top-[105%] left-0 w-full bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-600 rounded-xl shadow-2xl custom-select-list z-[60]"></div>
+                                    </div>
+                                    <div class="relative">
+                                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5"><i class="fa-solid fa-box-open text-accent mr-1"></i> Layanan</label>
+                                        <div class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 text-xs sm:text-sm cursor-pointer flex justify-between items-center transition shadow-inner" onclick="toggleCustomSelect('servList', event)">
+                                            <span id="servSelectedText" class="truncate pr-4 font-semibold">Pilih Layanan...</span>
+                                            <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+                                        </div>
+                                        <div id="servList" class="hidden absolute top-[105%] left-0 w-full bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-600 rounded-xl shadow-2xl custom-select-list z-[60]"></div>
+                                    </div>
+                                </div>
+
+                                <div id="serviceDetailBox" class="p-4 bg-slate-100 dark:bg-[#070D19]/80 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 relative overflow-hidden">
+                                    <div class="absolute right-0 top-0 w-1.5 h-full bg-gradient-to-b from-primary to-accent"></div>
+                                    <p id="selectedDesc" class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed pr-2">Deskripsi layanan akan muncul di sini.</p>
+                                    <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs">
+                                        <div><span class="text-slate-500 block text-[9px] uppercase font-bold">Harga per 1000</span><span id="selectedPrice" class="font-bold text-primary text-sm">Rp 0</span></div>
+                                        <div><span class="text-slate-500 block text-[9px] uppercase font-bold">Min / Max Order</span><span id="selectedMinMax" class="font-bold text-slate-700 dark:text-slate-200 text-xs">100 / 50.000</span></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div id="trackResult" class="hidden mt-6 p-4 bg-slate-50 dark:bg-[#070D19] rounded-xl border border-slate-200 dark:border-slate-800 text-left space-y-3">
-                                <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3"><span id="resCode" class="font-mono font-bold text-primary text-sm"></span><span id="resBadge"></span></div>
-                                <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300">
-                                    <div><span class="text-slate-500 block text-[9px] uppercase">Waktu:</span><span id="resTime" class="font-semibold text-slate-800 dark:text-slate-200"></span></div>
-                                    <div><span class="text-slate-500 block text-[9px] uppercase">Detail:</span><span id="resItemDetail" class="font-semibold text-primary"></span></div>
+
+                            <!-- Panel Single Order -->
+                            <div id="panelSingleOrder" class="space-y-5 block transition-all z-10 relative">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Target Pesanan <span class="text-red-500">*</span></label>
+                                        <input type="text" id="mainTargetInput" placeholder="Username / Link URL" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-sm shadow-inner transition">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Jumlah Beli</label>
+                                        <input type="number" id="mainQuantityInput" oninput="calculateMainTotal()" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-primary font-bold rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-sm shadow-inner transition">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Metode Bayar</label>
+                                    <select id="mainPaymentSelect" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary text-sm cursor-pointer shadow-inner">
+                                        <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis H2H)</option>
+                                        <option value="QRIS (Minta via WA)">QRIS (Minta Barcode via WA)</option>
+                                        <option value="Bank Mandiri (1290013795022)">Bank Mandiri (1290013795022)</option>
+                                    </select>
+                                </div>
+
+                                <div class="pt-5 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                                    <div>
+                                        <span class="text-[10px] font-bold text-slate-500 block uppercase tracking-wider mb-1">Total Bayar</span>
+                                        <span id="mainCalculatedTotal" class="text-2xl sm:text-3xl font-extrabold text-primary drop-shadow-md">Rp 0</span>
+                                    </div>
+                                    <div class="flex gap-2 sm:gap-3">
+                                        <button onclick="addMainToCart()" class="w-14 sm:w-auto px-4 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-xl transition flex items-center justify-center border border-slate-300 dark:border-slate-600 shadow-sm" title="Masuk Keranjang">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                        <button onclick="processDirectOrder()" class="flex-1 sm:flex-none btn-primary px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm shadow-glow border border-primary/50">
+                                            <i class="fa-solid fa-paper-plane"></i> Proses Pesanan
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Panel Mass Order -->
+                            <div id="panelMassOrder" class="space-y-5 hidden transition-all z-10 relative">
+                                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 p-3 rounded-xl shadow-inner text-xs text-blue-700 dark:text-blue-300">
+                                    <span class="font-bold block mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Format Mass Order:</span>
+                                    <code class="font-mono block bg-white dark:bg-[#070D19] p-2 rounded border border-blue-100 dark:border-slate-700">target1 | jumlah1<br>target2 | jumlah2</code>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">Daftar Target (Pisah per baris) <span class="text-red-500">*</span></label>
+                                    <textarea id="massOrderInput" rows="5" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary font-mono text-xs placeholder-slate-400 dark:placeholder-slate-600 shadow-inner" placeholder="https://ig.com/user1 | 500"></textarea>
+                                </div>
+                                <div class="pt-2 flex justify-end">
+                                    <button onclick="processMassOrder()" class="btn-primary w-full sm:w-auto px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm shadow-glow">
+                                        <i class="fa-solid fa-rocket"></i> Proses Mass Order
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- VIEW 5: ISI SALDO -->
-                <div id="view-deposit" class="view-section hidden animate-[slideIn_0.3s_ease]">
+                <!-- ==================== VIEW 3: RIWAYAT ORDER ==================== -->
+                <div id="view-history" class="view-section hidden animate-[slideIn_0.3s_ease]">
                     <div class="max-w-5xl mx-auto">
-                        <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-4"><i class="fa-solid fa-wallet text-primary mr-2"></i> Metode Pembayaran Resmi</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- QRIS -->
-                            <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 rounded-xl p-5 relative overflow-hidden group shadow-sm">
-                                <div class="flex justify-between items-start mb-4 relative z-10"><div class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-500/10 text-red-500 flex items-center justify-center text-lg"><i class="fa-solid fa-qrcode"></i></div></div>
-                                <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1">QRIS Barcode</h3>
-                                <p class="text-[10px] text-slate-500 mb-4">Dana, OVO, GoPay, ShopeePay (Otomatis)</p>
-                                <button onclick="openQrisModal()" class="w-full py-2 bg-slate-800 text-white rounded-lg text-xs font-bold transition">Lihat Barcode</button>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left text-primary"></i> Riwayat Transaksi
+                            </h3>
+                            <span id="dashTotalOrders" class="text-[10px] bg-lightcard dark:bg-darkcard px-3 py-1 rounded-full text-slate-500 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm">Memuat...</span>
+                        </div>
+                        <div id="dashboardHistoryItems" class="space-y-3 pb-4">
+                            <!-- Data riwayat masuk ke sini via Firebase Render JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== VIEW 4: LACAK STATUS ==================== -->
+                <div id="view-track" class="view-section hidden animate-[slideIn_0.3s_ease]">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 rounded-2xl p-6 text-center shadow-lg">
+                            <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary text-2xl mx-auto mb-4 border border-primary/20"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                            <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Lacak Pesanan Anda</h2>
+                            <p class="text-xs text-slate-500 mb-6">Masukkan Kode Order (Contoh: KATH-123456) untuk melihat status realtime.</p>
+                            
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="text" id="trackInput" placeholder="KATH-..." class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-sm font-mono text-center sm:text-left text-uppercase shadow-inner">
+                                <button onclick="trackOrderReal()" class="btn-primary px-6 py-3 rounded-xl font-bold text-sm whitespace-nowrap">Cari Pesanan</button>
                             </div>
-                            <!-- MANDIRI -->
-                            <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 rounded-xl p-5 relative overflow-hidden group shadow-sm">
-                                <div class="flex justify-between items-start mb-4 relative z-10"><div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-blue-500 flex items-center justify-center text-lg"><i class="fa-solid fa-building-columns"></i></div></div>
-                                <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1">Bank Mandiri</h3>
-                                <p class="text-[10px] text-slate-500 mb-2">No. Rekening:</p>
-                                <div class="flex items-center justify-between bg-slate-50 dark:bg-[#070D19] p-2 rounded-lg border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-slate-800 dark:text-white text-sm">1290013795022</span><button onclick="copyToClipboard('1290013795022', 'Mandiri')" class="text-[10px] bg-primary/20 text-primary px-2 py-1 rounded">Salin</button></div>
+
+                            <div id="trackResult" class="hidden mt-6 p-4 bg-slate-50 dark:bg-[#070D19] rounded-xl border border-slate-200 dark:border-slate-800 text-left space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                                    <span id="resCode" class="font-mono font-bold text-primary text-sm">#KATH-XXXX</span>
+                                    <span id="resBadge" class="px-2.5 py-1 rounded text-[10px] font-bold border"></span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300">
+                                    <div><span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-bold">Waktu:</span><span id="resTime" class="font-semibold text-slate-700 dark:text-slate-200"></span></div>
+                                    <div><span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-bold">Detail:</span><span id="resItemDetail" class="font-semibold text-primary"></span></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- VIEW 6: REFERRAL -->
-                <div id="view-referral" class="view-section hidden animate-[slideIn_0.3s_ease]">
-                    <div class="max-w-3xl mx-auto"><div class="bg-gradient-to-br from-lightcard to-slate-100 dark:from-darkcard dark:to-[#0B1528] border border-slate-200 dark:border-slate-700 rounded-2xl p-6 sm:p-8 text-center shadow-lg"><h2 class="text-2xl font-extrabold text-slate-800 dark:text-white mb-2">Program Referral VIP</h2><p class="text-xs text-slate-500 dark:text-slate-300 mb-6 max-w-md mx-auto">Ajak teman bergabung, dapatkan komisi <b>Rp 2.000</b> per user!</p><div class="bg-slate-50 dark:bg-[#070D19] p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 max-w-lg mx-auto mb-6"><div class="text-left w-full sm:w-auto"><span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Link Referral Anda</span><span id="refLinkText" class="text-sm font-mono text-primary font-bold">https://...</span></div><button onclick="shareReferralLink()" class="w-full sm:w-auto btn-primary px-4 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-copy mr-1"></i> Salin</button></div></div></div>
+                <!-- ==================== VIEW 5: ISI SALDO (DEPOSIT) ==================== -->
+                <div id="view-deposit" class="view-section hidden animate-[slideIn_0.3s_ease]">
+                    <div class="max-w-5xl mx-auto">
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-4"><i class="fa-solid fa-wallet text-primary mr-2"></i> Metode Pembayaran Resmi</h2>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- QRIS -->
+                            <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 rounded-xl p-5 relative overflow-hidden group shadow-sm">
+                                <div class="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 dark:bg-red-500/10 rounded-full blur-xl group-hover:bg-red-500/10 dark:group-hover:bg-red-500/20"></div>
+                                <div class="flex justify-between items-start mb-4 relative z-10">
+                                    <div class="w-10 h-10 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 flex items-center justify-center text-red-500 text-lg"><i class="fa-solid fa-qrcode"></i></div>
+                                    <span class="text-[9px] bg-slate-50 dark:bg-[#070D19] text-slate-500 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 font-bold uppercase">All Wallet</span>
+                                </div>
+                                <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1">QRIS Barcode</h3>
+                                <p class="text-[10px] text-slate-500 mb-4">Dana, OVO, GoPay, ShopeePay & M-Banking (Otomatis)</p>
+                                <button onclick="openQrisModal()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg text-xs font-bold transition border border-slate-300 dark:border-slate-600">Lihat Barcode</button>
+                            </div>
+                            
+                            <!-- Bank Mandiri -->
+                            <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 rounded-xl p-5 relative overflow-hidden group shadow-sm">
+                                <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/10 dark:group-hover:bg-blue-500/20"></div>
+                                <div class="flex justify-between items-start mb-4 relative z-10">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex items-center justify-center text-blue-500 text-lg"><i class="fa-solid fa-building-columns"></i></div>
+                                </div>
+                                <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1">Bank Mandiri</h3>
+                                <p class="text-[10px] text-slate-500 mb-2">No. Rekening:</p>
+                                <div class="flex items-center justify-between bg-slate-50 dark:bg-[#070D19] p-2 rounded-lg border border-slate-200 dark:border-slate-800 shadow-inner">
+                                    <span class="font-mono font-bold text-slate-800 dark:text-white text-sm tracking-widest">1290013795022</span>
+                                    <button onclick="copyToClipboard('1290013795022', 'Mandiri')" class="text-[10px] bg-primary/20 text-primary px-2 py-1 rounded hover:bg-primary/30 transition">Salin</button>
+                                </div>
+                            </div>
+                            
+                            <!-- E-Wallet / WhatsApp -->
+                            <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 rounded-xl p-5 relative overflow-hidden group shadow-sm">
+                                <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/5 dark:bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/10 dark:group-hover:bg-orange-500/20"></div>
+                                <div class="flex justify-between items-start mb-4 relative z-10">
+                                    <div class="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-500/10 border border-orange-100 dark:border-orange-500/20 flex items-center justify-center text-orange-500 text-lg"><i class="fa-brands fa-whatsapp"></i></div>
+                                </div>
+                                <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1">WhatsApp Admin</h3>
+                                <p class="text-[10px] text-slate-500 mb-2">Konfirmasi & Tanya-tanya:</p>
+                                <div class="flex items-center justify-between bg-slate-50 dark:bg-[#070D19] p-2 rounded-lg border border-slate-200 dark:border-slate-800 shadow-inner">
+                                    <span class="font-mono font-bold text-slate-800 dark:text-white text-sm tracking-widest">081312185600</span>
+                                    <button onclick="copyToClipboard('081312185600', 'Nomor WA')" class="text-[10px] bg-primary/20 text-primary px-2 py-1 rounded hover:bg-primary/30 transition">Salin</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-start gap-3 shadow-sm">
+                            <i class="fa-solid fa-circle-info text-primary mt-1"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-800 dark:text-white">Cara Konfirmasi Saldo Manual</h4>
+                                <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1">Setelah melakukan transfer ke rekening di atas, silakan klik tombol WA di menu Support atau hubungi <b>0813-1218-5600</b> dengan melampirkan bukti transfer dan email akun Anda. Saldo akan ditambahkan instan.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- VIEW 7: ADMIN -->
+                <!-- ==================== VIEW 6: REFERRAL ==================== -->
+                <div id="view-referral" class="view-section hidden animate-[slideIn_0.3s_ease]">
+                    <div class="max-w-3xl mx-auto">
+                        <div class="bg-gradient-to-br from-lightcard to-slate-100 dark:from-darkcard dark:to-[#0B1528] border border-slate-200 dark:border-slate-700 rounded-2xl p-6 sm:p-8 text-center shadow-lg relative overflow-hidden">
+                            <i class="fa-solid fa-users text-8xl absolute -right-10 -bottom-10 text-slate-200 dark:text-white/5 rotate-12"></i>
+                            <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-2xl mx-auto mb-4 shadow-glow-emerald rotate-3"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                            <h2 class="text-2xl font-extrabold text-slate-800 dark:text-white mb-2">Program Referral VIP</h2>
+                            <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 max-w-md mx-auto">Ajak teman bergabung dan gunakan kode link Anda. Dapatkan komisi <b>Rp 2.000</b> untuk setiap teman yang mendaftar!</p>
+                            
+                            <div class="bg-white dark:bg-[#070D19] p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 max-w-lg mx-auto mb-6 shadow-sm">
+                                <div class="text-left w-full sm:w-auto">
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Link Referral Anda</span>
+                                    <span id="refLinkText" class="text-sm font-mono text-primary font-bold">https://...</span>
+                                </div>
+                                <button onclick="shareReferralLink()" class="w-full sm:w-auto btn-primary px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-copy mr-1"></i> Salin Link</button>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                                <div class="bg-white/50 dark:bg-[#070D19]/50 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
+                                    <span class="text-[10px] text-slate-500 uppercase font-bold block mb-1">Total Undangan</span>
+                                    <span id="viewRefCount" class="text-xl font-bold text-slate-800 dark:text-white">0</span>
+                                </div>
+                                <div class="bg-white/50 dark:bg-[#070D19]/50 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
+                                    <span class="text-[10px] text-slate-500 uppercase font-bold block mb-1">Total Komisi</span>
+                                    <span id="viewRefEarnings" class="text-xl font-bold text-emerald-500 dark:text-emerald-400">Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== VIEW 7: ADMIN PANEL (OWNER) ==================== -->
                 <div id="view-admin" class="view-section hidden animate-[slideIn_0.3s_ease]">
-                    <div class="max-w-6xl mx-auto space-y-6"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-crown text-yellow-500 text-xl"></i> <h2 class="text-xl font-extrabold text-slate-800 dark:text-white">Owner Area</h2></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div class="bg-lightcard dark:bg-darkcard p-5 rounded-2xl border border-emerald-500/30 shadow-sm"><span class="text-[10px] text-emerald-500 font-bold uppercase tracking-wider block mb-1">Pendapatan</span><span id="dashOwnerIncome" class="text-3xl font-extrabold text-slate-800 dark:text-white">Rp ...</span></div><div class="bg-lightcard dark:bg-darkcard p-5 rounded-2xl border border-rose-500/30 shadow-sm"><span class="text-[10px] text-rose-500 font-bold uppercase tracking-wider block mb-1">Ditarik</span><span id="dashOwnerCashout" class="text-3xl font-extrabold text-slate-800 dark:text-white">Rp ...</span></div></div></div>
+                    <div class="max-w-6xl mx-auto space-y-6">
+                        <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-crown text-yellow-500 text-xl drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]"></i> <h2 class="text-xl font-extrabold text-slate-800 dark:text-white">Supreme Owner Area</h2></div>
+                        
+                        <!-- Box Saldo Owner -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-lightcard dark:bg-darkcard p-5 rounded-2xl border border-emerald-200 dark:border-emerald-500/30 shadow-sm relative overflow-hidden group">
+                                <i class="fa-solid fa-sack-dollar absolute -right-4 -bottom-4 text-7xl text-emerald-100 dark:text-emerald-500/10 group-hover:scale-110 transition"></i>
+                                <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider block mb-1">Total Pendapatan (Income)</span>
+                                <span id="dashOwnerIncome" class="text-3xl font-extrabold text-slate-800 dark:text-white truncate block">Rp ...</span>
+                            </div>
+                            <div class="bg-lightcard dark:bg-darkcard p-5 rounded-2xl border border-rose-200 dark:border-rose-500/30 shadow-sm relative overflow-hidden group">
+                                <i class="fa-solid fa-money-bill-transfer absolute -right-4 -bottom-4 text-7xl text-rose-100 dark:text-rose-500/10 group-hover:scale-110 transition"></i>
+                                <span class="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase tracking-wider block mb-1">Total Ditarik (Cashout)</span>
+                                <span id="dashOwnerCashout" class="text-3xl font-extrabold text-slate-800 dark:text-white truncate block">Rp ...</span>
+                            </div>
+                        </div>
+
+                        <!-- Chart Analytics -->
+                        <div class="bg-lightcard dark:bg-darkcard p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-4"><i class="fa-solid fa-chart-line text-primary mr-1.5"></i>Grafik Pendapatan (7 Hari Terakhir)</h4>
+                            <div class="w-full h-56 relative"><canvas id="revenueChart"></canvas></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Topup Admin -->
+                            <div class="bg-lightcard dark:bg-darkcard p-5 rounded-2xl border border-emerald-200 dark:border-emerald-500/20 shadow-sm">
+                                <h4 class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-money-bill-wave mr-1.5"></i>Top-Up Manual Saldo User</h4>
+                                <div class="space-y-3">
+                                    <input type="email" id="topupUserEmail" placeholder="Email pelanggan..." class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:border-emerald-500 outline-none shadow-inner">
+                                    <input type="number" id="topupUserAmount" placeholder="Nominal Rp..." class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:border-emerald-500 outline-none shadow-inner">
+                                    <button onclick="adminAddBalance()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-lg text-xs font-bold shadow-sm transition">Kirim Saldo</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Tarik Tunai Owner -->
+                            <div class="bg-lightcard dark:bg-darkcard p-5 rounded-2xl border border-primary/20 shadow-sm">
+                                <h4 class="text-xs font-bold text-primary uppercase tracking-wider mb-3"><i class="fa-solid fa-building-columns mr-1.5"></i>Tarik Tunai Ke Rekening Owner</h4>
+                                <div class="space-y-3">
+                                    <input type="number" id="cashoutAmount" placeholder="Nominal Tarik Rp..." class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:border-primary outline-none shadow-inner">
+                                    <select id="cashoutBank" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:border-primary outline-none appearance-none cursor-pointer shadow-inner">
+                                        <option value="Bank Mandiri">Bank Mandiri (Utama)</option>
+                                        <option value="SeaBank">SeaBank</option>
+                                        <option value="BCA">Bank BCA</option>
+                                    </select>
+                                    <button onclick="processCashout()" class="w-full btn-primary px-4 py-2.5 rounded-lg text-xs font-bold transition">Tarik Sekarang</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ticket Bantuan -->
+                        <div class="bg-lightcard dark:bg-darkcard p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-headset mr-1"></i> Live Chat Support</h4>
+                                <span class="text-[10px] bg-sky-100 dark:bg-sky-500/20 text-sky-600 dark:text-sky-300 px-2 py-0.5 rounded font-mono" id="activeTicketCount">0 Antrean</span>
+                            </div>
+                            <div id="adminTicketList" class="space-y-2 max-h-64 overflow-y-auto pr-1 no-scrollbar text-sm text-slate-500">Antrean tiket akan muncul di sini saat terhubung Firebase...</div>
+                        </div>
+                    </div>
                 </div>
 
             </main>
         </div>
     </div>
 
-    <!-- SEMUA MODAL POP-UP (CHAT, INVOICE, QRIS, API DOCS) ADA DI SINI -->
-    <!-- Saya menjaga kodenya tetap lengkap sesuai permintaan awal -->
-    <div id="liveChatModal" class="fixed inset-0 z-[900] hidden items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-0 sm:p-4"><div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 w-full sm:max-w-md h-[85vh] sm:h-[600px] flex flex-col relative shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden"><div class="p-4 bg-white dark:bg-[#0B1528] border-b border-slate-200 dark:border-slate-800 flex justify-between items-center z-10 shadow-md"><h3 class="text-sm font-bold text-slate-800 dark:text-white">CS Support</h3><button onclick="closeChatModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button></div><div id="chatMessagesArea" class="flex-grow overflow-y-auto p-4 space-y-3 flex flex-col no-scrollbar bg-slate-50 dark:bg-[#070D19]/50"></div><div id="chatInputContainer" class="p-3 bg-white dark:bg-[#0B1528] border-t border-slate-200 dark:border-slate-800 flex gap-2"><textarea id="chatInputMessage" rows="1" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none" placeholder="Ketik pesan..."></textarea><button onclick="sendChatMessage()" class="w-12 h-12 btn-primary rounded-xl flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button></div></div></div>
-    <div id="cartModal" class="fixed inset-0 z-[800] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"><div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 w-full max-w-lg p-6 max-h-[90vh] flex flex-col relative rounded-2xl shadow-2xl"><button onclick="toggleCartModal()" class="absolute top-4 right-4 text-slate-500 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button><h2 class="text-xl font-bold text-slate-800 dark:text-white mb-6">Keranjang Belanja</h2><div id="cartItems" class="space-y-3 mb-6 flex-grow overflow-y-auto pr-2"></div><button onclick="processCartCheckout()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm">Proses Checkout</button></div></div>
-    <div id="qrisModal" class="fixed inset-0 z-[950] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4"><div class="bg-lightcard dark:bg-darkcard border border-slate-700 max-w-sm w-full p-6 text-center relative rounded-2xl"><button onclick="closeQrisModal()" class="absolute top-4 right-4 text-slate-500 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button><h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1">QRIS All Payment</h3><button onclick="closeQrisModal()" class="w-full btn-primary py-2 rounded-lg font-bold text-xs mt-4">Tutup</button></div></div>
+    <!-- ==================== SEMUA MODAL POP-UP (UTILITY LENGKAP) ==================== -->
+    
+    <!-- Modal Live Chat CS -->
+    <div id="liveChatModal" class="fixed inset-0 z-[900] hidden items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-0 sm:p-4">
+        <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 w-full sm:max-w-md h-[85vh] sm:h-[600px] flex flex-col relative shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden">
+            <div class="p-4 bg-white dark:bg-[#0B1528] border-b border-slate-200 dark:border-slate-800 flex justify-between items-center z-10 shadow-md">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary relative">
+                        <i class="fa-solid fa-headset text-lg"></i>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-[#0B1528]"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800 dark:text-white" id="chatHeaderTitle">CS Support</h3>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Online • Membalas instan</p>
+                    </div>
+                </div>
+                <button onclick="closeChatModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
 
-    <!-- ==================== SCRIPT & FIREBASE CORE (LENGKAP) ==================== -->
+            <div id="chatMessagesArea" class="flex-grow overflow-y-auto p-4 space-y-3 flex flex-col no-scrollbar bg-slate-50 dark:bg-[#070D19]/50">
+                <div class="text-center text-[10px] text-slate-400 dark:text-slate-500 my-2">Memuat percakapan dari Firebase...</div>
+            </div>
+
+            <div id="chatInputContainer" class="p-3 bg-white dark:bg-[#0B1528] border-t border-slate-200 dark:border-slate-800 flex gap-2 items-end">
+                <textarea id="chatInputMessage" rows="1" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none no-scrollbar shadow-inner" placeholder="Ketik pesan Anda..."></textarea>
+                <button onclick="sendChatMessage()" class="w-12 h-12 btn-primary rounded-xl flex items-center justify-center flex-shrink-0 transition">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Keranjang (Cart) -->
+    <div id="cartModal" class="fixed inset-0 z-[800] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity p-4">
+        <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 w-full max-w-lg p-6 max-h-[90vh] flex flex-col relative rounded-2xl shadow-2xl">
+            <button onclick="toggleCartModal()" class="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-white transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center"><i class="fa-solid fa-cart-shopping mr-3 text-primary"></i> Keranjang Belanja</h2>
+            
+            <div id="cartItems" class="space-y-3 mb-6 flex-grow overflow-y-auto pr-2 no-scrollbar text-sm text-slate-500">
+                <!-- Diisi via JS renderCartItems() -->
+            </div>
+            
+            <div class="border-t border-slate-200 dark:border-slate-700/50 pt-5 mb-4">
+                <label class="block text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-2">Metode Pembayaran</label>
+                <select id="paymentMethod" class="w-full bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-4 py-3 text-sm focus:border-primary shadow-inner cursor-pointer">
+                    <option value="Saldo Akun">💳 Saldo Akun (Otomatis H2H)</option>
+                    <option value="QRIS">QRIS</option>
+                    <option value="Bank Mandiri">Bank Mandiri</option>
+                </select>
+            </div>
+            <div class="border-t border-slate-200 dark:border-slate-700/50 pt-4 flex justify-between items-end mb-4">
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">Total:</p>
+                <h3 class="text-2xl font-bold text-primary" id="cartTotal">Rp 0</h3>
+            </div>
+            <button onclick="processCartCheckout()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm">Proses Checkout</button>
+        </div>
+    </div>
+
+    <!-- Modal Cetak Struk (Invoice) -->
+    <div id="invoiceModal" class="fixed inset-0 z-[950] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
+        <div class="bg-white max-w-sm w-full p-0 relative rounded-xl shadow-2xl overflow-hidden text-slate-900">
+            <button onclick="closeInvoiceModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition z-20"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div id="invoiceContent" class="p-6 relative">
+                <div class="text-center mb-6 border-b border-dashed border-slate-300 pb-4">
+                    <div class="w-10 h-10 bg-primary rounded-xl mx-auto flex items-center justify-center text-white mb-2"><i class="fa-solid fa-bolt text-lg"></i></div>
+                    <h2 class="text-base font-extrabold text-slate-800 tracking-widest">KA TECH HUB</h2>
+                    <p class="text-[9px] text-slate-500">Bukti Transaksi Resmi</p>
+                </div>
+                <div class="space-y-2 text-[11px] mb-5">
+                    <div class="flex justify-between"><span class="text-slate-500">No. Order</span><span id="invCode" class="font-bold text-slate-800 font-mono">#KATH-000</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Tanggal</span><span id="invDate" class="font-bold text-slate-800">DD/MM/YYYY</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Status</span><span id="invStatus" class="font-bold">Berhasil</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Metode</span><span id="invPayment" class="font-bold text-slate-800">Saldo Akun</span></div>
+                </div>
+                <div class="border-t border-dashed border-slate-300 pt-3 mb-3">
+                    <span class="text-[9px] text-slate-500 font-bold uppercase block mb-1">Detail Item</span>
+                    <p id="invItems" class="text-[11px] font-semibold text-slate-800 bg-slate-50 p-2 rounded border border-slate-100">Item Name</p>
+                </div>
+                <div class="flex justify-between items-end border-t border-dashed border-slate-300 pt-3">
+                    <span class="text-xs font-bold text-slate-500">TOTAL BAYAR</span>
+                    <span id="invTotal" class="text-lg font-extrabold text-primary">Rp 0</span>
+                </div>
+            </div>
+            <div class="p-3 bg-slate-50 border-t border-slate-200">
+                <button onclick="downloadInvoice()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-[11px] font-bold transition"><i class="fa-solid fa-download mr-1"></i> Unduh Struk</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QRIS Tampil Barcode -->
+    <div id="qrisModal" class="fixed inset-0 z-[950] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
+        <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 max-w-sm w-full p-6 text-center relative rounded-2xl shadow-glow-strong">
+            <button onclick="closeQrisModal()" class="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <!-- Pastikan file gambar ini ada di root folder Github Bosku jika ingin tampil -->
+            <div class="inline-block p-2 bg-white rounded-xl mb-4 shadow-lg"><img src="ReactNative-snapshot-image316319566030730119.png" class="w-56 h-56 rounded object-cover" onerror="this.src='https://via.placeholder.com/256'"></div>
+            <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1">QRIS All Payment</h3>
+            <button onclick="copyToClipboard('081312185600', 'Nomor E-Wallet')" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white rounded-lg text-xs font-bold transition mb-2">Salin Nomor Manual</button>
+            <button onclick="closeQrisModal()" class="w-full btn-primary py-2 rounded-lg font-bold text-xs mt-2">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Modal Dokumentasi API H2H -->
+    <div id="apiDocsModal" class="fixed inset-0 z-[850] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
+        <div class="bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 max-w-2xl w-full p-6 relative rounded-2xl max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl">
+            <button onclick="closeApiDocs()" class="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-2"><i class="fa-solid fa-code text-primary mr-2"></i> API Documentation H2H</h2>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-4">Integrasikan layanan KA TECH HUB ke website panel Anda dengan harga Grosir API.</p>
+            <div class="bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 rounded-xl p-3 mb-3 shadow-inner">
+                <h3 class="text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-1">Endpoint (URL)</h3>
+                <code class="text-[10px] text-emerald-600 dark:text-emerald-400 block">POST https://katechhub.netlify.app/.netlify/functions/v1</code>
+            </div>
+            <div class="bg-slate-50 dark:bg-[#070D19] border border-slate-200 dark:border-slate-700 rounded-xl p-3 shadow-inner">
+                <h3 class="text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-1">Parameter Wajib (JSON)</h3>
+                <pre class="text-[9px] text-slate-600 dark:text-slate-300 font-mono">
+{
+    "key": "API_KEY_ANDA",
+    "action": "add",
+    "service": "ID_LAYANAN",
+    "link": "target_url_pesanan",
+    "quantity": 1000
+}
+                </pre>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================================================
+                                FULL JAVASCRIPT CORE
+         ========================================================================= -->
+
+    <!-- BAGIAN 1: FIREBASE CORE & AUTENTIKASI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, orderBy, limit, runTransaction } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, orderBy, limit, runTransaction } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase Bosku
-        const firebaseConfig = { apiKey: "AIzaSyBLVj5a_RliAWNrF8_PayUie-VtZYLyeR0", authDomain: "projectssm-62b24.firebaseapp.com", projectId: "projectssm-62b24", storageBucket: "projectssm-62b24.firebasestorage.app", messagingSenderId: "213678313979", appId: "1:213678313979:web:737ee8efebdeac5442bb5e" };
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const googleProvider = new GoogleAuthProvider();
+        // Konfigurasi API Key Firebase Bosku
+        const firebaseConfig = {
+            apiKey: "AIzaSyBLVj5a_RliAWNrF8_PayUie-VtZYLyeR0",
+            authDomain: "projectssm-62b24.firebaseapp.com",
+            projectId: "projectssm-62b24",
+            storageBucket: "projectssm-62b24.firebasestorage.app",
+            messagingSenderId: "213678313979",
+            appId: "1:213678313979:web:737ee8efebdeac5442bb5e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
         
-        window.db = db; window.currentUserData = null; window.activeTicketId = null; window.unsubscribeChat = null; let userSnapshotUnsubscribe = null;
+        // Buat objek database & auth bisa diakses secara global oleh fungsi vanilla JS
+        window.db = db;
+        window.auth = auth;
+        window.currentUserData = null;
+        window.activeTicketId = null;
+        window.unsubscribeChat = null;
+        window.chatContext = 'user';
+        let userSnapshotUnsubscribe = null;
 
-        // Jam Realtime
+        // FITUR JAM REALTIME UNTUK DASHBOARD HOME
         setInterval(() => {
-            const now = new Date(); const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu']; const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            const now = new Date();
+            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
             const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} • ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} WIB`;
-            if(document.getElementById('dashHomeDate')) document.getElementById('dashHomeDate').innerText = dateStr;
+            
+            const homeDate = document.getElementById('dashHomeDate');
+            if(homeDate) homeDate.innerText = dateStr;
         }, 1000);
 
-        // Core Auth Listener
+        // DETEKSI URL UNTUK REFERRAL (Jika ada yang klik link invite)
+        const urlParams = new URLSearchParams(window.location.search);
+        const refParam = urlParams.get('ref');
+        if (refParam) { 
+            localStorage.setItem('katech_ref', refParam.toLowerCase()); 
+            window.history.replaceState({}, document.title, window.location.pathname); // Bersihkan URL bar
+        }
+        
+        const savedRef = localStorage.getItem('katech_ref');
+        if (savedRef) { 
+            const notifBox = document.getElementById('refNotification'); 
+            if(notifBox) { 
+                notifBox.innerHTML = `Diundang oleh <b>@${savedRef}</b>! Daftar untuk bonus Rp 1.000`; 
+                notifBox.classList.remove('hidden'); 
+            } 
+        }
+
+        // FUNGSI PLAY SOUND (Klakson CS Live Chat)
+        window.playNotifSound = function() { 
+            const audio = document.getElementById('csNotifSound'); 
+            if(audio) audio.play().catch(e => console.log('Autoplay browser dicegah')); 
+        };
+
+        // KENDALI PENUH STATUS LOGIN USER (Auth State Listener)
         onAuthStateChanged(auth, async (user) => {
+            const welcomeModal = document.getElementById('welcomeModal');
+            const appContent = document.getElementById('appContent');
+            const authLoadingState = document.getElementById('authLoadingState');
+            const authFormArea = document.getElementById('authFormArea');
+
             if (user) {
-                document.body.classList.remove('show-recaptcha');
-                const userRef = doc(db, "users", user.uid); let userDoc = await getDoc(userRef);
-                if (!userDoc.exists()) {
-                    const isOwner = (user.email === "marcurapikk@gmail.com"); const cleanUsername = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
-                    await setDoc(userRef, { name: user.displayName || "User", username: cleanUsername, email: user.email, role: isOwner ? 'owner' : 'user', level: isOwner ? 'Supreme 👑' : 'Bronze', balance: isOwner ? 999999999 : 0, totalSpent: 0, income: isOwner ? 89574843 : 0, cashout: isOwner ? 12500000 : 0, refCount: 0, refEarnings: 0 });
+                document.body.classList.remove('show-recaptcha'); // Sembunyikan reCAPTCHA google
+                
+                try {
+                    const userRef = doc(db, "users", user.uid);
+                    let userDoc = await getDoc(userRef);
+                    
+                    // Jika login pertama kali (belum ada data di Firestore)
+                    if (!userDoc.exists()) {
+                        const isOwner = (user.email === "marcurapikk@gmail.com");
+                        const cleanUsername = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
+                        
+                        await setDoc(userRef, { 
+                            name: user.displayName || "User", 
+                            username: cleanUsername, 
+                            email: user.email, 
+                            role: isOwner ? 'owner' : 'user', 
+                            level: isOwner ? 'Supreme 👑' : 'Bronze', 
+                            balance: isOwner ? 999999999 : 0, 
+                            totalSpent: 0, 
+                            income: isOwner ? 89574843 : 0, 
+                            cashout: isOwner ? 12500000 : 0, 
+                            refCount: 0, 
+                            refEarnings: 0 
+                        });
+                    }
+
+                    // Dengarkan perubahan data saldo dll secara Realtime (Auto Update)
+                    if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
+                    
+                    userSnapshotUnsubscribe = onSnapshot(userRef, (docSnap) => {
+                        if (docSnap.exists()) {
+                            window.currentUserData = { uid: user.uid, ...docSnap.data() };
+                            const d = window.currentUserData;
+                            
+                            // 1. Suntik Data ke SIDEBAR KIRI
+                            document.getElementById('sbUsername').innerHTML = `${d.name} <i class="fa-solid fa-circle-check text-blue-500 text-[10px] ${d.role === 'owner' ? '' : 'hidden'}"></i> <i class="fa-solid fa-pen-to-square text-[10px] text-slate-500 ml-1"></i>`;
+                            document.getElementById('sbBalance').innerText = `Rp ${window.formatRupiah(d.balance)}`;
+                            document.getElementById('sbLevel').innerText = d.level;
+                            
+                            const avatarEl = document.getElementById('sbAvatar');
+                            if(d.avatar) { 
+                                avatarEl.style.backgroundImage = `url(${d.avatar})`; 
+                                avatarEl.innerHTML = ''; 
+                            } else { 
+                                avatarEl.innerHTML = (d.name.charAt(0)).toUpperCase(); 
+                                avatarEl.style.backgroundImage = 'none'; 
+                            }
+
+                            // 2. Suntik Data ke HALAMAN UTAMA (Home)
+                            const homeName = document.getElementById('dashHomeName');
+                            if(homeName) homeName.innerText = d.name.split(' ')[0]; 
+                            
+                            const homeBalance = document.getElementById('dashHomeBalance');
+                            if(homeBalance) homeBalance.innerText = `Rp ${window.formatRupiah(d.balance)}`;
+                            
+                            const homeLevel = document.getElementById('dashHomeLevel');
+                            if(homeLevel) homeLevel.innerHTML = `<i class="fa-solid fa-crown"></i> ${d.level}`;
+
+                            const homeSpent = document.getElementById('dashHomeSpent');
+                            if(homeSpent) homeSpent.innerText = `Rp ${window.formatRupiah(d.totalSpent || 0)}`;
+
+                            const homeRef = document.getElementById('dashHomeRef');
+                            if(homeRef) homeRef.innerText = `Rp ${window.formatRupiah(d.refEarnings || 0)}`;
+
+                            // 3. Update text di Menu Referral
+                            document.getElementById('refLinkText').innerText = `https://katechhub.netlify.app/?ref=${d.username}`;
+                            document.getElementById('viewRefCount').innerText = d.refCount || 0;
+                            document.getElementById('viewRefEarnings').innerText = `Rp ${window.formatRupiah(d.refEarnings || 0)}`;
+
+                            // 4. Logika Buka Kunci Menu Admin Area (Owner)
+                            if(d.role === 'owner' || d.role === 'admin') {
+                                document.getElementById('adminMenuBox').classList.remove('hidden');
+                                document.getElementById('dashOwnerIncome').innerText = `Rp ${window.formatRupiah(d.income || 89574843)}`;
+                                document.getElementById('dashOwnerCashout').innerText = `Rp ${window.formatRupiah(d.cashout || 12500000)}`;
+                                
+                                // Setup Chart Grafik Pendapatan Admin
+                                if(!window.revenueChartInstance && document.getElementById('revenueChart')) {
+                                    const ctx = document.getElementById('revenueChart').getContext('2d');
+                                    window.revenueChartInstance = new Chart(ctx, {
+                                        type: 'line', 
+                                        data: { 
+                                            labels: ['Sen','Sel','Rab','Kam','Jum','Sab','Minggu'], 
+                                            datasets: [{ 
+                                                label: 'Pendapatan (Rp)', 
+                                                data: [4500000, 3200000, 5100000, 2900000, 3800000, 4200000, d.income || 8957484], 
+                                                borderColor: '#0EA5E9', 
+                                                backgroundColor: 'rgba(14, 165, 233, 0.2)', 
+                                                borderWidth: 2, fill: true, tension: 0.4 
+                                            }] 
+                                        },
+                                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font:{size:9}, callback: function(val) { return 'Rp ' + (val/1000000).toFixed(1) + 'M'; } } }, x: { grid: { display: false }, ticks: { color: '#94A3B8', font:{size:9} } } } }
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+                    // Muat riwayat transaksi jika fungsi sudah ada
+                    if(typeof window.renderDashboardHistory === 'function') {
+                        window.renderDashboardHistory();
+                    }
+
+                    // Tutup modal loading, tampilkan dashboard
+                    welcomeModal.classList.add('hidden'); 
+                    welcomeModal.classList.remove('flex');
+                    appContent.classList.remove('hidden');
+                    window.switchView('view-home');
+
+                } catch (err) { 
+                    window.showToast("Koneksi lambat memuat data server...", "error"); 
                 }
 
-                if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
-                userSnapshotUnsubscribe = onSnapshot(userRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        window.currentUserData = { uid: user.uid, ...docSnap.data() }; const d = window.currentUserData;
-                        
-                        document.getElementById('sbUsername').innerHTML = `${d.name} <i class="fa-solid fa-pen-to-square text-[10px] text-slate-500 ml-1"></i>`;
-                        document.getElementById('sbBalance').innerText = `Rp ${window.formatRupiah(d.balance)}`; document.getElementById('sbLevel').innerText = d.level;
-                        if(d.avatar) { document.getElementById('sbAvatar').style.backgroundImage = `url(${d.avatar})`; document.getElementById('sbAvatar').innerHTML = ''; } 
-                        
-                        if(document.getElementById('dashHomeName')) document.getElementById('dashHomeName').innerText = d.name.split(' ')[0]; 
-                        if(document.getElementById('dashHomeBalance')) document.getElementById('dashHomeBalance').innerText = `Rp ${window.formatRupiah(d.balance)}`;
-                        if(document.getElementById('dashHomeSpent')) document.getElementById('dashHomeSpent').innerText = `Rp ${window.formatRupiah(d.totalSpent || 0)}`;
-                        if(document.getElementById('dashHomeRef')) document.getElementById('dashHomeRef').innerText = `Rp ${window.formatRupiah(d.refEarnings || 0)}`;
-                        
-                        if(d.role === 'owner' || d.role === 'admin') {
-                            document.getElementById('adminMenuBox').classList.remove('hidden');
-                            if(document.getElementById('dashOwnerIncome')) document.getElementById('dashOwnerIncome').innerText = `Rp ${window.formatRupiah(d.income || 89574843)}`;
-                        }
-                    }
-                });
-                document.getElementById('welcomeModal').classList.add('hidden'); document.getElementById('welcomeModal').classList.remove('flex');
-                document.getElementById('appContent').classList.remove('hidden'); window.switchView('view-home');
             } else {
-                document.body.classList.add('show-recaptcha'); window.currentUserData = null; if(userSnapshotUnsubscribe) userSnapshotUnsubscribe();
-                document.getElementById('appContent').classList.add('hidden'); document.getElementById('authLoadingState').classList.add('hidden'); document.getElementById('authFormArea').classList.remove('hidden');
-                document.getElementById('welcomeModal').classList.remove('hidden'); document.getElementById('welcomeModal').classList.add('flex');
+                // JIKA BELUM LOGIN / LOGOUT
+                document.body.classList.add('show-recaptcha');
+                window.currentUserData = null; 
+                
+                if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
+                
+                appContent.classList.add('hidden');
+                authLoadingState.classList.add('hidden'); 
+                authFormArea.classList.remove('hidden');
+                
+                welcomeModal.classList.remove('hidden'); 
+                welcomeModal.classList.add('flex');
             }
         });
 
-        // Proses Login & Register Firebase (Sama seperti versi sebelumnya)
-        window.processLogin = async function() { const e=document.getElementById('loginUsername').value, p=document.getElementById('loginPassword').value; if(!e||!p)return window.alert("Isi form!"); try { await setPersistence(auth, browserLocalPersistence); await signInWithEmailAndPassword(auth, e, p); } catch(err) { window.alert("Login Gagal!"); } };
-        window.processGoogleLogin = async function() { try { await setPersistence(auth, browserLocalPersistence); await signInWithPopup(auth, googleProvider); } catch(e) { window.alert("Gagal Google Login"); } };
-        window.logout = async function() { await signOut(auth); location.reload(); };
-
-        // Proses Checkout Firebase untuk Quick Order Home
-        window.checkoutWithFirebase = async function(oCode, itemsTxt, totalHrg, payMethod) {
-            const ud = window.currentUserData; if (!ud) return { success: false, message: "Silakan login." };
+        // ================= KUMPULAN FUNGSI LOGIN & DAFTAR (TIDAK DIPENDEKKAN) =================
+        window.processGoogleLogin = async function() {
+            const btn = document.getElementById('btnGoogleLogin'); 
+            const ori = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengarahkan ke Google...'; 
+            btn.disabled = true;
+            
             try {
-                let sOrder = 'Belum Proses';
-                await runTransaction(db, async (t) => {
-                    const uRef = doc(db, "users", ud.uid); const uDoc = await t.get(uRef);
-                    if (payMethod === 'Saldo Akun') {
-                        if (uDoc.data().balance < totalHrg) throw new Error("Saldo akun tidak mencukupi!");
-                        t.update(uRef, { balance: increment(-totalHrg), totalSpent: increment(totalHrg) }); sOrder = 'Diproses';
+                await setPersistence(auth, browserLocalPersistence); 
+                const result = await signInWithPopup(auth, googleProvider); 
+                const user = result.user;
+                
+                const userDocRef = doc(db, "users", user.uid); 
+                const userDoc = await getDoc(userDocRef);
+                
+                // Jika baru pertama kali login Google, buat data di database
+                if(!userDoc.exists()) {
+                    const isOwner = (user.email === "marcurapikk@gmail.com"); 
+                    const cleanUsername = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const refCode = localStorage.getItem('katech_ref'); 
+                    
+                    let bal = isOwner ? 999999999 : 0; 
+                    let isReferral = false;
+                    
+                    // Beri bonus 1.000 jika mendaftar lewat link teman
+                    if (!isOwner && refCode && refCode !== cleanUsername) { 
+                        bal += 1000; 
+                        isReferral = true; 
                     }
-                    const nRef = doc(collection(db, "orders"));
-                    t.set(nRef, { code: oCode, date: new Date().toLocaleString('id-ID'), uid: ud.uid, username: ud.username, items: itemsTxt, target: document.getElementById('targetInputQuick').value || '-', total: Number(totalHrg), payment: payMethod, status: sOrder, createdAt: Date.now() });
+                    
+                    await setDoc(userDocRef, { 
+                        name: user.displayName || "Google User", 
+                        username: cleanUsername, 
+                        email: user.email, 
+                        role: isOwner ? 'owner' : 'user', 
+                        level: isOwner ? 'Supreme 👑' : 'Bronze', 
+                        avatar: user.photoURL || null, 
+                        totalSpent: 0, 
+                        balance: bal, 
+                        income: isOwner ? 89574843 : 0, 
+                        cashout: isOwner ? 12500000 : 0, 
+                        refCount: 0, 
+                        refEarnings: 0 
+                    });
+                    
+                    // Beri komisi ke yang mengundang
+                    if(isReferral) {
+                        await window.processReferrerBonus(refCode, cleanUsername); 
+                    }
+                    localStorage.removeItem('katech_ref'); // Hapus jejak
+                }
+            } catch(e) { 
+                window.alert("Gagal Login Google: " + e.message); 
+            } finally { 
+                btn.innerHTML = ori; 
+                btn.disabled = false; 
+            }
+        };
+
+        window.processRegister = async function() {
+            const name = document.getElementById('regName').value;
+            const uname = document.getElementById('regUsername').value.trim().toLowerCase().replace(/\s+/g,'');
+            const email = document.getElementById('regEmail').value.toLowerCase();
+            const pass = document.getElementById('regPassword').value;
+            
+            if(!name || !uname || !email || !pass) {
+                return window.alert("Harap isi semua form pendaftaran!");
+            }
+            
+            const btn = document.getElementById('btnRegister'); 
+            const ori = btn.innerHTML; 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mendaftarkan Akun...'; 
+            btn.disabled = true;
+            
+            // Verifikasi Google reCAPTCHA v3 untuk mencegah bot spam daftar
+            grecaptcha.ready(async function() {
+                try {
+                    const token = await grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', {action: 'register'}); 
+                    if(!token) throw new Error("Aktivitas bot terdeteksi!");
+                    
+                    // Cek apakah username sudah dipakai orang lain
+                    const q = query(collection(db, "users"), where("username", "==", uname)); 
+                    const snapshot = await getDocs(q); 
+                    if(!snapshot.empty) return window.alert("Username sudah digunakan orang lain!");
+                    
+                    // Buat Akun Auth Firebase
+                    const credential = await createUserWithEmailAndPassword(auth, email, pass); 
+                    const user = credential.user;
+                    
+                    const isOwner = (email === "marcurapikk@gmail.com"); 
+                    const refCode = localStorage.getItem('katech_ref'); 
+                    let bal = isOwner ? 999999999 : 0; 
+                    let isReferral = false;
+                    
+                    if (!isOwner && refCode && refCode !== uname) { 
+                        bal += 1000; 
+                        isReferral = true; 
+                    }
+                    
+                    // Simpan data pendaftaran ke Database Firestore
+                    await setDoc(doc(db, "users", user.uid), { 
+                        name: name, 
+                        username: uname, 
+                        email: email, 
+                        role: isOwner ? 'owner' : 'user', 
+                        level: isOwner ? 'Supreme 👑' : 'Bronze', 
+                        avatar: null, 
+                        totalSpent: 0, 
+                        balance: bal, 
+                        income: isOwner ? 89574843 : 0, 
+                        cashout: isOwner ? 12500000 : 0, 
+                        refCount: 0, 
+                        refEarnings: 0 
+                    });
+                    
+                    if(isReferral) {
+                        await window.processReferrerBonus(refCode, uname); 
+                    }
+                    localStorage.removeItem('katech_ref');
+                    
+                    window.alert("Pendaftaran Sukses! Anda akan diarahkan ke Dashboard.");
+                } catch(e) { 
+                    window.alert("Pendaftaran Gagal: " + e.message); 
+                } finally { 
+                    btn.innerHTML = ori; 
+                    btn.disabled = false; 
+                }
+            });
+        };
+
+        window.processLogin = async function() {
+            const email = document.getElementById('loginUsername').value;
+            const pass = document.getElementById('loginPassword').value;
+            
+            if(!email || !pass) return window.alert("Harap isi email dan password!");
+            
+            const btn = document.getElementById('btnLoginBtn'); 
+            const ori = btn.innerHTML; 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Autentikasi...'; 
+            btn.disabled = true;
+            
+            try { 
+                await setPersistence(auth, browserLocalPersistence); 
+                await signInWithEmailAndPassword(auth, email, pass); 
+            } catch(err) { 
+                window.alert("Gagal Login! Silakan cek kembali penulisan email dan password Anda."); 
+            } finally { 
+                btn.innerHTML = ori; 
+                btn.disabled = false; 
+            }
+        };
+
+        window.logout = async function() { 
+            await signOut(auth); 
+            location.reload(); 
+        };
+        
+        window.processResetPassword = async function() { 
+            const email = document.getElementById('forgotEmail').value; 
+            if(email) { 
+                try {
+                    await sendPasswordResetEmail(auth, email); 
+                    window.alert("Terkirim! Silakan cek inbox/spam email Anda untuk membuat password baru."); 
+                    window.switchAuthTab('formLogin');
+                } catch(e) {
+                    window.alert("Gagal: Email tidak ditemukan.");
+                }
+            } 
+        };
+
+        window.processReferrerBonus = async function(referrerUsername, newUsername) {
+            try { 
+                const q = query(collection(db, "users"), where("username", "==", referrerUsername)); 
+                const snapshot = await getDocs(q);
+                
+                if (!snapshot.empty) { 
+                    const id = snapshot.docs[0].id; 
+                    // Tambah saldo si pengundang 2000 perak
+                    await updateDoc(doc(db, "users", id), { 
+                        balance: increment(2000), 
+                        refCount: increment(1), 
+                        refEarnings: increment(2000) 
+                    });
+                    
+                    // Catat ke riwayat transaksinya sebagai bukti komisi
+                    await addDoc(collection(db, "orders"), { 
+                        code: `REF-${Date.now().toString().slice(-5)}`, 
+                        date: new Date().toLocaleString('id-ID'), 
+                        uid: id, 
+                        username: referrerUsername, 
+                        items: `Komisi Referral (Undang @${newUsername})`, 
+                        target: '-',
+                        total: 2000, 
+                        payment: 'Sistem Bonus', 
+                        status: 'Berhasil', 
+                        createdAt: Date.now() 
+                    });
+                }
+            } catch(e) {
+                console.error("Gagal beri komisi referral", e);
+            }
+        };
+
+        // ================= FITUR UBAH PROFIL & KONTROL ADMIN (OWNER) =================
+        window.handleAvatarUpload = async function(event) {
+            const file = event.target.files[0]; 
+            if(!file) return;
+            
+            const reader = new FileReader(); 
+            reader.onload = async (ev) => {
+                const base64Image = ev.target.result;
+                try { 
+                    await updateDoc(doc(db, "users", window.currentUserData.uid), { avatar: base64Image }); 
+                    window.showToast("Foto profil berhasil disimpan ke database!"); 
+                } catch(e) {
+                    window.alert("Gagal menyimpan foto. File mungkin terlalu besar.");
+                }
+            }; 
+            reader.readAsDataURL(file); // Konversi gambar jadi teks (Base64) agar ringan di database
+        };
+
+        window.editUserName = async function() {
+            const { value: newName } = await Swal.fire({ 
+                title: 'Ubah Nama', 
+                input: 'text', 
+                inputValue: window.currentUserData.name, 
+                background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', 
+                color: document.documentElement.classList.contains('dark') ? '#fff' : '#000', 
+                showCancelButton: true 
+            });
+            
+            if (newName && newName.trim() !== '') { 
+                await updateDoc(doc(db, "users", window.currentUserData.uid), { name: newName.trim() }); 
+                window.showToast("Nama panggilan berhasil diperbarui!"); 
+            }
+        };
+
+        // Fungsi Admin: Isi saldo manual ke member
+        window.adminAddBalance = async function() {
+            const email = document.getElementById('topupUserEmail').value.toLowerCase();
+            const amount = parseInt(document.getElementById('topupUserAmount').value);
+            
+            if(!email || isNaN(amount)) return window.alert("Isi kolom email dan nominal dengan benar.");
+            
+            const q = query(collection(db, "users"), where("email", "==", email)); 
+            const snapshot = await getDocs(q);
+            
+            if(snapshot.empty) return window.alert("Email tersebut tidak terdaftar di database.");
+            
+            for(let d of snapshot.docs) { 
+                await updateDoc(doc(db, "users", d.id), { balance: increment(amount) }); 
+                
+                // Tambahkan riwayat deposit ke akun user
+                await addDoc(collection(db, "orders"), { 
+                    code: `DEP-${Date.now().toString().slice(-5)}`, 
+                    date: new Date().toLocaleString('id-ID'), 
+                    uid: d.id, 
+                    username: d.data().username, 
+                    items: `Top-Up Saldo Manual (Oleh Admin)`, 
+                    target: '-',
+                    total: amount, 
+                    payment: 'Manual Admin', 
+                    status: 'Berhasil', 
+                    createdAt: Date.now() 
                 });
-                return { success: true, status: sOrder };
-            } catch (e) { return { success: false, message: e.message }; }
+
+                window.alert(`Sukses menambahkan Rp ${window.formatRupiah(amount)} ke akun ${email}`); 
+            }
+            
+            document.getElementById('topupUserAmount').value = ''; 
+            document.getElementById('topupUserEmail').value = '';
+        };
+        
+        // Fungsi Admin: Tarik tunai virtual (mengurangi angka Income)
+        window.processCashout = async function() {
+            const amount = parseInt(document.getElementById('cashoutAmount').value);
+            const bank = document.getElementById('cashoutBank').value;
+            
+            if(isNaN(amount) || amount <= 0) return window.alert("Nominal tarik tidak valid.");
+            if(amount > window.currentUserData.income) return window.alert("Saldo Pendapatan Anda tidak mencukupi untuk ditarik sejumlah itu.");
+            
+            await updateDoc(doc(db, "users", window.currentUserData.uid), { 
+                income: increment(-amount), 
+                cashout: increment(amount) 
+            });
+            
+            window.alert(`Laporan Tarik Tunai ke rekening ${bank} sebesar Rp ${window.formatRupiah(amount)} sukses dicatat.`); 
+            document.getElementById('cashoutAmount').value = '';
+        };
+
+        // ================= TRANSAKSI & RIWAYAT (FIREBASE ORDERS) =================
+        
+        // Jantung Pemrosesan Order Pembelian Saldo
+        window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
+            const userData = window.currentUserData; 
+            if (!userData) return { success: false, message: "Akses ditolak. Silakan login." };
+            
+            try {
+                let statusOrder = 'Belum Proses';
+                
+                // Transaksi Aman (Jika gagal di tengah jalan, saldo tidak akan kepotong)
+                await runTransaction(db, async (transaction) => {
+                    const userDocRef = doc(db, "users", userData.uid); 
+                    const userSnapshot = await transaction.get(userDocRef);
+                    
+                    if (paymentMethod === 'Saldo Akun') {
+                        if (userSnapshot.data().balance < totalHarga) {
+                            throw new Error("Maaf, Saldo akun Anda tidak mencukupi untuk transaksi ini.");
+                        }
+                        // Kurangi Saldo, Tambah Angka Pengeluaran Total User
+                        transaction.update(userDocRef, { 
+                            balance: increment(-totalHarga), 
+                            totalSpent: increment(totalHarga) 
+                        }); 
+                        statusOrder = 'Diproses'; // Otomatis diproses jika pakai saldo
+                    }
+                    
+                    // Simpan data order
+                    const newOrderRef = doc(collection(db, "orders"));
+                    transaction.set(newOrderRef, { 
+                        code: orderCode, 
+                        date: new Date().toLocaleString('id-ID'), 
+                        uid: userData.uid, 
+                        username: userData.username, 
+                        items: itemsText, 
+                        
+                        // Menangkap target dari form mana yang dipakai (Traditional atau Quick Order)
+                        target: (document.getElementById('targetInputQuick') && document.getElementById('targetInputQuick').value !== "") 
+                                ? document.getElementById('targetInputQuick').value 
+                                : (document.getElementById('mainTargetInput') ? document.getElementById('mainTargetInput').value : '-'), 
+                        
+                        total: Number(totalHarga), 
+                        payment: paymentMethod, 
+                        status: statusOrder, 
+                        createdAt: Date.now() 
+                    });
+                });
+                
+                return { success: true, status: statusOrder };
+
+            } catch (error) { 
+                return { success: false, message: error.message }; 
+            }
+        };
+
+        // Fungsi Render List HTML Riwayat di View-History
+        window.renderDashboardHistory = async function() {
+            const userData = window.currentUserData; 
+            if(!userData) return;
+            
+            const container = document.getElementById('dashboardHistoryItems');
+            
+            try {
+                // Admin bisa lihat riwayat seluruh user, User biasa hanya riwayat dirinya (Max 50)
+                let queryOrders = (userData.role === 'owner' || userData.role === 'admin') 
+                    ? query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(50)) 
+                    : query(collection(db, "orders"), where("uid", "==", userData.uid), orderBy("createdAt", "desc"), limit(30));
+                
+                const snapshot = await getDocs(queryOrders); 
+                let ordersArray = []; 
+                
+                snapshot.forEach((doc) => { 
+                    ordersArray.push({ id: doc.id, ...doc.data() }); 
+                });
+                
+                // Update angka jumlah order di Halaman Riwayat & Halaman Home Utama
+                document.getElementById('dashTotalOrders').innerText = `${ordersArray.length} Transaksi`; 
+                const homeOrderCount = document.getElementById('dashHomeOrderCount');
+                if(homeOrderCount) homeOrderCount.innerText = ordersArray.length;
+
+                container.innerHTML = '';
+                
+                if(ordersArray.length === 0) { 
+                    container.innerHTML = `<div class="p-6 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-xl"><p class="text-xs text-slate-500">Belum ada riwayat transaksi sama sekali.</p></div>`; 
+                    return; 
+                }
+
+                ordersArray.forEach(order => {
+                    // Penentuan warna label status
+                    let colorClass = order.status === 'Diproses' ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400' 
+                                   : (order.status === 'Selesai' || order.status === 'Berhasil' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' 
+                                   : 'bg-slate-200 text-slate-600 dark:bg-slate-500/20 dark:text-slate-400');
+                    
+                    // Admin bisa ubah status, User cuma bisa lihat text mati
+                    let statusElement = (order.payment === 'Sistem Bonus' || order.payment === 'Manual Admin' || userData.role === 'user') 
+                        ? `<span class="px-2 py-0.5 rounded text-[9px] font-bold ${colorClass}">${order.status}</span>` 
+                        : `<select onchange="updateOrderStatusFirebase('${order.id}', this.value)" class="bg-white dark:bg-[#070D19] border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white rounded text-[9px] px-1 py-0.5 shadow-sm">
+                            <option value="Belum Proses" ${order.status === 'Belum Proses' ? 'selected' : ''}>Belum Proses</option>
+                            <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
+                            <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
+                           </select>`;
+                           
+                    // Tombol cetak Struk (Invoice) jika bukan Bonus
+                    let invoiceButton = `<button onclick="openInvoice('${order.code}','${order.date}','${order.username}','${order.status}','${order.payment}','${order.items}',${order.total})" class="text-[9px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded hover:bg-primary/20 transition ml-2"><i class="fa-solid fa-print"></i> Struk</button>`;
+                    
+                    container.innerHTML += `
+                        <div class="bg-lightcard dark:bg-darkcard p-4 rounded-xl border border-slate-200 dark:border-slate-800 mb-3 hover:border-primary/50 dark:hover:border-primary/50 transition shadow-sm">
+                            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700/50 pb-2 mb-3">
+                                <div class="flex items-center"><span class="font-mono text-primary font-bold text-[10px] bg-primary/5 px-2 py-0.5 rounded border border-primary/20">#${order.code}</span> ${(order.payment !== 'Sistem Bonus' && order.payment !== 'Manual Admin') ? invoiceButton : ''}</div>
+                                ${statusElement}
+                            </div>
+                            <p class="text-[11px] font-medium text-slate-800 dark:text-slate-200 mb-2 leading-relaxed"><i class="fa-solid fa-box text-[9px] text-slate-400 mr-1"></i> ${order.items}</p>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mb-3 break-all"><i class="fa-solid fa-link text-[9px] mr-1"></i> Target: <span class="text-primary">${order.target || '-'}</span></p>
+                            
+                            <div class="flex justify-between items-end pt-2 border-t border-slate-100 dark:border-slate-700/50">
+                                <span class="text-[9px] text-slate-500">${order.date} <br> <span class="font-bold">By: @${order.username}</span></span>
+                                <div class="text-right">
+                                    <span class="block text-[8px] uppercase font-bold text-slate-400 mb-0.5">Total Bayar (${order.payment})</span>
+                                    <span class="font-extrabold text-[12px] text-slate-800 dark:text-white">Rp ${window.formatRupiah(order.total)}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            } catch(e) { 
+                container.innerHTML = '<p class="text-red-500 text-xs">Error memuat riwayat dari server Firebase.</p>'; 
+            }
+        };
+
+        // Fungsi API ganti status dari Dropdown Admin
+        window.updateOrderStatusFirebase = async function(docId, newStatus) { 
+            try {
+                await updateDoc(doc(db, "orders", docId), { status: newStatus }); 
+                window.showToast(`Status berhasil diubah menjadi ${newStatus}`);
+            } catch(e) { window.alert("Gagal update status"); }
+        };
+
+        // ================= FITUR LIVE CHAT CS (REALTIME FIREBASE) =================
+        window.openChatWidget = async function() {
+            if(!window.currentUserData) return window.alert("Silakan login."); 
+            
+            // Sembunyikan badge jika ada
+            document.getElementById('globalChatBadge').classList.add('hidden');
+            
+            // Set konteks kita yang membalas adalah "user"
+            window.chatContext = 'user'; 
+            
+            const modal = document.getElementById('liveChatModal'); 
+            modal.classList.remove('hidden'); 
+            modal.classList.add('flex');
+            
+            // Cek apakah user sudah pernah buka tiket bantuan sebelumnya
+            const q = query(collection(db, "tickets"), where("uid", "==", window.currentUserData.uid)); 
+            const snapshot = await getDocs(q);
+            
+            if (!snapshot.empty) {
+                // Jika sudah punya tiket, subscribe agar pesannya muncul
+                window.subscribeToChat(snapshot.docs[0].id, false);
+            }
+        };
+        
+        window.closeChatModal = function() { 
+            const modal = document.getElementById('liveChatModal');
+            modal.classList.add('hidden'); 
+            modal.classList.remove('flex'); 
+            // Matikan proses mendengarkan database untuk hemat data
+            if(window.unsubscribeChat) window.unsubscribeChat(); 
+        };
+        
+        // Jantung sinkronisasi Chat antar Hp
+        window.subscribeToChat = function(ticketId, isAdminMode = false) {
+            window.activeTicketId = ticketId; 
+            const chatArea = document.getElementById('chatMessagesArea'); 
+            
+            if(window.unsubscribeChat) window.unsubscribeChat();
+            
+            // Fungsi onSnapshot akan ter-trigger 0.1 detik setiap ada pesan baru di Database
+            window.unsubscribeChat = onSnapshot(doc(db, "tickets", ticketId), (docSnapshot) => {
+                if (docSnapshot.exists()) {
+                    const data = docSnapshot.data(); 
+                    chatArea.innerHTML = '';
+                    
+                    // Ganti judul modal jika admin yang balas
+                    if (isAdminMode) {
+                        document.getElementById('chatHeaderTitle').innerText = `Membantu: ${data.userName}`;
+                    }
+
+                    if(!data.messages || data.messages.length === 0) {
+                        chatArea.innerHTML = `<div class="text-center text-[10px] text-slate-500 my-4">Kirimkan keluhan pesanan atau pertanyaan Anda di bawah. Admin akan membalas.</div>`;
+                        return;
+                    }
+                    
+                    data.messages.forEach(msg => {
+                        // Tentukan apakah bubble chat di kanan (Saya) atau kiri (Lawan bicara)
+                        const isMe = isAdminMode ? msg.sender === 'admin' : msg.sender === 'user';
+                        
+                        // Konversi timestamp chat
+                        const timeStr = new Date(msg.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+                        if(isMe) {
+                            // Bubble Kanan (Pesan Saya)
+                            chatArea.innerHTML += `
+                                <div class="w-full flex justify-end">
+                                    <div class="chat-bubble-user p-2.5 shadow-md">
+                                        <p class="text-[11px] leading-relaxed">${msg.text}</p>
+                                        <span class="text-[8px] text-blue-100 block text-right mt-1">${timeStr}</span>
+                                    </div>
+                                </div>`;
+                        } else {
+                            // Bubble Kiri (Balasan)
+                            chatArea.innerHTML += `
+                                <div class="w-full flex justify-start">
+                                    <div class="chat-bubble-admin p-2.5 shadow-md">
+                                        <span class="text-[8px] text-primary font-bold block mb-0.5">${isAdminMode ? data.userName : "Admin KATECH HUB"}</span>
+                                        <p class="text-[11px] leading-relaxed text-slate-800 dark:text-slate-200">${msg.text}</p>
+                                        <span class="text-[8px] text-slate-500 block text-right mt-1">${timeStr}</span>
+                                    </div>
+                                </div>`;
+                        }
+                    }); 
+                    
+                    // Auto scroll layar chat ke paling bawah
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }
+            });
+        };
+        
+        window.sendChatMessage = async function() {
+            const inputEl = document.getElementById('chatInputMessage');
+            const text = inputEl.value.trim(); 
+            if(!text) return; 
+            
+            inputEl.value = ''; // Kosongkan box ketik
+            
+            const newMessage = { 
+                sender: window.chatContext === 'admin' ? 'admin' : 'user', 
+                text: text, 
+                timestamp: Date.now() 
+            };
+            
+            if (window.activeTicketId) {
+                // Tiket sudah ada, tinggal tambah array ke dalamnya (arrayUnion)
+                await updateDoc(doc(db, "tickets", window.activeTicketId), { 
+                    messages: arrayUnion(newMessage), 
+                    updatedAt: Date.now() 
+                });
+            } else { 
+                // Tiket belum ada (Pertama kali chat), buat data Dokumen Baru di Firebase
+                const newTicket = await addDoc(collection(db, "tickets"), { 
+                    uid: window.currentUserData.uid, 
+                    userName: window.currentUserData.name, 
+                    status: 'open', 
+                    messages: [newMessage], 
+                    createdAt: Date.now(), 
+                    updatedAt: Date.now() 
+                }); 
+                // Langsung nyalakan fungsi sinkronisasi (Dengar chat masuk)
+                window.subscribeToChat(newTicket.id, false); 
+            }
         };
     </script>
 
-    <!-- ==================== JAVASCRIPT UI VANILLA & LOGIKA ORDER BARU ==================== -->
+    <!-- =========================================================================
+                                FULL JAVASCRIPT UI & LOGIC API
+         ========================================================================= -->
     <script>
-        const WA_NUMBER = "6281312185600"; let cart = []; let selectedProduct = null; let products = []; 
+        const WA_NUMBER = "6281312185600"; 
+        let cart = JSON.parse(localStorage.getItem('katech_cart')) || []; 
+        let selectedProduct = null; 
+        let products = []; 
 
+        // Fungsi Global
         window.formatRupiah = function(num) { return new Intl.NumberFormat('id-ID').format(num || 0); };
-        window.alert = function(msg) { Swal.fire({ title: 'Info', text: msg, icon: msg.toLowerCase().includes('gagal')?'error':'success', background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', color: document.documentElement.classList.contains('dark') ? '#fff' : '#000', confirmButtonColor: '#0EA5E9' }); };
+        window.alert = function(msg) { 
+            Swal.fire({ 
+                title: 'Info', text: msg, icon: msg.toLowerCase().includes('gagal') ? 'error' : 'success', 
+                background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', 
+                color: document.documentElement.classList.contains('dark') ? '#fff' : '#1e293b', 
+                confirmButtonColor: '#0EA5E9' 
+            }); 
+        };
+        window.showToast = function(msg) { 
+            const container = document.getElementById('toastContainer'); 
+            const toast = document.createElement('div'); 
+            toast.className = `bg-lightcard dark:bg-darkcard border border-slate-200 dark:border-slate-700 p-3 rounded-lg shadow-2xl flex items-center gap-2 toast-slide text-xs text-slate-800 dark:text-white z-[99999] font-bold`; 
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-primary text-lg"></i><span>${msg}</span>`; 
+            container.appendChild(toast); 
+            setTimeout(() => toast.remove(), 4000); 
+        };
         
-        // --- FITUR TEMA TERANG / GELAP (DARK/LIGHT MODE) ---
-        function toggleTheme() {
+        // --- FITUR DARK MODE / LIGHT MODE ---
+        window.toggleTheme = function() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
+            
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
                 icon.classList.replace('fa-moon', 'fa-sun');
@@ -591,61 +1668,140 @@
                 localStorage.setItem('theme', 'dark');
             }
         }
-        // Set tema awal saat load
-        if (localStorage.getItem('theme') === 'light') { document.documentElement.classList.remove('dark'); document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun'); }
+        
+        // Otomatis terapkan tema yang tersimpan di HP User saat web dibuka
+        if (localStorage.getItem('theme') === 'light') { 
+            document.documentElement.classList.remove('dark'); 
+            document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun'); 
+        }
 
         // --- SISTEM SEDOT API DJURAGAN (H2H) ---
         window.fetchSMMProducts = async function() {
             try {
-                // Saat proses testing/tampil awal karena backend kosong, kita buat simulasi data dummy elegan
-                // Nanti saat fetch('/.netlify/functions/api') sudah berhasil di-deploy Bosku, data ini akan terganti otomatis.
-                const dummyData = [
-                    { id: 1, name: "Instagram Followers [High Quality] - Instan", category: "Instagram", price: 15000, unit: "/1K", min: 100, max: 10000, desc: "Followers real aktif, proses cepat 5 menit masuk." },
-                    { id: 2, name: "Instagram Likes VIP [Real Indonesia]", category: "Instagram", price: 8000, unit: "/1K", min: 50, max: 5000, desc: "Like dari akun Indonesia." },
-                    { id: 3, name: "TikTok Views [FYP Server] - Max 1M", category: "TikTok", price: 2000, unit: "/1K", min: 1000, max: 1000000, desc: "View video masuk FYP dengan cepat." },
-                    { id: 4, name: "YouTube Subscribers [No Drop 30 Days]", category: "YouTube", price: 450000, unit: "/1K", min: 100, max: 2000, desc: "Garansi tidak turun 30 hari." },
-                    { id: 5, name: "Free Fire 720 Diamonds", category: "Games", price: 95000, unit: "/1", min: 1, max: 5, desc: "Proses topup via ID Game." }
+                // Tembak request ke Backend Server Netlify yang telah kita buat (v1.js atau api.js)
+                const res = await fetch('/.netlify/functions/api', { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'services' }) 
+                });
+                
+                // Jika API belum siap atau error limit, fallback otomatis ke Data Dummy
+                if(!res.ok) throw new Error("API Backend belum siap atau error");
+                
+                const data = await res.json();
+                
+                if(Array.isArray(data) && data.length > 0) {
+                    products = data.map(i => {
+                        let hargaPusat = parseFloat(i.rate); 
+                        // Sistem Markup Keuntungan Dinamis
+                        let markup = 0;
+                        if(hargaPusat < 50000) markup = 5000;
+                        else if(hargaPusat < 200000) markup = 10000;
+                        else if(hargaPusat < 700000) markup = 25000;
+                        else markup = 50000;
+
+                        return { 
+                            id: i.service, 
+                            name: i.name, 
+                            category: i.category, 
+                            price: Math.round(hargaPusat + markup), 
+                            unit: "/1K", 
+                            min: parseInt(i.min) || 100, 
+                            max: parseInt(i.max) || 10000, 
+                            desc: i.desc ? `Info Server: ${i.desc}` : 'Proses auto instan by system.' 
+                        };
+                    });
+                    console.log("Berhasil sedot layanan dari pusat:", products.length);
+                } else {
+                    throw new Error("Data kosong dari Provider");
+                }
+            } catch(e) { 
+                console.warn("Menggunakan Data Backup Layanan (Server API Netlify offline)", e); 
+                // Dummy Data agar web tetap cantik terlihat dan bisa ditest
+                products = [
+                    { id: 1, name: "Instagram Followers [High Quality] - Instan", category: "Instagram", price: 15000, unit: "/1K", min: 100, max: 10000, desc: "Followers real aktif, proses cepat 5 menit masuk. Garansi 30 Hari." },
+                    { id: 2, name: "Instagram Likes VIP [Real Indonesia]", category: "Instagram", price: 8000, unit: "/1K", min: 50, max: 5000, desc: "Like murni akun Indonesia." },
+                    { id: 3, name: "TikTok Views [FYP Server] - Max 1M", category: "TikTok", price: 2000, unit: "/1K", min: 1000, max: 1000000, desc: "View video masuk FYP TikTok Global." },
+                    { id: 4, name: "YouTube Subscribers [No Drop 30 Days]", category: "YouTube", price: 450000, unit: "/1K", min: 100, max: 2000, desc: "Garansi tidak turun (No Drop) 30 hari. Proses perlahan agar aman." },
+                    { id: 5, name: "Free Fire 720 Diamonds", category: "Games", price: 95000, unit: "/1", min: 1, max: 5, desc: "Proses topup via ID Game FF Anda." }
                 ];
-                products = dummyData; // Gunakan data asli (H2H) bila API siap.
-                console.log("Produk berhasil dimuat:", products.length);
-            } catch(e) { console.error("Gagal menarik data", e); }
+            }
+            
+            // Re-inisialisasi semua dropdown form
+            window.initCategoryDropdown(); 
         };
 
-        // --- LOGIKA QUICK ORDER (DI HALAMAN UTAMA) ALAA DJURAGAN ---
+        // --- SISTEM PENCARIAN (SEARCH BAR PREMIUM DI HOME) ---
+        window.searchServices = function(keyword) {
+            if(keyword.length < 2) return; // Syarat mencari harus 2 huruf minimal
+            
+            const section = document.getElementById('quickOrderSection');
+            document.getElementById('quickOrderTitle').innerText = `Pencarian: "${keyword}"`;
+            
+            // Animasi turun form order
+            section.classList.add('active');
+            
+            const filtered = products.filter(p => p.name.toLowerCase().includes(keyword.toLowerCase())); 
+            
+            const listHtml = filtered.map(p => 
+                `<div class="dropdown-item px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer group" onclick="selectServiceQuick('${p.id}')">
+                    <div class="text-[11px] text-slate-700 dark:text-slate-200 group-hover:text-primary line-clamp-2">${p.name} <span class="text-[8px] bg-primary/10 border border-primary/20 text-primary px-1.5 py-0.5 rounded ml-1 font-bold">${p.category}</span></div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 font-extrabold">Rp ${window.formatRupiah(p.price)}</div>
+                </div>`
+            ).join(''); 
+            
+            document.getElementById('servListQuick').innerHTML = filtered.length > 0 ? listHtml : `<div class="p-4 text-xs text-slate-500 text-center font-bold">Layanan tidak ditemukan.</div>`;
+            
+            // Auto click layanan pertama
+            if(filtered.length > 0) window.selectServiceQuick(filtered[0].id);
+        };
+
+        // --- LOGIKA QUICK ORDER SLIDE-DOWN (DI HALAMAN UTAMA) ---
         window.openQuickOrder = function(categoryName) {
             const section = document.getElementById('quickOrderSection');
             document.getElementById('quickOrderTitle').innerText = categoryName;
             
-            // Buka area (Animasi turun)
+            // Buka area menu order
             section.classList.add('active');
             
-            // Scroll ke form secara smooth
+            // Scroll otomatis biar layarnya pas di tengah user (halus)
             setTimeout(() => { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
 
-            // Filter layanan khusus kategori yang di-klik
-            const filtered = products.filter(p => p.category.toLowerCase().includes(categoryName.toLowerCase()) || categoryName === 'Semua'); 
+            const filtered = products.filter(p => p.category.toLowerCase().includes(categoryName.toLowerCase())); 
             
             const listHtml = filtered.map(p => 
-                `<div class="dropdown-item px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer group" onclick="selectServiceQuick('${p.id}')">
-                    <div class="text-[11px] text-slate-700 dark:text-slate-200 group-hover:text-primary line-clamp-2">${p.name}</div>
-                    <div class="text-[10px] text-emerald-500 mt-1 font-bold">Rp ${window.formatRupiah(p.price)}</div>
+                `<div class="dropdown-item px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer group transition" onclick="selectServiceQuick('${p.id}')">
+                    <div class="text-[11px] text-slate-700 dark:text-slate-200 group-hover:text-primary line-clamp-2 font-medium">${p.name}</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 font-extrabold">Rp ${window.formatRupiah(p.price)}</div>
                 </div>`
             ).join(''); 
             
-            document.getElementById('servListQuick').innerHTML = listHtml;
+            document.getElementById('servListQuick').innerHTML = filtered.length > 0 ? listHtml : `<div class="p-4 text-xs text-slate-500 font-bold text-center">API Layanan kosong di kategori ini.</div>`;
             
-            // Auto pilih layanan pertama jika ada
             if(filtered.length > 0) window.selectServiceQuick(filtered[0].id);
-            else document.getElementById('servSelectedTextQuick').innerText = "Layanan kosong di kategori ini.";
+            else {
+                document.getElementById('servSelectedTextQuick').innerText = "Tidak ada layanan.";
+                document.getElementById('selectedDescQuick').innerText = "Belum disinkronisasi server.";
+            }
         };
 
         window.closeQuickOrder = function() {
             document.getElementById('quickOrderSection').classList.remove('active');
+            document.getElementById('searchServiceInput').value = ''; // Reset Search bar
         };
 
-        window.toggleCustomSelect = function(id, e) { e.stopPropagation(); document.getElementById(id).classList.toggle('hidden'); };
-        document.addEventListener('click', () => { if(document.getElementById('servListQuick')) document.getElementById('servListQuick').classList.add('hidden'); });
+        window.toggleCustomSelect = function(id, e) { 
+            e.stopPropagation(); 
+            document.getElementById(id).classList.toggle('hidden'); 
+        };
+        
+        // Klik sembarang untuk menutup Dropdown
+        document.addEventListener('click', () => { 
+            if(document.getElementById('servListQuick')) document.getElementById('servListQuick').classList.add('hidden'); 
+            if(document.getElementById('catList')) document.getElementById('catList').classList.add('hidden'); 
+            if(document.getElementById('servList')) document.getElementById('servList').classList.add('hidden'); 
+        });
 
+        // Event saat List Quick Order diklik
         window.selectServiceQuick = function(id) { 
             selectedProduct = products.find(p => p.id == id); 
             if (selectedProduct) { 
@@ -658,6 +1814,7 @@
             } 
         };
 
+        // Event Realtime Hitung Harga (Quick Order)
         window.calculateTotalQuick = function() { 
             if (!selectedProduct) return; 
             const q = parseFloat(document.getElementById('qtyInputQuick').value) || 0; 
@@ -665,85 +1822,371 @@
             document.getElementById('totalCalcQuick').innerText = `Rp ${window.formatRupiah(Math.round(total))}`; 
         };
 
-        // --- SISTEM PENCARIAN (SEARCH BAR) ---
-        window.searchServices = function(keyword) {
-            if(keyword.length < 2) return;
-            const section = document.getElementById('quickOrderSection');
-            document.getElementById('quickOrderTitle').innerText = `Pencarian: "${keyword}"`;
-            section.classList.add('active');
-
-            const filtered = products.filter(p => p.name.toLowerCase().includes(keyword.toLowerCase())); 
-            
-            const listHtml = filtered.map(p => 
-                `<div class="dropdown-item px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer group" onclick="selectServiceQuick('${p.id}')">
-                    <div class="text-[11px] text-slate-700 dark:text-slate-200 group-hover:text-primary line-clamp-2">${p.name} <span class="text-[8px] bg-primary/20 text-primary px-1 rounded ml-1">${p.category}</span></div>
-                    <div class="text-[10px] text-emerald-500 mt-1 font-bold">Rp ${window.formatRupiah(p.price)}</div>
-                </div>`
-            ).join(''); 
-            
-            document.getElementById('servListQuick').innerHTML = filtered.length > 0 ? listHtml : `<div class="p-4 text-xs text-slate-500">Layanan tidak ditemukan.</div>`;
-            if(filtered.length > 0) window.selectServiceQuick(filtered[0].id);
-        };
-
-        // --- PROSES TOMBOL PESAN SEKARANG ---
+        // PROSES PESAN LANGSUNG DARI HALAMAN HOME
         window.processQuickOrder = async function() {
             if (!selectedProduct) return window.alert("Pilih layanan terlebih dahulu!");
+            
             const target = document.getElementById('targetInputQuick').value.trim();
             const qty = parseInt(document.getElementById('qtyInputQuick').value);
             const pay = document.getElementById('paySelectQuick').value;
             
-            if (target === "") return window.alert("Harap isi Target pesanan!");
-            if (isNaN(qty) || qty < selectedProduct.min || qty > selectedProduct.max) return window.alert(`Jumlah harus di antara ${selectedProduct.min} dan ${selectedProduct.max}!`);
+            if (target === "") return window.alert("Harap isi link target pesanan pada kotak yang disediakan!");
+            if (isNaN(qty) || qty < selectedProduct.min || qty > selectedProduct.max) return window.alert(`Order gagal! Jumlah harus di antara rentang ${window.formatRupiah(selectedProduct.min)} dan ${window.formatRupiah(selectedProduct.max)}.`);
             
             let total = Math.round(selectedProduct.unit.includes('/1K') ? (qty/1000) * selectedProduct.price : qty * selectedProduct.price);
             
             const conf = await Swal.fire({ 
                 title: 'Konfirmasi Pesanan', 
-                html: `<div class="text-left bg-slate-100 dark:bg-[#070D19] p-4 rounded border border-slate-200 dark:border-slate-700 text-xs">
-                        <b class="text-slate-800 dark:text-white block mb-2">${selectedProduct.name}</b>
-                        Target: <b class="text-primary">${target}</b><br>Jumlah: <b>${window.formatRupiah(qty)}</b><br><br>Total: <b class="text-emerald-500 text-sm">Rp ${window.formatRupiah(total)}</b>
+                html: `<div class="text-left bg-slate-100 dark:bg-[#070D19] p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs shadow-inner">
+                        <b class="text-slate-800 dark:text-white block mb-3 text-sm leading-snug">${selectedProduct.name}</b>
+                        <div class="space-y-1 text-slate-600 dark:text-slate-300">
+                            <div>Target Data: <b class="text-primary font-mono bg-primary/10 px-1 rounded">${target}</b></div>
+                            <div>Jumlah: <b class="text-slate-800 dark:text-white">${window.formatRupiah(qty)}</b></div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-300 dark:border-slate-700">
+                            <span class="block text-slate-500 uppercase tracking-wider font-bold mb-0.5" style="font-size:10px">Total Potongan Saldo</span>
+                            <b class="text-emerald-600 dark:text-emerald-400 text-xl block">Rp ${window.formatRupiah(total)}</b>
+                        </div>
                        </div>`, 
-                showCancelButton: true, background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', color: document.documentElement.classList.contains('dark') ? '#fff' : '#000', confirmButtonColor: '#0EA5E9' 
+                showCancelButton: true, confirmButtonText: "Ya, Beli", cancelButtonText: "Batal",
+                background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', 
+                color: document.documentElement.classList.contains('dark') ? '#fff' : '#1e293b', 
+                confirmButtonColor: '#0EA5E9' 
             });
             
             if(conf.isConfirmed) {
-                Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+                // Tampilkan Loading
+                Swal.fire({ title: 'Menyambungkan ke Server...', allowOutsideClick: false, background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', color: document.documentElement.classList.contains('dark') ? '#fff' : '#000', didOpen: () => { Swal.showLoading(); } });
+                
                 const code = `KATH-${Date.now().toString().slice(-6)}`; 
                 const itemTxt = `${window.formatRupiah(qty)}x ${selectedProduct.name}`;
                 
-                // Gunakan fungsi Firebase yang dideklarasi di script atas
+                // Gunakan fungsi Database Firebase
                 const res = await window.checkoutWithFirebase(code, itemTxt, total, pay); 
                 
-                if(!res.success) return window.alert(res.message);
+                if(!res.success) return window.alert("Transaksi Ditolak: " + res.message);
                 
                 if(pay === 'Saldo Akun') { 
-                    Swal.fire('Berhasil!', 'Order instan diproses.', 'success'); 
+                    // Tembak API aslinya ke backend jika pakai saldo (opsional)
+                    try { fetch('/.netlify/functions/api', { method: 'POST', body: JSON.stringify({ action: 'add', service: selectedProduct.id, link: target, quantity: qty }) }).catch(e=>{}); } catch(e){}
+                    
+                    Swal.fire({ title: 'Berhasil!', text: 'Order instan otomatis dikirim ke Provider Pusat.', icon: 'success', background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', color: document.documentElement.classList.contains('dark') ? '#fff' : '#000' }); 
+                    
                     document.getElementById('targetInputQuick').value = ''; 
                     window.closeQuickOrder();
                     window.switchView('view-history'); 
                 } else { 
                     Swal.close(); 
-                    const msg = `Halo Admin\nOrder: #${code}\nProduk: ${selectedProduct.name}\nTarget: ${target}\nTotal: Rp ${window.formatRupiah(total)}\nVia: ${pay}`; 
+                    const msg = `Halo Admin KATECH HUB\nSaya mau order layanan:\n\nOrder ID: #${code}\nProduk: ${selectedProduct.name}\nTarget: ${target}\nTotal: Rp ${window.formatRupiah(total)}\nBayar Lewat: ${pay}`; 
                     window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank'); 
+                    window.closeQuickOrder();
                     window.switchView('view-history'); 
                 }
             }
         };
 
-        // Jalankan Script saat web dibuka
-        window.onload = function() { 
-            window.fetchSMMProducts(); 
+        // --- SISTEM ORDER TRADISIONAL (VIEW-ORDER LAMA & MASSAL) ---
+        // (Tetap dipertahankan agar fungsi Mass Order tidak hilang)
+        window.initCategoryDropdown = function() { 
+            const cat = [...new Set(products.map(p => p.category))]; 
+            const cL = document.getElementById('catList'); 
+            if(!cL) return; 
+            
+            cL.innerHTML = cat.map(c => 
+                `<div class="dropdown-item px-4 py-3 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer" onclick="selectCategory('${c.replace(/'/g, "\\'")}')">${c.toUpperCase()}</div>`
+            ).join(''); 
+            
+            if(cat.length > 0) window.selectCategory(cat[0]); 
         };
         
-        // Logika sederhana pindah view (Navigasi Sidebar)
-        window.toggleSidebar = function() { const sb = document.getElementById('sidebarMenu'); const ov = document.getElementById('sidebarOverlay'); if(sb.classList.contains('-translate-x-full')) { sb.classList.remove('-translate-x-full'); ov.classList.remove('hidden'); } else { sb.classList.add('-translate-x-full'); ov.classList.add('hidden'); } };
+        window.selectCategory = function(cat) {
+            document.getElementById('catSelectedText').innerText = cat.toUpperCase();
+            const filtered = products.filter(p => p.category === cat); 
+            
+            document.getElementById('servList').innerHTML = filtered.map(p => 
+                `<div class="dropdown-item px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer group" onclick="selectService('${p.id}')">
+                    <div class="text-[11px] text-slate-700 dark:text-slate-200 group-hover:text-primary line-clamp-2">${p.name}</div>
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5 font-bold">Rp ${window.formatRupiah(p.price)}</div>
+                </div>`
+            ).join(''); 
+            
+            if(filtered.length > 0) window.selectService(filtered[0].id);
+        };
+        
+        window.selectService = function(id) { 
+            selectedProduct = products.find(p => p.id == id); 
+            if (selectedProduct) { 
+                document.getElementById('servSelectedText').innerText = selectedProduct.name;
+                document.getElementById('selectedDesc').innerText = selectedProduct.desc; 
+                document.getElementById('selectedPrice').innerText = `Rp ${window.formatRupiah(selectedProduct.price)}`; 
+                document.getElementById('selectedMinMax').innerText = `${window.formatRupiah(selectedProduct.min)} / ${window.formatRupiah(selectedProduct.max)}`; 
+                document.getElementById('mainQuantityInput').value = selectedProduct.min; 
+                window.calculateMainTotal(); 
+            } 
+        };
+        
+        window.calculateMainTotal = function() { 
+            if (!selectedProduct) return; 
+            const q = parseFloat(document.getElementById('mainQuantityInput').value) || 0; 
+            const total = selectedProduct.unit.includes('/1K') ? (q/1000) * selectedProduct.price : q * selectedProduct.price;
+            document.getElementById('mainCalculatedTotal').innerText = `Rp ${window.formatRupiah(Math.round(total))}`; 
+        };
+
+        window.processDirectOrder = async function() {
+            if (!selectedProduct) return window.alert("Pilih layanan terlebih dahulu!");
+            const target = document.getElementById('mainTargetInput').value.trim();
+            const qty = parseInt(document.getElementById('mainQuantityInput').value);
+            const pay = document.getElementById('mainPaymentSelect').value;
+            
+            if (target === "") return window.alert("Isi Target pesanan!");
+            if (isNaN(qty) || qty < selectedProduct.min || qty > selectedProduct.max) return window.alert(`Jumlah harus ${selectedProduct.min} - ${selectedProduct.max}!`);
+            
+            let total = Math.round(selectedProduct.unit.includes('/1K') ? (qty/1000) * selectedProduct.price : qty * selectedProduct.price);
+            
+            const conf = await Swal.fire({ 
+                title: 'Konfirmasi', html: `Total bayar: Rp ${window.formatRupiah(total)}`, 
+                showCancelButton: true, background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', color: document.documentElement.classList.contains('dark') ? '#fff' : '#000' 
+            });
+            if(conf.isConfirmed) {
+                Swal.fire({ title: 'Memproses...', didOpen: () => { Swal.showLoading(); }});
+                const code = `KATH-M-${Date.now().toString().slice(-5)}`; 
+                const res = await window.checkoutWithFirebase(code, `${window.formatRupiah(qty)}x ${selectedProduct.name}`, total, pay); 
+                
+                if(!res.success) return window.alert(res.message);
+                Swal.fire('Berhasil!', 'Order direkam sistem.', 'success'); 
+                document.getElementById('mainTargetInput').value = ''; 
+                window.switchView('view-history');
+            }
+        };
+
+        // --- SISTEM KERANJANG BELANJA (CART) FULL ---
+        window.toggleCartModal = function() {
+            const modal = document.getElementById('cartModal');
+            if(modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden'); 
+                modal.classList.add('flex'); 
+                window.renderCartItems();
+            } else {
+                modal.classList.add('hidden'); 
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.updateCartBadge = function() {
+            const badge = document.getElementById('topCartBadge');
+            if(cart.length > 0) { 
+                badge.classList.remove('hidden'); 
+                badge.innerText = cart.length; 
+            } else { 
+                badge.classList.add('hidden'); 
+            }
+        };
+
+        window.addQuickToCart = function() {
+            if(!selectedProduct) return window.alert("Pilih layanan dulu");
+            const qty = parseInt(document.getElementById('qtyInputQuick').value);
+            const target = document.getElementById('targetInputQuick').value;
+            if(!target || target === "" || isNaN(qty)) return window.alert("Isi kotak link target dan jumlah dengan benar.");
+            
+            let tHarga = Math.round(selectedProduct.unit.includes('/1K') ? (qty/1000)*selectedProduct.price : qty*selectedProduct.price);
+            
+            cart.push({ id: Date.now(), serviceName: selectedProduct.name, target: target, qty: qty, price: tHarga });
+            localStorage.setItem('katech_cart', JSON.stringify(cart));
+            
+            window.showToast("Berhasil dimasukkan ke Keranjang Belanja!"); 
+            window.updateCartBadge();
+            
+            document.getElementById('targetInputQuick').value = ''; // Reset
+        };
+        
+        window.addMainToCart = function() {
+            if(!selectedProduct) return window.alert("Pilih layanan dulu");
+            const qty = parseInt(document.getElementById('mainQuantityInput').value);
+            const target = document.getElementById('mainTargetInput').value;
+            if(!target || isNaN(qty)) return window.alert("Isi target dan jumlah");
+            let tHarga = Math.round(selectedProduct.unit.includes('/1K') ? (qty/1000)*selectedProduct.price : qty*selectedProduct.price);
+            
+            cart.push({ id: Date.now(), serviceName: selectedProduct.name, target: target, qty: qty, price: tHarga });
+            localStorage.setItem('katech_cart', JSON.stringify(cart));
+            window.showToast("Masuk Keranjang!"); window.updateCartBadge();
+        };
+
+        window.renderCartItems = function() {
+            const listArea = document.getElementById('cartItems'); 
+            listArea.innerHTML = ''; 
+            let sum = 0;
+            
+            if(cart.length === 0) { 
+                listArea.innerHTML = '<p class="text-sm text-slate-400 text-center font-bold mt-4">Keranjang Anda masih kosong</p>'; 
+            } else {
+                cart.forEach(item => {
+                    sum += item.price;
+                    listArea.innerHTML += `
+                        <div class="bg-slate-50 dark:bg-[#070D19] p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center shadow-sm">
+                            <div class="pr-2">
+                                <p class="text-xs font-bold text-slate-800 dark:text-white line-clamp-1">${item.serviceName}</p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Link: <span class="text-primary font-mono">${item.target}</span> | Jml: ${window.formatRupiah(item.qty)}</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <p class="text-primary font-bold text-xs whitespace-nowrap">Rp ${window.formatRupiah(item.price)}</p>
+                                <button onclick="removeCartItem(${item.id})" class="text-red-400 hover:text-red-600 bg-red-100 dark:bg-red-500/10 w-7 h-7 rounded flex items-center justify-center transition"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                            </div>
+                        </div>`;
+                });
+            }
+            document.getElementById('cartTotal').innerText = `Rp ${window.formatRupiah(sum)}`;
+        };
+
+        window.removeCartItem = function(id) { 
+            cart = cart.filter(i => i.id !== id); 
+            localStorage.setItem('katech_cart', JSON.stringify(cart)); 
+            window.renderCartItems(); 
+            window.updateCartBadge(); 
+        };
+
+        window.processCartCheckout = async function() {
+            if(cart.length === 0) return window.alert("Keranjang kosong.");
+            
+            const pay = document.getElementById('paymentMethod').value;
+            const totalHrg = cart.reduce((sum, item) => sum + item.price, 0);
+            const itemsTxt = cart.map(i => `${window.formatRupiah(i.qty)}x ${i.serviceName} (${i.target})`).join(', ');
+            
+            Swal.fire({ title: 'Memproses Checkout Massal...', allowOutsideClick: false, background: document.documentElement.classList.contains('dark') ? '#13233F' : '#ffffff', color: document.documentElement.classList.contains('dark') ? '#fff' : '#000', didOpen: () => { Swal.showLoading(); } });
+            
+            const code = `KATH-CART-${Date.now().toString().slice(-4)}`;
+            const res = await window.checkoutWithFirebase(code, itemsTxt, totalHrg, pay);
+            
+            if(!res.success) return window.alert(res.message);
+            
+            // Hapus isi keranjang setelah sukses dibayar
+            cart = []; 
+            localStorage.setItem('katech_cart', JSON.stringify(cart)); 
+            window.updateCartBadge(); 
+            window.toggleCartModal();
+            
+            if(pay === 'Saldo Akun') { 
+                Swal.fire('Berhasil!', 'Semua pesanan dalam keranjang berhasil diproses.', 'success'); 
+                window.switchView('view-history'); 
+            } else { 
+                Swal.close(); 
+                const msg = `Halo Admin\nOrder Banyak (Cart): #${code}\nTotal Tagihan: Rp ${window.formatRupiah(totalHrg)}\nVia: ${pay}`; 
+                window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank'); 
+                window.switchView('view-history'); 
+            }
+        };
+
+        // --- SISTEM LACAK PESANAN ---
+        window.trackOrderReal = async function() {
+            const inp = document.getElementById('trackInput').value.trim().toUpperCase();
+            if(!inp) return;
+            const resDiv = document.getElementById('trackResult');
+            
+            try {
+                // Cari di Firebase
+                const q = query(collection(window.db, "orders"), where("code", "==", inp));
+                const snap = await getDocs(q);
+                if(snap.empty) {
+                    resDiv.classList.add('hidden');
+                    window.alert("Kode pesanan tidak ditemukan.");
+                    return;
+                }
+                const data = snap.docs[0].data();
+                
+                document.getElementById('resCode').innerText = `#${data.code}`;
+                document.getElementById('resTime').innerText = data.date;
+                document.getElementById('resItemDetail').innerText = data.items;
+                
+                const badge = document.getElementById('resBadge');
+                badge.innerText = data.status;
+                badge.className = "px-2.5 py-1 rounded text-[10px] font-bold border ";
+                if(data.status === 'Selesai' || data.status === 'Berhasil') badge.className += "bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30";
+                else if(data.status === 'Diproses') badge.className += "bg-amber-100 text-amber-600 border-amber-200 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30";
+                else badge.className += "bg-slate-200 text-slate-600 border-slate-300 dark:bg-slate-500/20 dark:text-slate-400 dark:border-slate-500/30";
+                
+                resDiv.classList.remove('hidden');
+                
+            } catch(e) { window.alert("Gagal melacak, periksa koneksi."); }
+        };
+
+        // --- UTILITAS UI LAINNYA ---
+        window.shareReferralLink = function() { navigator.clipboard.writeText(document.getElementById('refLinkText').innerText); window.showToast("Link Referal Disalin!"); };
+        window.openQrisModal = () => { document.getElementById('qrisModal').classList.remove('hidden'); document.getElementById('qrisModal').classList.add('flex'); };
+        window.closeQrisModal = () => { document.getElementById('qrisModal').classList.add('hidden'); document.getElementById('qrisModal').classList.remove('flex'); };
+        window.openApiDocs = () => { document.getElementById('apiDocsModal').classList.remove('hidden'); document.getElementById('apiDocsModal').classList.add('flex'); };
+        window.closeApiDocs = () => { document.getElementById('apiDocsModal').classList.add('hidden'); document.getElementById('apiDocsModal').classList.remove('flex'); };
+        window.copyToClipboard = (txt, n) => { navigator.clipboard.writeText(txt); window.showToast(`${n} berhasil disalin!`); };
+        window.processFloatingWA = () => { window.open(`https://wa.me/${WA_NUMBER}`, '_blank'); };
+        
+        window.openInvoice = function(code, date, user, status, payment, items, total) {
+            document.getElementById('invCode').innerText = `#${code}`; 
+            document.getElementById('invDate').innerText = date;
+            document.getElementById('invStatus').innerText = status; 
+            document.getElementById('invPayment').innerText = payment;
+            document.getElementById('invItems').innerText = items; 
+            document.getElementById('invTotal').innerText = `Rp ${window.formatRupiah(total)}`;
+            document.getElementById('invoiceModal').classList.remove('hidden'); 
+            document.getElementById('invoiceModal').classList.add('flex');
+        };
+        
+        window.closeInvoiceModal = () => { 
+            document.getElementById('invoiceModal').classList.add('hidden'); 
+            document.getElementById('invoiceModal').classList.remove('flex'); 
+        };
+        
+        window.downloadInvoice = () => { 
+            html2canvas(document.getElementById('invoiceContent'), {scale: 2}).then(canvas => { 
+                const l = document.createElement('a'); 
+                l.download = `Invoice_KATECHHUB.png`; 
+                l.href = canvas.toDataURL(); 
+                l.click(); 
+            }); 
+        };
+
+        // --- Navigasi Sidebar Pindah Layar (Single Page App) ---
+        window.toggleSidebar = function() { 
+            const sb = document.getElementById('sidebarMenu'); 
+            const ov = document.getElementById('sidebarOverlay'); 
+            if(sb.classList.contains('-translate-x-full')) { 
+                sb.classList.remove('-translate-x-full'); ov.classList.remove('hidden'); 
+            } else { 
+                sb.classList.add('-translate-x-full'); ov.classList.add('hidden'); 
+            } 
+        };
+        
         window.switchView = function(viewId) {
+            // Sembunyikan semua konten section
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            const target = document.getElementById(viewId); if(target) target.classList.remove('hidden');
+            
+            // Munculkan yang dipilih
+            const target = document.getElementById(viewId); 
+            if(target) target.classList.remove('hidden');
+            
+            // Pindahkan CSS penanda warna aktif di Menu Sidebar
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            const activeMenu = document.getElementById('nav-' + viewId); if(activeMenu) activeMenu.classList.add('active');
+            const activeMenu = document.getElementById('nav-' + viewId); 
+            if(activeMenu) activeMenu.classList.add('active');
+            
+            // Auto ubah nama judul bar di atas
+            const titles = { 
+                'view-home': 'Halaman Utama', 
+                'view-order': 'Pesanan Lama (Massal)', 
+                'view-history': 'Riwayat Order', 
+                'view-track': 'Lacak Pesanan', 
+                'view-deposit': 'Isi Saldo', 
+                'view-referral': 'Program Referral', 
+                'view-admin': 'Admin Area' 
+            };
+            document.getElementById('headerTitle').innerText = titles[viewId] || 'KA TECH HUB';
+            
+            // Tutup sidebar (jika di hp) dan tutup Quick order form saat pindah halaman
             if(window.innerWidth < 768) window.toggleSidebar();
-            window.closeQuickOrder(); // Tutup form order jika pindah menu
+            window.closeQuickOrder(); 
+        };
+
+        // --- SISTEM OTOMATIS START (ONLOAD) ---
+        window.onload = function() { 
+            window.fetchSMMProducts(); // Download harga dari pusat
+            window.updateCartBadge(); // Render icon keranjang (Cart)
         };
     </script>
 </body>
