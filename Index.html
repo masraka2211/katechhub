@@ -83,10 +83,19 @@
         .swal2-container { z-index: 999999 !important; }
         .order-tab.active { background-color: #0EA5E9; color: white; font-weight: bold; border-color: #38BDF8; box-shadow: 0 0 15px rgba(14,165,233,0.3); }
         .order-tab { background-color: rgba(15, 23, 42, 0.8); color: #94A3B8; border: 1px solid rgba(51, 65, 85, 0.8); }
-        .grecaptcha-badge { z-index: 100; bottom: 20px !important; right: 20px !important; }
+        
+        /* --- KODE BARU: CUSTOM DROPDOWN & RECAPTCHA --- */
+        .grecaptcha-badge { visibility: hidden !important; opacity: 0 !important; transition: opacity 0.3s ease; }
+        body.show-recaptcha .grecaptcha-badge { visibility: visible !important; opacity: 1 !important; z-index: 100 !important; }
+        
+        .custom-select-list { max-height: 250px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #38BDF8 transparent; }
+        .custom-select-list::-webkit-scrollbar { width: 4px; }
+        .custom-select-list::-webkit-scrollbar-thumb { background-color: #38BDF8; border-radius: 4px; }
+        .dropdown-item { border-bottom: 1px solid rgba(51, 65, 85, 0.4); }
+        .dropdown-item:last-child { border-bottom: none; }
     </style>
 </head>
-<body class="antialiased selection:bg-primary selection:text-white relative bg-[#070C18]">
+<body class="antialiased selection:bg-primary selection:text-white relative bg-[#070C18] show-recaptcha">
 
     <audio id="csNotifSound" preload="auto">
         <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
@@ -587,14 +596,30 @@
                     </div>
 
                     <div class="space-y-6 mb-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Kategori Layanan</label>
-                                <select id="mainCategorySelect" onchange="onCategoryChange()" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary text-sm cursor-pointer shadow-inner"></select>
+                        <!-- CUSTOM DROPDOWN UI (PC, Android, iPhone Ready) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-30">
+                            <!-- Dropdown Kategori -->
+                            <div class="relative">
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5"><i class="fa-solid fa-layer-group text-primary mr-1"></i> Kategori</label>
+                                <div class="w-full bg-slate-900 border border-slate-700 hover:border-primary/50 text-white rounded-xl px-4 py-3 text-xs sm:text-sm cursor-pointer flex justify-between items-center transition-all shadow-inner" onclick="toggleCustomSelect('catList', event)">
+                                    <span id="catSelectedText" class="truncate pr-4 font-semibold text-slate-200">Memuat Kategori...</span>
+                                    <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+                                </div>
+                                <div id="catList" class="hidden absolute top-[105%] left-0 w-full bg-slate-800 border border-slate-600 rounded-xl shadow-2xl custom-select-list z-[50]">
+                                    <!-- List Kategori Masuk Disini -->
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Pilih Layanan</label>
-                                <select id="mainServiceSelect" onchange="onServiceChange()" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary text-sm cursor-pointer shadow-inner"></select>
+
+                            <!-- Dropdown Layanan -->
+                            <div class="relative">
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5"><i class="fa-solid fa-box-open text-accent mr-1"></i> Layanan</label>
+                                <div class="w-full bg-slate-900 border border-slate-700 hover:border-primary/50 text-white rounded-xl px-4 py-3 text-xs sm:text-sm cursor-pointer flex justify-between items-center transition-all shadow-inner" onclick="toggleCustomSelect('servList', event)">
+                                    <span id="servSelectedText" class="truncate pr-4 font-semibold text-slate-200">Pilih Layanan...</span>
+                                    <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+                                </div>
+                                <div id="servList" class="hidden absolute top-[105%] left-0 w-full bg-slate-800 border border-slate-600 rounded-xl shadow-2xl custom-select-list z-[50]">
+                                    <!-- List Layanan Masuk Disini -->
+                                </div>
                             </div>
                         </div>
 
@@ -608,7 +633,7 @@
                         </div>
                     </div>
 
-                    <div id="panelSingleOrder" class="space-y-6 block transition-opacity duration-300">
+                    <div id="panelSingleOrder" class="space-y-6 block transition-opacity duration-300 relative z-10">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Target Pesanan <span class="text-red-400">*</span></label>
@@ -646,7 +671,7 @@
                         </div>
                     </div>
 
-                    <div id="panelMassOrder" class="space-y-6 hidden transition-opacity duration-300">
+                    <div id="panelMassOrder" class="space-y-6 hidden transition-opacity duration-300 relative z-10">
                         <div class="bg-blue-900/20 border border-blue-500/30 p-3 rounded-xl shadow-inner">
                             <span class="text-xs text-blue-300 font-bold block mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Format Mass Order:</span>
                             <code class="text-[11px] text-slate-300 font-mono block bg-slate-900 p-2 rounded border border-slate-700">target1 | jumlah1<br>target2 | jumlah2<br>target3 | jumlah3</code>
@@ -1089,6 +1114,8 @@
             const authFormArea = document.getElementById('authFormArea');
 
             if (user) {
+                document.body.classList.remove('show-recaptcha'); // Menghilangkan badge reCAPTCHA saat login berhasil
+                
                 try {
                     const userRef = doc(db, "users", user.uid);
                     let userDoc = await getDoc(userRef);
@@ -1136,6 +1163,8 @@
                     window.showToast("Koneksi lambat, mencoba ulang...", "error");
                 }
             } else {
+                document.body.classList.add('show-recaptcha'); // Memunculkan kembali badge reCAPTCHA saat logout / belum login
+                
                 window.currentUserData = null;
                 if(userSnapshotUnsubscribe) userSnapshotUnsubscribe();
                 if(window.backgroundTicketUnsubscribe) window.backgroundTicketUnsubscribe();
@@ -1974,23 +2003,57 @@
             else { document.getElementById('tabMass').classList.add('active'); document.getElementById('panelMassOrder').classList.remove('hidden'); }
         };
 
+        // --- LOGIKA CUSTOM DROPDOWN ---
+        window.toggleCustomSelect = function(id, event) {
+            event.stopPropagation();
+            const el = document.getElementById(id);
+            if(id === 'catList') document.getElementById('servList').classList.add('hidden');
+            if(id === 'servList') document.getElementById('catList').classList.add('hidden');
+            el.classList.toggle('hidden');
+        };
+
+        // Tutup dropdown jika user klik di sembarang tempat
+        document.addEventListener('click', function() {
+            const catList = document.getElementById('catList');
+            const servList = document.getElementById('servList');
+            if(catList && !catList.classList.contains('hidden')) catList.classList.add('hidden');
+            if(servList && !servList.classList.contains('hidden')) servList.classList.add('hidden');
+        });
+
         window.initCategoryDropdown = function() { 
-            const catSelect = document.getElementById('mainCategorySelect'); 
             const categories = [...new Set(products.map(p => p.category))]; 
-            catSelect.innerHTML = categories.map(cat => `<option value="${cat}">${cat.toUpperCase()}</option>`).join(''); 
-            window.onCategoryChange(); 
+            const catListEl = document.getElementById('catList');
+            
+            if(!catListEl) return; 
+            
+            catListEl.innerHTML = categories.map(cat => `
+                <div class="dropdown-item px-4 py-3 text-xs sm:text-sm text-slate-300 hover:bg-slate-700 hover:text-white cursor-pointer transition-colors" onclick="selectCategory('${cat.replace(/'/g, "\\'")}')">
+                    ${cat.toUpperCase()}
+                </div>
+            `).join(''); 
+            
+            if(categories.length > 0) window.selectCategory(categories[0]); 
         };
         
-        window.onCategoryChange = function() { 
-            const serviceSelect = document.getElementById('mainServiceSelect'); 
-            const filtered = products.filter(p => p.category === document.getElementById('mainCategorySelect').value); 
-            serviceSelect.innerHTML = filtered.map(p => `<option value="${p.id}">${p.name}</option>`).join(''); 
-            window.onServiceChange(); 
+        window.selectCategory = function(cat) {
+            document.getElementById('catSelectedText').innerText = cat.toUpperCase();
+            const servListEl = document.getElementById('servList');
+            
+            const filtered = products.filter(p => p.category === cat); 
+            servListEl.innerHTML = filtered.map(p => `
+                <div class="dropdown-item px-4 py-3 hover:bg-slate-700 cursor-pointer transition-colors group" onclick="selectService('${p.id}')">
+                    <div class="text-[11px] sm:text-xs text-slate-200 group-hover:text-primary font-medium line-clamp-2">${p.name}</div>
+                    <div class="text-[10px] text-emerald-400 mt-1 font-bold">Rp ${window.formatRupiah(p.price)}</div>
+                </div>
+            `).join(''); 
+            
+            if(filtered.length > 0) window.selectService(filtered[0].id);
         };
         
-        window.onServiceChange = function() { 
-            selectedProduct = products.find(p => p.id == document.getElementById('mainServiceSelect').value); 
+        window.selectService = function(id) { 
+            selectedProduct = products.find(p => p.id == id); 
             if (selectedProduct) { 
+                document.getElementById('servSelectedText').innerText = selectedProduct.name;
                 document.getElementById('selectedDesc').innerText = selectedProduct.desc; 
                 document.getElementById('selectedPrice').innerText = `Rp ${window.formatRupiah(selectedProduct.price)} ${selectedProduct.unit}`; 
                 document.getElementById('selectedMinMax').innerText = `${window.formatRupiah(selectedProduct.min)} / ${window.formatRupiah(selectedProduct.max)}`; 
@@ -1998,6 +2061,7 @@
                 window.calculateMainTotal(); 
             } 
         };
+        // --- END CUSTOM DROPDOWN ---
         
         window.calculateMainTotal = function() { 
             if (!selectedProduct) return; 
@@ -2258,10 +2322,10 @@
 
         window.fetchSMMProducts = async function() {
             try {
-                const catSelect = document.getElementById('mainCategorySelect');
-                const servSelect = document.getElementById('mainServiceSelect');
-                if(catSelect) catSelect.innerHTML = '<option>Menyedot Layanan dari Cloud...</option>';
-                if(servSelect) servSelect.innerHTML = '<option>Mohon tunggu...</option>';
+                const catSelect = document.getElementById('catSelectedText');
+                const servSelect = document.getElementById('servSelectedText');
+                if(catSelect) catSelect.innerText = 'Menyedot Layanan...';
+                if(servSelect) servSelect.innerText = 'Mohon tunggu...';
 
                 // Tembak ke Backend Netlify yang baru dibuat Bosku
                 const res = await fetch('/.netlify/functions/api', {
@@ -2304,8 +2368,8 @@
                     window.initCategoryDropdown();
                     console.log(`✅ Berhasil menyedot ${products.length} layanan dari pusat!`);
                 } else {
-                    if(catSelect) catSelect.innerHTML = '<option>Gagal memuat layanan API</option>';
-                    if(servSelect) servSelect.innerHTML = '<option>Error Sinkronisasi API</option>';
+                    if(catSelect) catSelect.innerText = 'Gagal memuat layanan API';
+                    if(servSelect) servSelect.innerText = 'Error Sinkronisasi API';
                 }
             } catch(e) {
                 console.error("Gagal nyedot API:", e);
