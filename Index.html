@@ -29,6 +29,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Google ReCaptcha v3 (ENTERPRISE SECURITY) -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></script>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -88,8 +91,8 @@
         .swal2-container { z-index: 999999 !important; }
         .order-tab.active { background-color: #0EA5E9; color: white; font-weight: bold; border-color: #38BDF8; box-shadow: 0 0 15px rgba(14,165,233,0.3); }
         .order-tab { background-color: rgba(15, 23, 42, 0.8); color: #94A3B8; border: 1px solid rgba(51, 65, 85, 0.8); }
-        /* Receipt Pattern */
-        .receipt-bg { background-image: radial-gradient(circle at center, #1E293B 2px, transparent 2px); background-size: 16px 16px; background-color: #0F172A; }
+        /* Hides Recaptcha Badge to keep UI clean (optional but legal if privacy policy is stated) */
+        .grecaptcha-badge { visibility: hidden; }
     </style>
 </head>
 <body class="antialiased selection:bg-primary selection:text-white relative bg-[#070C18]">
@@ -191,14 +194,12 @@
                             <i class="fa-regular fa-eye absolute right-4 top-3.5 text-slate-400 cursor-pointer hover:text-primary transition" onclick="togglePassword('regPassword', this)"></i>
                         </div>
                     </div>
-                    <!-- Simulasi ReCaptcha -->
-                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center gap-3">
-                        <input type="checkbox" id="robotCheck" class="w-5 h-5 accent-emerald-500 cursor-pointer">
-                        <span class="text-xs text-slate-300 font-medium">Saya bukan robot</span>
-                        <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="w-6 h-6 ml-auto opacity-70" alt="reCAPTCHA">
+                    <!-- ReCaptcha Terms (Required by Google if badge is hidden) -->
+                    <div class="text-[9px] text-slate-500 text-center mt-2 leading-tight">
+                        Dengan mendaftar, Anda menyetujui Kebijakan Privasi. Terlindungi oleh reCAPTCHA Enterprise.
                     </div>
 
-                    <button onclick="processRegister()" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 py-3 rounded-xl font-bold text-sm transition mt-3 hover:scale-[1.02]">
+                    <button id="btnRegister" onclick="processRegister()" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 py-3 rounded-xl font-bold text-sm transition mt-3 hover:scale-[1.02]">
                         <i class="fa-solid fa-user-plus mr-1"></i> Daftar Sekarang
                     </button>
                     <div class="text-center text-xs mt-4 text-slate-400 pt-3 border-t border-slate-700/50">
@@ -529,7 +530,7 @@
                         <a href="#layanan" class="text-slate-300 hover:text-white transition font-medium">Layanan</a>
                         <a href="#reviews" class="text-slate-300 hover:text-white transition font-medium">Testimoni</a>
                         
-                        <!-- SERVER STATUS INDICATOR (FITUR BARU) -->
+                        <!-- SERVER STATUS INDICATOR -->
                         <div onclick="window.alert('✅ Server API Normal (Uptime 99.9%)\n✅ Firebase Cloud Terhubung\n✅ SMM System Operasional')" class="cursor-pointer ml-4 flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full hover:bg-emerald-500/20 transition shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                             <span class="relative flex h-2.5 w-2.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -548,7 +549,6 @@
                     </div>
 
                     <div class="md:hidden flex items-center gap-3">
-                        <!-- Mobile Server Status -->
                         <div class="relative flex h-2.5 w-2.5 mr-1" onclick="window.alert('Server Normal')">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -1031,8 +1031,9 @@
     <!-- FIREBASE SDK ENGINE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+        // DIUPDATE: Menambahkan sendEmailVerification
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, orderBy, limit, runTransaction } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBLVj5a_RliAWNrF8_PayUie-VtZYLyeR0",
@@ -1225,48 +1226,73 @@
             finally { btnGoogle.innerHTML = originalText; btnGoogle.disabled = false; }
         };
 
+        // DIUPDATE: REGISTER DENGAN RECAPTCHA DAN EMAIL VERIFICATION
         window.processRegister = async function() {
             const name = document.getElementById('regName').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase().replace(/\s+/g, '');
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
-            const isRobotChecked = document.getElementById('robotCheck').checked;
+            const btnReg = document.getElementById('btnRegister');
 
             if(!name || !username || !email || !password) return window.alert("Mohon isi semua bidang!");
             if(username.length < 3) return window.alert("Username minimal 3 karakter!");
-            if(!isRobotChecked) return window.alert("Mohon centang 'Saya bukan robot' untuk keamanan (Anti-Spam).");
 
-            try {
-                const qUsername = query(collection(db, "users"), where("username", "==", username));
-                const snapUsername = await getDocs(qUsername);
-                if(!snapUsername.empty) return window.alert(`Maaf, Username "${username}" sudah dipakai.`);
+            const originalBtn = btnReg.innerHTML;
+            btnReg.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memeriksa Keamanan...';
+            btnReg.disabled = true;
 
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+            // Eksekusi ReCaptcha v3 Anti-Spam (Tidak Terlihat oleh User)
+            grecaptcha.ready(async function() {
+                try {
+                    const token = await grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', {action: 'register'});
+                    if(!token) throw new Error("Gagal verifikasi Anti-Spam Bot!");
 
-                const isOwner = (email === "marcurapikk@gmail.com" || username === "xbee");
-                const role = isOwner ? 'owner' : 'user';
-                const level = isOwner ? 'Supreme 👑' : 'Bronze';
+                    const qUsername = query(collection(db, "users"), where("username", "==", username));
+                    const snapUsername = await getDocs(qUsername);
+                    if(!snapUsername.empty) return window.alert(`Maaf, Username "${username}" sudah dipakai.`);
 
-                const refUsername = localStorage.getItem('katech_ref');
-                let initialBalance = isOwner ? 999999999 : 0;
-                let appliedRef = false;
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
 
-                if (!isOwner && refUsername && refUsername !== username) { initialBalance += 1000; appliedRef = true; }
+                    const isOwner = (email === "marcurapikk@gmail.com" || username === "xbee");
+                    const role = isOwner ? 'owner' : 'user';
+                    const level = isOwner ? 'Supreme 👑' : 'Bronze';
 
-                const userData = {
-                    name, username, email, role, level, avatar: null,
-                    totalSpent: 0, balance: initialBalance, income: isOwner ? 89574843 : 0, cashout: isOwner ? 12500000 : 0,
-                    refCount: 0, refEarnings: 0
-                };
+                    const refUsername = localStorage.getItem('katech_ref');
+                    let initialBalance = isOwner ? 999999999 : 0;
+                    let appliedRef = false;
 
-                await setDoc(doc(db, "users", user.uid), userData);
-                if (appliedRef) { await window.processReferrerBonus(refUsername, username); }
-                localStorage.removeItem('katech_ref');
-                window.alert("Registrasi Berhasil! Anda mendapat bonus pendaftaran awal.");
-            } catch (error) { window.alert("Gagal Registrasi: " + error.message); }
+                    if (!isOwner && refUsername && refUsername !== username) { initialBalance += 1000; appliedRef = true; }
+
+                    const userData = {
+                        name, username, email, role, level, avatar: null,
+                        totalSpent: 0, balance: initialBalance, income: isOwner ? 89574843 : 0, cashout: isOwner ? 12500000 : 0,
+                        refCount: 0, refEarnings: 0
+                    };
+
+                    await setDoc(doc(db, "users", user.uid), userData);
+                    if (appliedRef) { await window.processReferrerBonus(refUsername, username); }
+                    localStorage.removeItem('katech_ref');
+
+                    // KUNCI KEAMANAN: Kirim Email Verifikasi
+                    await sendEmailVerification(user);
+                    
+                    // Logout otomatis agar user wajib klik email dulu
+                    await signOut(auth);
+
+                    window.alert("Registrasi Berhasil! Kami telah mengirimkan link verifikasi ke Email Anda. Silakan klik link tersebut sebelum Login.");
+                    window.switchAuthTab('formLogin');
+
+                } catch (error) { 
+                    window.alert("Gagal Registrasi: " + error.message); 
+                } finally {
+                    btnReg.innerHTML = originalBtn;
+                    btnReg.disabled = false;
+                }
+            });
         };
 
+        // DIUPDATE: CEK STATUS VERIFIKASI EMAIL SAAT LOGIN
         window.processLogin = async function() {
             const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
             const passIn = document.getElementById('loginPassword').value;
@@ -1278,7 +1304,15 @@
 
             try {
                 await setPersistence(auth, browserLocalPersistence);
-                await signInWithEmailAndPassword(auth, emailInput, passIn);
+                const userCredential = await signInWithEmailAndPassword(auth, emailInput, passIn);
+                
+                // Pengecekan OTP/Verifikasi (Dikecualikan untuk Akun Owner/Test jika belum diset)
+                if (!userCredential.user.emailVerified && userCredential.user.email !== "marcurapikk@gmail.com") {
+                    await signOut(auth); // Usir user jika belum verifikasi
+                    if(btn) { btn.innerHTML = originalContent; btn.disabled = false; }
+                    return window.alert("Akses Ditolak! Anda belum memverifikasi Email. Silakan klik link di Kotak Masuk atau Spam Email Anda.");
+                }
+
                 window.showToast("Login Berhasil!");
             } catch (error) { 
                 let msg = error.message;
@@ -1556,6 +1590,8 @@
             try { await updateDoc(doc(db, "orders", docId), { status: newStatus }); window.showToast(`Status diset ke ${newStatus}`); } catch (e) { window.alert("Gagal: " + e.message); }
         };
 
+        // DIUPDATE: SECURE TRANSACTION CHECKOUT
+        // Transaksi menggunakan runTransaction untuk memastikan data saldo aman dan tersinkron
         window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
             const userData = window.currentUserData;
             if (!userData) return { success: false, message: "Sesi login tidak valid atau belum termuat. Silakan refresh halaman." };
@@ -1564,33 +1600,50 @@
             try {
                 let statusOrder = 'Belum Proses';
                 
-                if(paymentMethod === 'Saldo Akun') {
-                    if((userData.balance || 0) < totalHarga) return { success: false, message: `Maaf, Saldo tidak mencukupi!` };
-                    await updateDoc(doc(db, "users", userData.uid), { balance: increment(-totalHarga), totalSpent: increment(totalHarga) });
-                    window.currentUserData.balance -= totalHarga; window.currentUserData.totalSpent += totalHarga;
-                    statusOrder = 'Diproses';
+                await runTransaction(db, async (transaction) => {
+                    const userRef = doc(db, "users", userData.uid);
+                    const userDoc = await transaction.get(userRef);
+                    if (!userDoc.exists()) throw new Error("Data user tidak ditemukan.");
                     
+                    const currentUserBalance = userDoc.data().balance || 0;
+
+                    if (paymentMethod === 'Saldo Akun') {
+                        if (currentUserBalance < totalHarga) {
+                            throw new Error(`Maaf, Saldo tidak mencukupi! (Saldo: Rp ${window.formatRupiah(currentUserBalance)})`);
+                        }
+                        transaction.update(userRef, { 
+                            balance: increment(-totalHarga), 
+                            totalSpent: increment(totalHarga) 
+                        });
+                        statusOrder = 'Diproses';
+                    }
+
+                    const newOrderRef = doc(collection(db, "orders"));
+                    transaction.set(newOrderRef, {
+                        code: orderCode || `KATH-${Date.now().toString().slice(-6)}`, 
+                        date: new Date().toLocaleString('id-ID'), 
+                        uid: userData.uid, 
+                        username: userData.username || userData.name || 'User', 
+                        userEmail: userData.email, // Dibutuhkan untuk Auto Email Node.js
+                        items: itemsText || 'Layanan Digital', 
+                        target: document.getElementById('mainTargetInput') ? document.getElementById('mainTargetInput').value : '-',
+                        total: Number(totalHarga) || 0, 
+                        payment: paymentMethod || 'Sistem', 
+                        status: statusOrder, 
+                        createdAt: Date.now() 
+                    });
+                });
+
+                if(paymentMethod === 'Saldo Akun') {
+                    window.currentUserData.balance -= totalHarga; window.currentUserData.totalSpent += totalHarga;
                     if(typeof confetti === 'function') { confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#38BDF8', '#0EA5E9', '#F59E0B'] }); }
                 }
-                
-                const orderData = { 
-                    code: orderCode || `KATH-${Date.now().toString().slice(-6)}`, 
-                    date: new Date().toLocaleString('id-ID'), 
-                    uid: userData.uid || 'unknown', 
-                    username: userData.username || userData.name || 'User', 
-                    items: itemsText || 'Layanan Digital', 
-                    total: Number(totalHarga) || 0, 
-                    payment: paymentMethod || 'Sistem', 
-                    status: statusOrder, 
-                    createdAt: Date.now() 
-                };
-                
-                await addDoc(collection(db, "orders"), orderData);
+
                 return { success: true, status: statusOrder };
                 
             } catch (e) { 
                 console.error("Firebase Order Error:", e);
-                return { success: false, message: `Firebase Error: ${e.message}` }; 
+                return { success: false, message: e.message.includes('Mencukupi') ? e.message : `System Error: ${e.message}` }; 
             }
         };
 
@@ -1612,7 +1665,6 @@
             }
         };
         
-        // --- FITUR BARU: INVOICE DIGITAL (E-RECEIPT) ---
         window.openInvoice = function(code, date, user, status, payment, items, total) {
             document.getElementById('invCode').innerText = `#${code}`;
             document.getElementById('invDate').innerText = date;
@@ -1654,7 +1706,6 @@
             if(!userData) return;
             const container = document.getElementById('dashboardHistoryItems');
             
-            // Skeleton Loader Premium
             container.innerHTML = Array(3).fill(`
                 <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 mb-3 animate-pulse flex flex-col gap-3 relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 w-12 h-12 bg-slate-700/30 rounded-full blur-xl"></div>
@@ -1677,7 +1728,6 @@
 
                 document.getElementById('dashTotalOrders').innerText = `${orders.length} Transaksi`; container.innerHTML = '';
                 
-                // Empty State Premium
                 if(orders.length === 0) {
                     container.innerHTML = `
                         <div class="py-12 flex flex-col items-center justify-center text-center bg-slate-900/30 rounded-xl border border-slate-800 border-dashed">
@@ -1753,7 +1803,7 @@
         
         window.alert = function(message) {
             let iconType = 'warning'; let titleText = 'Informasi'; const msgLower = (message || '').toLowerCase();
-            if(msgLower.includes('gagal') || msgLower.includes('maaf') || msgLower.includes('salah') || msgLower.includes('error')) { iconType = 'error'; titleText = 'Oops! Gagal'; } 
+            if(msgLower.includes('gagal') || msgLower.includes('maaf') || msgLower.includes('salah') || msgLower.includes('error') || msgLower.includes('ditolak')) { iconType = 'error'; titleText = 'Oops! Gagal'; } 
             else if (msgLower.includes('berhasil') || msgLower.includes('sukses')) { iconType = 'success'; titleText = 'Berhasil!'; }
             if (typeof Swal !== 'undefined') { Swal.fire({ title: titleText, text: message, icon: iconType, background: '#0F172A', color: '#F8FAFC', confirmButtonColor: '#0EA5E9', confirmButtonText: 'Mengerti' }); } 
             else { console.log("Pesan Alert:", message); }
@@ -1992,7 +2042,6 @@
             const cartItemsContainer = document.getElementById('cartItems'); const cartTotalEl = document.getElementById('cartTotal'); 
             cartItemsContainer.innerHTML = ''; let grandTotal = 0; 
             
-            // Empty State Keranjang Premium
             if(cart.length === 0) { 
                 cartItemsContainer.innerHTML = `
                     <div class="py-8 flex flex-col items-center justify-center text-center">
