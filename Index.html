@@ -102,7 +102,7 @@
                 </div>
                 <h2 class="text-2xl font-extrabold text-white tracking-tight">KA TECH HUB</h2>
                 <p class="text-primary font-bold text-xs mt-1 bg-primary/10 inline-block px-3 py-1 rounded-full border border-primary/20">Private Access Portal</p>
-                <p class="text-slate-400 text-[11px] mt-3">Sistem terkunci. Silakan login terlebih dahulu untuk menggunakan layanan.</p>
+                <p class="text-slate-400 text-[11px] mt-3">Sistem terkunci. Silakan login terlebih dahulu untuk menggunakan layanan kami.</p>
             </div>
 
             <!-- FORM LOGIN -->
@@ -192,6 +192,7 @@
             </div>
         </div>
 
+        <!-- SOCIAL PROOF POPUP CONTAINER -->
         <div id="socialProofContainer" class="fixed bottom-24 md:bottom-8 left-4 sm:left-6 z-[150] pointer-events-none flex flex-col gap-3"></div>
 
         <!-- USER PROFILE DASHBOARD MODAL -->
@@ -266,6 +267,7 @@
                         </div>
                     </div>
 
+                    <!-- AREA KHUSUS OWNER/ADMIN -->
                     <div id="ownerStatsBox" class="grid grid-cols-2 gap-3 sm:gap-4 hidden">
                         <div class="bg-emerald-900/20 p-3 sm:p-4 rounded-xl border border-emerald-500/40 shadow-glow-emerald flex flex-col justify-center relative overflow-hidden group hover:border-emerald-400 transition-colors">
                             <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-4xl sm:text-6xl text-emerald-500/10 group-hover:scale-110 transition-transform duration-500"></i>
@@ -283,7 +285,7 @@
                     <div id="adminSupportBox" class="p-3 sm:p-4 bg-sky-900/20 rounded-xl border border-sky-700/50 hidden">
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-headset text-base"></i> Live Chat Support Active (WA Style)
+                                <i class="fa-solid fa-headset text-base"></i> Live Chat Support Active
                             </h4>
                             <span class="text-[10px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full font-mono" id="activeTicketCount">0 Antrean</span>
                         </div>
@@ -609,6 +611,101 @@
             </div>
         </section>
 
+        <!-- SECTION INFO REKENING & PEMBAYARAN (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <section id="pembayaran" class="py-16 relative z-10 bg-slate-900/40 border-y border-slate-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <span class="text-xs font-bold px-3 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mb-2 inline-block">Payment Gateways</span>
+                    <h2 class="text-3xl font-bold text-white">Metode Pembayaran Resmi</h2>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-card p-6 flex flex-col justify-between relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 font-extrabold text-xl"><i class="fa-solid fa-qrcode"></i></div>
+                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 font-semibold">Instant</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">QRIS All Payment</h3>
+                            <p class="text-xs text-slate-400 mb-3">Dana, Ovo, GoPay, ShopeePay &amp; M-Banking</p>
+                            <button onclick="openQrisModal()" class="w-full py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg text-xs font-bold transition border border-primary/30 flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-expand"></i> Preview Barcode
+                            </button>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-between relative">
+                        <div class="flex justify-between items-start mb-4"><div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-xl"><i class="fa-solid fa-building-columns"></i></div><span class="text-[10px] bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-full border border-blue-500/20 font-semibold">Mandiri</span></div>
+                        <div><p class="text-xs text-slate-400 mb-1">Nomor Rekening:</p><div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800"><span class="font-mono font-bold text-white text-sm">1290013795022</span><button onclick="copyToClipboard('1290013795022', 'Mandiri')" class="text-xs bg-primary/20 text-primary px-2 py-1 rounded">Salin</button></div></div>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-between relative">
+                        <div class="flex justify-between items-start mb-4"><div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl"><i class="fa-solid fa-water-ladder"></i></div><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-500/20 font-semibold">SeaBank</span></div>
+                        <div><p class="text-xs text-slate-400 mb-1">Nomor Rekening:</p><div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800"><span class="font-mono font-bold text-white text-sm">901705790299</span><button onclick="copyToClipboard('901705790299', 'SeaBank')" class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">Salin</button></div></div>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-between relative">
+                        <div class="flex justify-between items-start mb-4"><div class="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 text-xl"><i class="fa-solid fa-wallet"></i></div><span class="text-[10px] bg-orange-500/10 text-orange-400 px-2.5 py-1 rounded-full border border-orange-500/20 font-semibold">ShopeePay</span></div>
+                        <div><p class="text-xs text-slate-400 mb-1">Nomor E-Wallet:</p><div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800"><span class="font-mono font-bold text-white text-sm">081312185600</span><button onclick="copyToClipboard('081312185600', 'ShopeePay')" class="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded">Salin</button></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ SECTION (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <section id="faq-section" class="py-20 relative z-10 border-b border-slate-800/80">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <span class="text-xs font-bold px-3 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mb-2 inline-block">Bantuan</span>
+                    <h2 class="text-3xl font-bold text-white">Pertanyaan yang Sering Diajukan (FAQ)</h2>
+                </div>
+                <div class="space-y-4">
+                    <div class="glass-card border-slate-800 overflow-hidden">
+                        <button class="faq-btn w-full px-6 py-4 flex justify-between items-center text-left focus:outline-none" onclick="toggleFAQ(this)">
+                            <span class="font-bold text-white text-sm sm:text-base">Bagaimana cara top-up Saldo Akun?</span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 faq-icon text-sm"></i>
+                        </button>
+                        <div class="faq-content bg-slate-900/50 border-t border-slate-800/50">
+                            <div class="px-6 py-4 text-sm text-slate-400 leading-relaxed">
+                                Silakan masuk ke menu Profile, klik tombol <b>Isi Saldo</b>. Kirim format permintaan ke WhatsApp Admin dan lakukan transfer. Admin akan menambahkan saldo ke akun Anda secara instan.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card border-slate-800 overflow-hidden">
+                        <button class="faq-btn w-full px-6 py-4 flex justify-between items-center text-left focus:outline-none" onclick="toggleFAQ(this)">
+                            <span class="font-bold text-white text-sm sm:text-base">Berapa lama proses pengerjaan pesanan?</span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 faq-icon text-sm"></i>
+                        </button>
+                        <div class="faq-content bg-slate-900/50 border-t border-slate-800/50">
+                            <div class="px-6 py-4 text-sm text-slate-400 leading-relaxed">
+                                Sebagian besar pesanan media sosial (seperti Followers, Likes, Views) diproses secara <b>Instan hingga Maksimal 1x24 jam</b>. Untuk layanan perbaikan perangkat, waktu akan disesuaikan.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES & STATS (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <section id="features" class="py-20 relative z-10 border-b border-slate-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="glass-card p-5 border-slate-800">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-primary block" id="countOrders">0</span>
+                        <span class="text-xs text-slate-400 font-medium">Pesanan Selesai</span>
+                    </div>
+                    <div class="glass-card p-5 border-slate-800">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-primary block" id="countUsers">0</span>
+                        <span class="text-xs text-slate-400 font-medium">Pelanggan Aktif</span>
+                    </div>
+                    <div class="glass-card p-5 border-slate-800">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-primary block" id="countSatisfy">0</span>
+                        <span class="text-xs text-slate-400 font-medium">% Rate Kepuasan</span>
+                    </div>
+                    <div class="glass-card p-5 border-slate-800">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-primary block">24/7</span>
+                        <span class="text-xs text-slate-400 font-medium">Sistem Bantuan</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- FLOATING ACTION BUTTONS (WA & LIVE CHAT CS) -->
         <div class="fixed bottom-20 md:bottom-8 left-5 z-40 flex flex-col items-start gap-3">
             <button onclick="openChatWidget()" class="w-14 h-14 bg-gradient-to-r from-blue-500 to-primary rounded-full flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/30 hover:scale-110 transition-transform floating-action" title="Live CS Support">
@@ -616,6 +713,9 @@
             </button>
         </div>
         <div class="fixed bottom-20 md:bottom-8 right-5 z-40 flex flex-col items-end gap-3">
+            <a href="https://instagram.com/rakadimas_2211" target="_blank" class="w-12 h-12 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg hover:scale-110 transition-transform floating-action" style="animation-delay: 0.5s;" title="Instagram">
+                <i class="fa-brands fa-instagram"></i>
+            </a>
             <button onclick="window.open('https://wa.me/6281312185600', '_blank')" class="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white text-3xl shadow-lg shadow-green-500/30 hover:scale-110 transition-transform floating-action" title="WhatsApp Chat">
                 <i class="fa-brands fa-whatsapp"></i>
             </button>
@@ -641,6 +741,45 @@
                 <span id="mobileBottomCartBadge" class="absolute -top-1 right-2 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden border border-[#070C18]">0</span>
             </button>
         </nav>
+
+        <!-- FOOTER (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <footer id="footer" class="border-t border-slate-800 bg-[#040810] pt-16 pb-24 md:pb-8 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
+                    <div>
+                        <h4 class="text-white font-bold text-lg mb-4">KA TECH HUB</h4>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">Pusat layanan digital terpercaya. Menyediakan top up, boost social media, dan solusi teknologi dengan proses instan.</p>
+                        <div class="text-slate-300 text-xs space-y-2">
+                            <p><i class="fa-solid fa-location-dot text-primary w-4"></i> Jl. Contoh Alamat Bisnis No.123, Jakarta Timur, Indonesia</p>
+                            <p><i class="fa-solid fa-envelope text-primary w-4"></i> admin@katechhub.com</p>
+                            <p><i class="fa-brands fa-whatsapp text-primary w-4"></i> +62 813-1218-5600</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">Legalitas & Kebijakan</h4>
+                        <div class="flex flex-col space-y-2 text-xs items-center md:items-start">
+                            <button onclick="openPolicyModal('tnc')" class="text-slate-400 hover:text-primary transition">Syarat & Ketentuan (T&C)</button>
+                            <button onclick="openPolicyModal('privacy')" class="text-slate-400 hover:text-primary transition">Kebijakan Privasi</button>
+                            <button onclick="openPolicyModal('refund')" class="text-slate-400 hover:text-primary transition">Kebijakan Pengembalian Dana (Refund)</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">Metode Pembayaran</h4>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-2">
+                            <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">QRIS</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">Mandiri</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">SeaBank</span>
+                            <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-slate-400">ShopeePay</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-slate-800/80 pt-8 flex flex-col justify-center items-center gap-4 text-center">
+                    <p class="text-slate-500 text-xs">
+                        &copy; 2026 KA TECH HUB. All Rights Reserved. Powered by Firebase Cloud.
+                    </p>
+                </div>
+            </div>
+        </footer>
 
         <!-- KERANJANG BELANJA MODAL -->
         <div id="cartModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity">
@@ -669,6 +808,20 @@
                     <button onclick="processCartCheckout()" class="w-full btn-primary py-3.5 rounded-xl font-bold text-lg flex justify-center items-center gap-2 shadow-lg">
                         <i class="fa-solid fa-bolt"></i> Proses Checkout
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL KEBIJAKAN / POLICIES (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <div id="policyModal" class="fixed inset-0 z-[450] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity p-4">
+            <div class="glass-card w-full max-w-2xl p-6 max-h-[85vh] flex flex-col relative border-slate-700 shadow-2xl">
+                <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition bg-slate-800 rounded-full w-8 h-8 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+                <h2 id="policyTitle" class="text-xl md:text-2xl font-bold text-white mb-4 border-b border-slate-700/50 pb-4">Judul Kebijakan</h2>
+                <div id="policyContent" class="overflow-y-auto pr-2 text-slate-300 text-sm leading-relaxed space-y-4 no-scrollbar"></div>
+                <div class="border-t border-slate-700/50 pt-4 mt-4">
+                    <button onclick="closePolicyModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-bold text-sm transition">Saya Mengerti & Setuju</button>
                 </div>
             </div>
         </div>
@@ -1104,7 +1257,7 @@
         };
     </script>
 
-    <!-- CORE VANILLA JS -->
+    <!-- CORE VANILLA JS (TERMASUK ANIMASI & MODAL KEBIJAKAN YANG SEMPAT HILANG) -->
     <script>
         const WA_NUMBER = "6281312185600";
         let cart = JSON.parse(localStorage.getItem('katech_cart')) || [];
@@ -1487,6 +1640,137 @@
 
         window.openQrisModal = function() { document.getElementById('qrisModal').classList.remove('hidden'); document.getElementById('qrisModal').classList.add('flex'); };
         window.closeQrisModal = function() { document.getElementById('qrisModal').classList.add('hidden'); document.getElementById('qrisModal').classList.remove('flex'); };
+        window.copyToClipboard = function(text, name) { navigator.clipboard.writeText(text); window.showToast(`${name} disalin!`); };
+        window.toggleFAQ = function(element) { 
+            element.classList.toggle('active'); const content = element.nextElementSibling; 
+            if (content.classList.contains('open')) content.classList.remove('open'); else content.classList.add('open'); 
+        };
+
+        // --- FUNGSI MODAL KEBIJAKAN (T&C, PRIVACY, REFUND) KEMBALI! ---
+        window.openPolicyModal = function(type) {
+            const modal = document.getElementById('policyModal'); 
+            const title = document.getElementById('policyTitle'); 
+            const content = document.getElementById('policyContent');
+            
+            if(type === 'tnc') {
+                title.innerText = "Syarat & Ketentuan";
+                content.innerHTML = `
+                    <p>Selamat datang di KA TECH HUB. Dengan mendaftar dan menggunakan layanan kami, Anda dianggap telah menyetujui seluruh Syarat & Ketentuan di bawah ini:</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-2">
+                        <li><b>Layanan:</b> Layanan ditujukan untuk tujuan sah secara hukum di Indonesia.</li>
+                        <li><b>Aktivitas Ilegal:</b> Dilarang menggunakan website ini untuk penipuan atau pencucian uang.</li>
+                        <li><b>Tanggung Jawab Input:</b> Kesalahan data target sepenuhnya tanggung jawab pembeli.</li>
+                        <li><b>Perubahan Harga:</b> Harga dapat berubah sewaktu-waktu tanpa pemberitahuan.</li>
+                    </ul>`;
+            } else if(type === 'privacy') {
+                title.innerText = "Kebijakan Privasi";
+                content.innerHTML = `
+                    <p>Di KA TECH HUB, kami sangat menjaga keamanan dan kerahasiaan data pribadi Anda:</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-2">
+                        <li><b>Pengumpulan Data:</b> Kami hanya mengumpulkan Nama, Email, dan Password untuk transaksi.</li>
+                        <li><b>Keamanan Data (Cloud):</b> Seluruh data diamankan dengan enkripsi Firebase. Password disandikan dan tidak dapat dilihat oleh admin.</li>
+                        <li><b>Berbagi Informasi:</b> Informasi Anda tidak akan kami jual kepada pihak ketiga mana pun.</li>
+                    </ul>`;
+            } else if(type === 'refund') {
+                title.innerText = "Kebijakan Pengembalian Dana (Refund)";
+                content.innerHTML = `
+                    <p>Aturan pengembalian dana (refund) kami adalah sebagai berikut:</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-2">
+                        <li><b>Transaksi Final:</b> Secara umum, transaksi bersifat final.</li>
+                        <li><b>Kesalahan Sistem:</b> Refund saldo HANYA diproses apabila terjadi error sistem internal yang menyebabkan pesanan Gagal.</li>
+                        <li><b>Kesalahan Pengguna (No Refund):</b> Kami <b>TIDAK MELAYANI</b> komplain akibat salah ketik username, akun di private, atau salah nomor rekening tujuan.</li>
+                        <li><b>Batas Klaim:</b> Komplain maksimal 3x24 jam sejak pesanan dibuat.</li>
+                    </ul>`;
+            }
+            modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden';
+        };
+
+        window.closePolicyModal = function() {
+            document.getElementById('policyModal').classList.add('hidden'); document.getElementById('policyModal').classList.remove('flex'); document.body.style.overflow = 'auto';
+        };
+
+        // --- ANIMASI COUNTERS (KEMBALI) ---
+        function animateCounters() { 
+            const targets = { orders: 58420, users: 12400, satisfy: 99 }; 
+            let c = { orders: 0, users: 0, satisfy: 0 }; 
+            const countOrders = document.getElementById('countOrders'); 
+            const countUsers = document.getElementById('countUsers'); 
+            const countSatisfy = document.getElementById('countSatisfy'); 
+            
+            if(!countOrders) return; 
+            
+            const t = setInterval(() => { 
+                if(c.orders < targets.orders) c.orders += 1200; 
+                if(c.users < targets.users) c.users += 300; 
+                if(c.satisfy < targets.satisfy) c.satisfy += 2; 
+                
+                countOrders.innerText = window.formatRupiah(Math.min(c.orders, targets.orders)); 
+                countUsers.innerText = window.formatRupiah(Math.min(c.users, targets.users)); 
+                countSatisfy.innerText = Math.min(c.satisfy, targets.satisfy) + '%'; 
+                
+                if(c.orders >= targets.orders && c.users >= targets.users && c.satisfy >= targets.satisfy) clearInterval(t); 
+            }, 30); 
+        }
+
+        // --- ANIMASI POP-UP SOCIAL PROOF (KEMBALI) ---
+        const indoNames = ["Bagas P.", "Nadia Safitri", "Reza Aditya", "Citra K.", "Rizky F.", "Ayu Lestari", "Dimas Anggara", "Putri M.", "Dedi Santoso", "Siska W.", "Tegar P.", "Rina Amelia", "Budi S.", "Andi Irawan", "Maya Sari", "Fajar H."]; 
+        const indoCities = ["Jakarta", "Bandung", "Surabaya", "Medan", "Semarang", "Yogyakarta", "Makassar", "Palembang", "Balikpapan", "Denpasar", "Malang", "Banjarmasin", "Bogor", "Depok", "Tangerang"]; 
+        const indoTimes = ["Baru saja", "12 detik yang lalu", "45 detik yang lalu", "1 menit yang lalu", "2 menit yang lalu"];
+        
+        function triggerSocialProof() { 
+            const container = document.getElementById('socialProofContainer'); 
+            if(!container) return; 
+            
+            const randomName = indoNames[Math.floor(Math.random() * indoNames.length)]; 
+            const randomCity = indoCities[Math.floor(Math.random() * indoCities.length)]; 
+            const randomTime = indoTimes[Math.floor(Math.random() * indoTimes.length)]; 
+            const randomProduct = products[Math.floor(Math.random() * products.length)]; 
+            const randomQty = Math.floor(Math.random() * (5000 - 100 + 1) + 100); 
+            const itemString = randomProduct.unit.includes('Pcs') ? `Layanan ${randomProduct.name}` : `${window.formatRupiah(randomQty)}x ${randomProduct.name}`; 
+            
+            const popup = document.createElement('div'); 
+            popup.className = "bg-slate-900/85 backdrop-blur-md p-3 sm:p-4 rounded-xl flex items-center gap-3 sm:gap-4 border-l-4 border-l-primary border-t border-r border-b border-white/10 shadow-[0_8px_30px_rgba(56,189,248,0.15)] relative overflow-hidden animate-slide-in-left min-w-[280px] max-w-[320px]"; 
+            popup.innerHTML = `
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/30 flex-shrink-0 relative">
+                    <i class="fa-solid fa-cart-arrow-down text-lg"></i>
+                    <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full w-4 h-4 flex items-center justify-center text-white text-[8px] border-2 border-slate-900"><i class="fa-solid fa-check"></i></div>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex justify-between items-center mb-0.5">
+                        <span class="font-bold text-white text-xs sm:text-sm tracking-tight">${randomName} <span class="font-normal text-slate-400">di</span> ${randomCity}</span>
+                    </div>
+                    <span class="text-[10px] sm:text-xs text-slate-300 leading-tight block mb-1">Membeli <b class="text-primary">${itemString}</b></span>
+                    <span class="text-[8px] sm:text-[9px] text-slate-500 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${randomTime}</span>
+                </div>`; 
+            
+            container.appendChild(popup); 
+            setTimeout(() => { popup.classList.remove('animate-slide-in-left'); popup.classList.add('animate-slide-out-left'); setTimeout(() => popup.remove(), 500); }, 5000); 
+        }
+        
+        function scheduleNextPopup() { 
+            const randomDelay = Math.floor(Math.random() * (15000 - 8000 + 1) + 8000); 
+            setTimeout(() => { triggerSocialProof(); scheduleNextPopup(); }, randomDelay); 
+        }
+        
+        window.trackOrderReal = function() { 
+            const val = document.getElementById('trackInput').value.trim(); 
+            if(!val) return alert("Masukkan kode pesanan Anda!"); 
+            
+            document.getElementById('trackResult').classList.remove('hidden'); 
+            document.getElementById('resCode').innerText = val; 
+            document.getElementById('resBadge').innerText = "Mencari..."; 
+            document.getElementById('resBadge').className = "px-2.5 py-1 rounded-full text-[10px] font-bold border bg-slate-500/20 text-slate-400 border-slate-500/20 animate-pulse"; 
+            document.getElementById('resTime').innerText = "Memuat data..."; 
+            document.getElementById('resItemDetail').innerText = "..."; 
+            
+            setTimeout(() => { 
+                document.getElementById('resBadge').innerText = "Diproses"; 
+                document.getElementById('resBadge').className = "px-2.5 py-1 rounded-full text-[10px] font-bold border bg-amber-500/20 text-amber-400 border-amber-500/20"; 
+                const now = new Date(); const waktu = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`; 
+                document.getElementById('resTime').innerText = waktu; 
+                document.getElementById('resItemDetail').innerText = "Pesanan sedang dalam antrean server. Harap tunggu sesuai estimasi."; 
+            }, 1200); 
+        };
 
         let typeIndex = 0, charIndex = 0, isDeleting = false; 
         const typingTexts = ["Layanan Digital", "Top Up Game", "Social Media Boost", "Solusi Teknologi"];
@@ -1518,6 +1802,8 @@
             window.initCategoryDropdown(); 
             window.updateCartUI(); 
             typeWriter(); 
+            animateCounters();
+            scheduleNextPopup();
             window.updateRealtimeClock(); 
             setInterval(window.updateRealtimeClock, 1000);
         };
