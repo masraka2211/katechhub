@@ -766,8 +766,13 @@
 
         <!-- FLOATING ACTION BUTTONS (WA & LIVE CHAT CS) -->
         <div class="fixed bottom-20 md:bottom-8 left-5 z-40 flex flex-col items-start gap-3">
-            <button onclick="openChatWidget()" class="w-14 h-14 bg-gradient-to-r from-blue-500 to-primary rounded-full flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/30 hover:scale-110 transition-transform floating-action" title="Live CS Support">
+            <button onclick="openChatWidget()" class="w-14 h-14 bg-gradient-to-r from-blue-500 to-primary rounded-full flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/30 hover:scale-110 transition-transform floating-action relative" title="Live CS Support">
                 <i class="fa-solid fa-comments"></i>
+                <!-- NOTIFIKASI MERAH CS REPLY -->
+                <span id="globalChatBadge" class="absolute -top-1 -right-1 flex h-4 w-4 hidden">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-[#070C18]"></span>
+                </span>
             </button>
         </div>
         <div class="fixed bottom-20 md:bottom-8 right-5 z-40 flex flex-col items-end gap-3">
@@ -917,6 +922,8 @@
         window.unsubscribeChat = null;
         window.unsubscribeAdminTickets = null;
         window.chatContext = 'user';
+        window.lastAdminMsgTime = 0; // Untuk tracker notifikasi
+        window.backgroundTicketUnsubscribe = null;
 
         // TANGKAP LINK REFERRAL DARI URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -935,6 +942,35 @@
                 notifBox.classList.remove('hidden');
             }
         }
+
+        // FITUR BARU: BACKGROUND LISTENER UNTUK NOTIFIKASI CS (RED DOT)
+        window.startBackgroundChatListener = function(uid) {
+            if(window.backgroundTicketUnsubscribe) window.backgroundTicketUnsubscribe();
+            
+            const q = query(collection(db, "tickets"), where("uid", "==", uid));
+            window.backgroundTicketUnsubscribe = onSnapshot(q, (snapshot) => {
+                const badge = document.getElementById('globalChatBadge');
+                const chatModal = document.getElementById('liveChatModal');
+                
+                if (!snapshot.empty) {
+                    const ticketData = snapshot.docs[0].data();
+                    if (ticketData.messages && ticketData.messages.length > 0) {
+                        const lastMsg = ticketData.messages[ticketData.messages.length - 1];
+                        
+                        // Jika pesan terakhir dari admin DAN modal chat sedang tidak dibuka
+                        if (lastMsg.sender === 'admin' && chatModal.classList.contains('hidden')) {
+                            if(badge) badge.classList.remove('hidden'); // Munculkan titik merah
+                            
+                            // Pop-up Alert Toast (dicegah agar tidak looping bunyi terus)
+                            if(window.lastAdminMsgTime === 0 || window.lastAdminMsgTime < lastMsg.timestamp) {
+                                window.showToast("Ada balasan baru dari CS Support!", "info");
+                                window.lastAdminMsgTime = lastMsg.timestamp;
+                            }
+                        }
+                    }
+                }
+            });
+        };
 
         onAuthStateChanged(auth, async (user) => {
             const welcomeModal = document.getElementById('welcomeModal');
@@ -976,6 +1012,11 @@
                         window.currentUserData = { uid: user.uid, ...fallbackData };
                     }
                     
+                    // AKTIFKAN LISTENER NOTIFIKASI JIKA DIA USER BIASA
+                    if(window.currentUserData && window.currentUserData.role === 'user') {
+                        window.startBackgroundChatListener(user.uid);
+                    }
+
                     welcomeModal.classList.add('hidden');
                     welcomeModal.classList.remove('flex');
                     appContent.classList.remove('hidden');
@@ -987,6 +1028,7 @@
                 }
             } else {
                 window.currentUserData = null;
+                if(window.backgroundTicketUnsubscribe) window.backgroundTicketUnsubscribe();
                 appContent.classList.add('hidden', 'opacity-0');
                 authLoadingState.classList.add('hidden');
                 authFormArea.classList.remove('hidden');
@@ -1136,15 +1178,18 @@
             } catch (error) { window.alert("Gagal Registrasi: " + error.message); }
         };
 
-        // PROSES LOGIN ANTI-MACET DENGAN FINALLY BLOCK & AUTO-RESET
+        // PERBAIKAN LOGIN ANTI-MACET (Sesuai yg sebelumnya)
         window.processLogin = async function() {
             const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
             const passIn = document.getElementById('loginPassword').value;
             const btn = document.getElementById('btnLoginBtn');
             
-            if(!emailInput || !passIn) return window.alert("Isi Email dan Password!");
+            if(!emailInput || !passIn) {
+                window.alert("Isi Email dan Password terlebih dahulu!");
+                return;
+            }
             
-            let originalText = '<i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk Cloud';
+            const originalContent = '<i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk Cloud';
             if(btn) {
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memeriksa...';
                 btn.disabled = true;
@@ -1158,11 +1203,13 @@
                 let msg = error.message;
                 if(msg.includes('invalid-credential') || msg.includes('user-not-found') || msg.includes('wrong-password')) {
                     msg = "Email atau Password yang Anda masukkan salah.";
+                } else if(msg.includes('network-request-failed')) {
+                    msg = "Koneksi internet bermasalah. Silakan coba lagi.";
                 }
                 window.alert("Login Gagal: " + msg); 
             } finally {
                 if(btn) {
-                    btn.innerHTML = originalText;
+                    btn.innerHTML = originalContent;
                     btn.disabled = false;
                 }
             }
@@ -1246,8 +1293,14 @@
             }
         };
 
+        // KETIKA BUKA CHAT, HILANGKAN NOTIF MERAH
         window.openChatWidget = async function() {
             if(!window.currentUserData) return window.alert("Silakan login dulu.");
+            
+            // Hapus Badge Notif Merah
+            const badge = document.getElementById('globalChatBadge');
+            if(badge) badge.classList.add('hidden');
+
             window.chatContext = 'user';
             const modal = document.getElementById('liveChatModal');
             modal.classList.remove('hidden');
@@ -1548,7 +1601,7 @@
         };
     </script>
 
-    <!-- CORE VANILLA JS (AMAT SANGAT AMAN DARI ERROR) -->
+    <!-- CORE VANILLA JS -->
     <script>
         const WA_NUMBER = "6281312185600";
         let cart = JSON.parse(localStorage.getItem('katech_cart')) || [];
@@ -1556,7 +1609,6 @@
 
         window.formatRupiah = function(num) { return new Intl.NumberFormat('id-ID').format(num || 0); };
         
-        // OVERRIDE ALERT DENGAN FUNGSI PENJAGA ANTI-CRASH
         window.alert = function(message) {
             let iconType = 'warning';
             let titleText = 'Informasi';
