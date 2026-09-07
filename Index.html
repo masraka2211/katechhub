@@ -96,82 +96,91 @@
         </div>
 
         <div class="glass-card max-w-md w-full p-6 sm:p-8 relative border-primary/30 shadow-glow-strong transform scale-100 transition-transform overflow-hidden z-10 mx-4">
-            <div class="text-center mb-6 mt-2">
-                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mx-auto mb-4 shadow-glow border border-white/20">
-                    <i class="fa-solid fa-shield-halved text-white text-3xl"></i>
-                </div>
-                <h2 class="text-2xl font-extrabold text-white tracking-tight">KA TECH HUB</h2>
-                <p class="text-primary font-bold text-xs mt-1 bg-primary/10 inline-block px-3 py-1 rounded-full border border-primary/20">Private Access Portal</p>
-                <p class="text-slate-400 text-[11px] mt-3">Sistem terkunci. Silakan login terlebih dahulu untuk menggunakan layanan kami.</p>
+            
+            <!-- INDICATOR LOADING SAAT CEK FIREBASE -->
+            <div id="authLoadingState" class="flex flex-col items-center justify-center py-8">
+                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-primary mb-4"></i>
+                <p class="text-sm font-semibold text-slate-300">Menghubungkan ke Cloud...</p>
             </div>
 
-            <!-- FORM LOGIN -->
-            <div id="formLogin" class="block space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Email Terdaftar</label>
-                    <input type="email" id="loginUsername" placeholder="email@contoh.com" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none transition">
+            <div id="authFormArea" class="hidden">
+                <div class="text-center mb-6 mt-2">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mx-auto mb-4 shadow-glow border border-white/20">
+                        <i class="fa-solid fa-shield-halved text-white text-3xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-white tracking-tight">KA TECH HUB</h2>
+                    <p class="text-primary font-bold text-xs mt-1 bg-primary/10 inline-block px-3 py-1 rounded-full border border-primary/20">Private Access Portal</p>
+                    <p class="text-slate-400 text-[11px] mt-3">Sistem terkunci. Silakan login terlebih dahulu untuk menggunakan layanan kami.</p>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
-                    <div class="relative">
-                        <input type="password" id="loginPassword" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-primary focus:outline-none transition">
-                        <i class="fa-regular fa-eye absolute right-4 top-3.5 text-slate-400 cursor-pointer hover:text-primary transition" onclick="togglePassword('loginPassword', this)"></i>
+
+                <!-- FORM LOGIN -->
+                <div id="formLogin" class="block space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Email Terdaftar</label>
+                        <input type="email" id="loginUsername" placeholder="email@contoh.com" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
+                        <div class="relative">
+                            <input type="password" id="loginPassword" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-primary focus:outline-none transition">
+                            <i class="fa-regular fa-eye absolute right-4 top-3.5 text-slate-400 cursor-pointer hover:text-primary transition" onclick="togglePassword('loginPassword', this)"></i>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs mt-1 text-slate-400 px-1">
+                        <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-300 transition group">
+                            <input type="checkbox" id="rememberMe" checked class="accent-primary w-3.5 h-3.5 rounded cursor-pointer">
+                            <span class="group-hover:text-primary transition-colors">Ingat Saya</span>
+                        </label>
+                        <button type="button" onclick="switchAuthTab('forgot')" class="hover:text-primary transition">Lupa Password?</button>
+                    </div>
+                    <button onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-lg mt-3 transition hover:scale-[1.02]">
+                        <i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk Cloud
+                    </button>
+                    <div class="text-center text-xs mt-5 text-slate-400 pt-3 border-t border-slate-700/50">
+                        Belum punya akun? <button type="button" onclick="switchAuthTab('register')" class="text-primary font-bold hover:underline transition">Daftar Akun</button>
                     </div>
                 </div>
-                <div class="flex justify-between items-center text-xs mt-1 text-slate-400 px-1">
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-300 transition group">
-                        <input type="checkbox" id="rememberMe" checked class="accent-primary w-3.5 h-3.5 rounded cursor-pointer">
-                        <span class="group-hover:text-primary transition-colors">Ingat Saya</span>
-                    </label>
-                    <button type="button" onclick="switchAuthTab('forgot')" class="hover:text-primary transition">Lupa Password?</button>
-                </div>
-                <button onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-lg mt-3 transition hover:scale-[1.02]">
-                    <i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk Cloud
-                </button>
-                <div class="text-center text-xs mt-5 text-slate-400 pt-3 border-t border-slate-700/50">
-                    Belum punya akun? <button type="button" onclick="switchAuthTab('register')" class="text-primary font-bold hover:underline transition">Daftar Akun</button>
-                </div>
-            </div>
 
-            <!-- FORM REGISTER -->
-            <div id="formRegister" class="hidden space-y-3.5">
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Nama Lengkap</label>
-                    <input type="text" id="regName" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Username</label>
-                    <input type="text" id="regUsername" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Email</label>
-                    <input type="email" id="regEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
-                    <div class="relative">
-                        <input type="password" id="regPassword" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-primary focus:outline-none transition">
-                        <i class="fa-regular fa-eye absolute right-4 top-3.5 text-slate-400 cursor-pointer hover:text-primary transition" onclick="togglePassword('regPassword', this)"></i>
+                <!-- FORM REGISTER -->
+                <div id="formRegister" class="hidden space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Nama Lengkap</label>
+                        <input type="text" id="regName" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Username</label>
+                        <input type="text" id="regUsername" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Email</label>
+                        <input type="email" id="regEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
+                        <div class="relative">
+                            <input type="password" id="regPassword" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-primary focus:outline-none transition">
+                            <i class="fa-regular fa-eye absolute right-4 top-3.5 text-slate-400 cursor-pointer hover:text-primary transition" onclick="togglePassword('regPassword', this)"></i>
+                        </div>
+                    </div>
+                    <button onclick="processRegister()" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 py-3 rounded-xl font-bold text-sm transition mt-3 hover:scale-[1.02]">
+                        <i class="fa-solid fa-user-plus mr-1"></i> Daftar Sekarang
+                    </button>
+                    <div class="text-center text-xs mt-4 text-slate-400 pt-3 border-t border-slate-700/50">
+                        Sudah punya akun? <button type="button" onclick="switchAuthTab('login')" class="text-primary font-bold hover:underline transition">Login Disini</button>
                     </div>
                 </div>
-                <button onclick="processRegister()" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 py-3 rounded-xl font-bold text-sm transition mt-3 hover:scale-[1.02]">
-                    <i class="fa-solid fa-user-plus mr-1"></i> Daftar Sekarang
-                </button>
-                <div class="text-center text-xs mt-4 text-slate-400 pt-3 border-t border-slate-700/50">
-                    Sudah punya akun? <button type="button" onclick="switchAuthTab('login')" class="text-primary font-bold hover:underline transition">Login Disini</button>
-                </div>
-            </div>
 
-            <!-- FORM LUPA PASSWORD -->
-            <div id="formForgot" class="hidden space-y-4">
-                <p class="text-xs text-slate-300 mb-4 text-center">Masukkan Email terdaftar untuk kirim link reset password.</p>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Email Terdaftar</label>
-                    <input type="email" id="forgotEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
-                </div>
-                <button onclick="processResetPassword()" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-bold text-sm transition mt-2 hover:scale-[1.02]">Kirim Link Reset</button>
-                <div class="text-center text-xs mt-4 text-slate-400 pt-3 border-t border-slate-700/50">
-                    Kembali ke <button type="button" onclick="switchAuthTab('login')" class="text-primary font-bold hover:underline transition">Login</button>
+                <!-- FORM LUPA PASSWORD -->
+                <div id="formForgot" class="hidden space-y-4">
+                    <p class="text-xs text-slate-300 mb-4 text-center">Masukkan Email terdaftar untuk kirim link reset password.</p>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Email Terdaftar</label>
+                        <input type="email" id="forgotEmail" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
+                    </div>
+                    <button onclick="processResetPassword()" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-xl font-bold text-sm transition mt-2 hover:scale-[1.02]">Kirim Link Reset</button>
+                    <div class="text-center text-xs mt-4 text-slate-400 pt-3 border-t border-slate-700/50">
+                        Kembali ke <button type="button" onclick="switchAuthTab('login')" class="text-primary font-bold hover:underline transition">Login</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -611,7 +620,7 @@
             </div>
         </section>
 
-        <!-- SECTION INFO REKENING & PEMBAYARAN (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <!-- SECTION INFO REKENING & PEMBAYARAN -->
         <section id="pembayaran" class="py-16 relative z-10 bg-slate-900/40 border-y border-slate-800/80">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -648,7 +657,7 @@
             </div>
         </section>
 
-        <!-- FAQ SECTION (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <!-- FAQ SECTION -->
         <section id="faq-section" class="py-20 relative z-10 border-b border-slate-800/80">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -682,7 +691,7 @@
             </div>
         </section>
 
-        <!-- FEATURES & STATS (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <!-- FEATURES & STATS -->
         <section id="features" class="py-20 relative z-10 border-b border-slate-800/80">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
@@ -742,7 +751,7 @@
             </button>
         </nav>
 
-        <!-- FOOTER (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <!-- FOOTER -->
         <footer id="footer" class="border-t border-slate-800 bg-[#040810] pt-16 pb-24 md:pb-8 relative z-10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
@@ -812,7 +821,7 @@
             </div>
         </div>
 
-        <!-- MODAL KEBIJAKAN / POLICIES (YANG SEMPAT HILANG, KINI KEMBALI) -->
+        <!-- MODAL KEBIJAKAN / POLICIES -->
         <div id="policyModal" class="fixed inset-0 z-[450] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity p-4">
             <div class="glass-card w-full max-w-2xl p-6 max-h-[85vh] flex flex-col relative border-slate-700 shadow-2xl">
                 <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition bg-slate-800 rounded-full w-8 h-8 flex items-center justify-center">
@@ -858,25 +867,48 @@
         window.unsubscribeChat = null;
         window.unsubscribeAdminTickets = null;
 
+        // PERBAIKAN LOGIKA AUTHENTICATION STATE
         onAuthStateChanged(auth, async (user) => {
             const welcomeModal = document.getElementById('welcomeModal');
             const appContent = document.getElementById('appContent');
+            const authLoadingState = document.getElementById('authLoadingState');
+            const authFormArea = document.getElementById('authFormArea');
 
             if (user) {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) {
-                    window.currentUserData = { uid: user.uid, ...userDoc.data() };
-                }
-                
-                welcomeModal.classList.add('hidden');
-                welcomeModal.classList.remove('flex');
-                
-                appContent.classList.remove('hidden');
-                setTimeout(() => appContent.classList.remove('opacity-0'), 50);
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        window.currentUserData = { uid: user.uid, ...userDoc.data() };
+                    } else {
+                        const isOwner = (user.email === "marcurapikk@gmail.com");
+                        window.currentUserData = {
+                            uid: user.uid,
+                            email: user.email,
+                            name: user.displayName || "User",
+                            username: user.email.split('@')[0],
+                            role: isOwner ? 'owner' : 'user',
+                            level: isOwner ? 'Supreme 👑' : 'Bronze',
+                            balance: isOwner ? 999999999 : 0
+                        };
+                    }
+                    
+                    welcomeModal.classList.add('hidden');
+                    welcomeModal.classList.remove('flex');
+                    
+                    appContent.classList.remove('hidden');
+                    setTimeout(() => appContent.classList.remove('opacity-0'), 50);
 
+                } catch (err) {
+                    console.error("Gagal sinkron data user:", err);
+                    window.showToast("Koneksi lambat, mencoba ulang...", "error");
+                }
             } else {
                 window.currentUserData = null;
                 appContent.classList.add('hidden', 'opacity-0');
+                
+                authLoadingState.classList.add('hidden');
+                authFormArea.classList.remove('hidden');
+                
                 welcomeModal.classList.remove('hidden');
                 welcomeModal.classList.add('flex');
             }
@@ -904,7 +936,7 @@
             reader.readAsDataURL(file);
         };
 
-        // --- REALTIME CHAT CS SUPPORT SYSTEM ---
+        // REALTIME CHAT CS SUPPORT SYSTEM
         window.openChatWidget = async function() {
             if(!window.currentUserData) return alert("Silakan login dulu.");
             const modal = document.getElementById('liveChatModal');
@@ -1018,7 +1050,7 @@
             if(window.unsubscribeChat) { window.unsubscribeChat(); window.activeTicketId = null; }
         };
 
-        // --- REALTIME TICKET LIST UNTUK OWNER (WHATSAPP STYLE) ---
+        // REALTIME TICKET LIST UNTUK OWNER (WHATSAPP STYLE)
         window.fetchAdminTicketsRealtime = function() {
             const listContainer = document.getElementById('adminTicketList');
             const countBadge = document.getElementById('activeTicketCount');
@@ -1087,7 +1119,7 @@
             } catch(e) { alert("Gagal menghapus tiket: " + e.message); }
         };
 
-        // --- AUTH & DB FUNCTIONS ---
+        // AUTH & DB FUNCTIONS
         window.processRegister = async function() {
             const name = document.getElementById('regName').value.trim();
             const username = document.getElementById('regUsername').value.trim();
@@ -1257,7 +1289,7 @@
         };
     </script>
 
-    <!-- CORE VANILLA JS (TERMASUK ANIMASI & MODAL KEBIJAKAN YANG SEMPAT HILANG) -->
+    <!-- CORE VANILLA JS -->
     <script>
         const WA_NUMBER = "6281312185600";
         let cart = JSON.parse(localStorage.getItem('katech_cart')) || [];
@@ -1298,27 +1330,24 @@
             document.getElementById('formLogin').classList.add('hidden');
             document.getElementById('formRegister').classList.add('hidden');
             document.getElementById('formForgot').classList.add('hidden');
-            document.getElementById('formLogin').classList.remove('block');
-            document.getElementById('formRegister').classList.remove('block');
-            document.getElementById('formForgot').classList.remove('block');
 
             if (tabName === 'login') {
-                document.getElementById('formLogin').classList.remove('hidden'); document.getElementById('formLogin').classList.add('block');
+                document.getElementById('formLogin').classList.remove('hidden');
             } else if (tabName === 'register') {
-                document.getElementById('formRegister').classList.remove('hidden'); document.getElementById('formRegister').classList.add('block');
+                document.getElementById('formRegister').classList.remove('hidden');
             } else if (tabName === 'forgot') {
-                document.getElementById('formForgot').classList.remove('hidden'); document.getElementById('formForgot').classList.add('block');
+                document.getElementById('formForgot').classList.remove('hidden');
             }
         };
 
         window.openProfileDashboard = function() {
             const userData = window.currentUserData;
-            if(!userData) return alert("Sistem memuat data profil...");
+            if(!userData) return alert("Sistem sedang memuat data profil. Mohon tunggu sebentar...");
 
-            document.getElementById('dashNameDisplay').innerText = userData.name;
-            document.getElementById('dashUsername').innerText = userData.username;
+            document.getElementById('dashNameDisplay').innerText = userData.name || 'User';
+            document.getElementById('dashUsername').innerText = userData.username || 'user';
             document.getElementById('dashEmail').innerText = window.maskEmail(userData.email);
-            document.getElementById('dashLevel').innerText = userData.level;
+            document.getElementById('dashLevel').innerText = userData.level || 'Bronze';
             document.getElementById('dashUserBalance').innerText = `Rp ${window.formatRupiah(userData.balance || 0)}`;
 
             const hour = new Date().getHours();
@@ -1343,7 +1372,7 @@
             document.getElementById('adminTopupBox').classList.add('hidden');
             document.getElementById('adminSupportBox').classList.add('hidden');
 
-            if (userData.role === 'owner' || userData.username.toLowerCase() === 'xbee' || userData.email === 'marcurapikk@gmail.com') {
+            if (userData.role === 'owner' || (userData.username && userData.username.toLowerCase() === 'xbee') || userData.email === 'marcurapikk@gmail.com') {
                 document.getElementById('dashCrown').classList.remove('hidden'); 
                 document.getElementById('dashBluetick').classList.remove('hidden'); 
                 document.getElementById('dashRoleTag').classList.remove('hidden');
@@ -1378,7 +1407,7 @@
             }
 
             if(userData.avatar) avatarEl.style.backgroundImage = `url(${userData.avatar})`;
-            else avatarEl.innerHTML = userData.name.charAt(0).toUpperCase();
+            else avatarEl.innerHTML = (userData.name || 'U').charAt(0).toUpperCase();
 
             const spent = userData.totalSpent || 0; 
             let currentBase = 0, nextTarget = 150000, nextT = "Silver";
@@ -1646,7 +1675,6 @@
             if (content.classList.contains('open')) content.classList.remove('open'); else content.classList.add('open'); 
         };
 
-        // --- FUNGSI MODAL KEBIJAKAN (T&C, PRIVACY, REFUND) KEMBALI! ---
         window.openPolicyModal = function(type) {
             const modal = document.getElementById('policyModal'); 
             const title = document.getElementById('policyTitle'); 
@@ -1689,7 +1717,6 @@
             document.getElementById('policyModal').classList.add('hidden'); document.getElementById('policyModal').classList.remove('flex'); document.body.style.overflow = 'auto';
         };
 
-        // --- ANIMASI COUNTERS (KEMBALI) ---
         function animateCounters() { 
             const targets = { orders: 58420, users: 12400, satisfy: 99 }; 
             let c = { orders: 0, users: 0, satisfy: 0 }; 
@@ -1712,7 +1739,6 @@
             }, 30); 
         }
 
-        // --- ANIMASI POP-UP SOCIAL PROOF (KEMBALI) ---
         const indoNames = ["Bagas P.", "Nadia Safitri", "Reza Aditya", "Citra K.", "Rizky F.", "Ayu Lestari", "Dimas Anggara", "Putri M.", "Dedi Santoso", "Siska W.", "Tegar P.", "Rina Amelia", "Budi S.", "Andi Irawan", "Maya Sari", "Fajar H."]; 
         const indoCities = ["Jakarta", "Bandung", "Surabaya", "Medan", "Semarang", "Yogyakarta", "Makassar", "Palembang", "Balikpapan", "Denpasar", "Malang", "Banjarmasin", "Bogor", "Depok", "Tangerang"]; 
         const indoTimes = ["Baru saja", "12 detik yang lalu", "45 detik yang lalu", "1 menit yang lalu", "2 menit yang lalu"];
