@@ -194,11 +194,12 @@
                         
                         <!-- AVATAR UPLOAD FITUR KEREN -->
                         <div class="relative group cursor-pointer flex-shrink-0" onclick="document.getElementById('avatarUpload').click()" title="Klik untuk ubah foto profil">
-                            <div id="profileAvatar" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 shadow-lg transition-all overflow-hidden bg-cover bg-center"></div>
+                            <div id="profileAvatar" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 shadow-lg transition-all overflow-hidden bg-cover bg-center"></div>
                             <!-- Efek Blur Kamera Saat Hover -->
                             <div class="absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] border-4 border-transparent">
                                 <i class="fa-solid fa-camera text-white text-xl sm:text-2xl drop-shadow-lg"></i>
                             </div>
+                            <!-- BUG FIX: Accept JPEG specifically to ensure device compatibility -->
                             <input type="file" id="avatarUpload" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleAvatarUpload(event)">
                         </div>
                         
@@ -877,12 +878,11 @@
             }
         });
 
-        // FITUR BARU: AUTO-COMPRESS CANVAS & SIMPAN FOTO KE FIRESTORE 
+        // BUG FIX: AUTO-COMPRESS CANVAS (Menggunakan JPEG agar tidak blank)
         window.handleAvatarUpload = async function(event) {
             const file = event.target.files[0];
             if(!file) return;
             
-            // Limit 5MB Input, selebihnya ditolak agar browser tidak hang
             if(file.size > 5 * 1024 * 1024) {
                 return alert("Ukuran file terlalu besar! Maksimal 5MB.");
             }
@@ -893,7 +893,6 @@
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = async function() {
-                    // Proses Kompresi
                     const canvas = document.createElement('canvas');
                     const MAX_SIZE = 400; 
                     let width = img.width;
@@ -914,22 +913,32 @@
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
+                    
+                    // FIX: Beri background putih sebelum foto digambar
+                    // (Mencegah foto transparan/PNG berubah jadi hitam pekat)
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Gambar foto di atas background putih
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Convert gambar jadi teks Base64
-                    const base64Data = canvas.toDataURL('image/webp', 0.8);
+                    // FIX: Ubah dari WebP ke JPEG yang didukung 100% oleh semua HP
+                    const base64Data = canvas.toDataURL('image/jpeg', 0.8);
                     
-                    // Simpan ke Firestore
                     try {
                         await updateDoc(doc(db, "users", window.currentUserData.uid), {
                             avatar: base64Data
                         });
                         
-                        // Perbarui UI
                         window.currentUserData.avatar = base64Data;
                         const avatarEl = document.getElementById('profileAvatar');
+                        
+                        // Set foto ke elemen HTML
                         avatarEl.style.backgroundImage = `url(${base64Data})`;
                         avatarEl.innerHTML = ''; 
+                        
+                        // FIX: Bersihkan class gradient bawaan saat foto terpasang
+                        avatarEl.classList.remove('bg-gradient-to-br', 'from-yellow-400', 'via-gold', 'to-amber-600', 'from-accent', 'to-primary');
                         
                         window.showToast("Foto profil berhasil diperbarui!");
                     } catch(err) {
@@ -1297,6 +1306,7 @@
             return new Intl.NumberFormat('id-ID').format(num); 
         };
         
+        // BUG FIX: PERBAIKAN CLASS RENDER AVATAR
         window.openProfileDashboard = function() {
             const userData = window.currentUserData;
             if(!userData) return window.openWelcomeModal();
@@ -1307,7 +1317,6 @@
             document.getElementById('dashLevel').innerText = userData.level;
             document.getElementById('dashUserBalance').innerText = `Rp ${window.formatRupiah(userData.balance || 0)}`;
 
-            // SMART GREETING LOGIC
             const hour = new Date().getHours();
             let greeting = "Selamat Malam,";
             if(hour >= 4 && hour < 11) greeting = "Selamat Pagi,";
@@ -1315,15 +1324,9 @@
             else if(hour >= 15 && hour < 18) greeting = "Selamat Sore,";
             document.getElementById('dashGreeting').innerText = greeting;
 
-            // AVATAR RENDER LOGIC
             const avatarEl = document.getElementById('profileAvatar');
-            avatarEl.style.backgroundImage = 'none'; // reset
-            if(userData.avatar) {
-                avatarEl.style.backgroundImage = `url(${userData.avatar})`;
-                avatarEl.innerHTML = ''; 
-            } else {
-                avatarEl.innerHTML = userData.name.charAt(0).toUpperCase();
-            }
+            avatarEl.style.backgroundImage = 'none'; // Reset awal
+            avatarEl.innerHTML = '';
 
             const dashRoleTag = document.getElementById('dashRoleTag'); 
             const dashBluetick = document.getElementById('dashBluetick'); 
@@ -1350,7 +1353,11 @@
                 dashBluetick.classList.remove('hidden'); 
                 dashRoleTag.classList.remove('hidden');
                 document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-server text-primary mr-1.5"></i> Area Supreme Owner`;
-                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-yellow-400 via-gold to-amber-600 flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-yellow-300 shadow-glow-gold transition-all bg-cover bg-center";
+                
+                // Pisahkan class gradient agar tidak menimpa background-image
+                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-yellow-300 shadow-glow-gold transition-all bg-cover bg-center";
+                if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-yellow-400', 'via-gold', 'to-amber-600');
+                
                 ownerStatsBox.classList.remove('hidden'); 
                 ownerActionBox.classList.remove('hidden'); 
                 ownerMutasiBox.classList.remove('hidden'); 
@@ -1362,11 +1369,23 @@
             } else if (userData.role === 'admin') {
                 dashShield.classList.remove('hidden');
                 document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-user-shield text-indigo-400 mr-1.5"></i> Area Admin Staff`;
-                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-indigo-400 shadow-glow transition-all bg-cover bg-center";
+                
+                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-indigo-400 shadow-glow transition-all bg-cover bg-center";
+                if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-indigo-500', 'to-blue-600');
+                
                 adminTopupBox.classList.remove('hidden');
             } else {
                 document.getElementById('dashHistoryTitle').innerHTML = `<i class="fa-solid fa-clock-rotate-left text-primary mr-1.5"></i> Riwayat Pesanan Saya`;
-                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-[#070C18] shadow-lg transition-all bg-cover bg-center";
+                
+                avatarEl.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold border-4 border-[#070C18] shadow-lg transition-all bg-cover bg-center";
+                if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-accent', 'to-primary');
+            }
+
+            // Jika ada foto terunggah
+            if(userData.avatar) {
+                avatarEl.style.backgroundImage = `url(${userData.avatar})`;
+            } else {
+                avatarEl.innerHTML = userData.name.charAt(0).toUpperCase();
             }
 
             document.getElementById('dashTotalSpent').innerText = `Rp ${window.formatRupiah(userData.totalSpent || 0)}`;
