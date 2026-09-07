@@ -8,15 +8,17 @@
     <meta name="description" content="Pusat layanan digital dan otomatisasi SMM nomor #1 di Indonesia. Proses instan 24/7.">
     <meta name="theme-color" content="#0B1528">
     
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- External Libraries -->
     <script src="https://www.google.com/recaptcha/api.js?render=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -76,11 +78,11 @@
 </head>
 <body class="antialiased selection:bg-primary selection:text-white relative show-recaptcha">
 
-    <!-- Notifikasi Sound -->
+    <!-- Notifikasi Sound & Toasts -->
     <audio id="csNotifSound" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg"></audio>
     <div id="toastContainer" class="fixed top-5 right-5 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- MODAL LOGIN/REGISTER (Tampil Awal) -->
+    <!-- ==================== 1. MODAL AUTHENTICATION (LOGIN/REGISTER) ==================== -->
     <div id="welcomeModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-[#070D19] overflow-hidden transition-all duration-500">
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div class="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] bg-primary/10 rounded-full blur-[120px]"></div>
@@ -119,17 +121,11 @@
                         <label class="flex items-center gap-1.5 cursor-pointer hover:text-white transition"><input type="checkbox" checked class="accent-primary rounded"><span>Ingat Saya</span></label>
                         <button type="button" onclick="switchAuthTab('formForgot')" class="hover:text-primary transition">Lupa Password?</button>
                     </div>
-                    
-                    <button id="btnLoginBtn" onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-glow flex items-center justify-center gap-2 mt-2">
-                        Masuk Dashboard <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-
+                    <button id="btnLoginBtn" onclick="processLogin()" class="w-full btn-primary py-3 rounded-xl font-bold text-sm shadow-glow mt-2">Masuk Dashboard</button>
                     <div class="relative my-4"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-700/80"></div></div><div class="relative flex justify-center text-xs"><span class="bg-cardbg px-2 text-slate-400">Atau</span></div></div>
-
                     <button id="btnGoogleLogin" onclick="processGoogleLogin()" type="button" class="w-full bg-[#070D19] hover:bg-slate-800 text-slate-200 border border-slate-700 py-3 rounded-xl font-semibold text-xs transition flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.4 0 15.2s.7 5.5 1.9 7.9l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg> Masuk dengan Google
                     </button>
-
                     <div class="text-center text-xs mt-5 text-slate-400 pt-3 border-t border-slate-700/50">
                         Belum punya akun? <button type="button" onclick="switchAuthTab('formRegister')" class="text-primary font-bold hover:underline">Daftar Akun</button>
                     </div>
@@ -162,29 +158,22 @@
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD APP (Djuragan Layout) -->
+    <!-- ==================== 2. MAIN DASHBOARD APP ==================== -->
     <div id="appContent" class="hidden h-screen w-full flex bg-[#070D19]">
         
-        <!-- ==================== SIDEBAR KIRI ==================== -->
+        <!-- SIDEBAR KIRI -->
         <aside id="sidebarMenu" class="fixed md:static inset-y-0 left-0 z-[100] w-72 bg-sidebar border-r border-slate-800 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col h-full overflow-y-auto no-scrollbar shadow-2xl md:shadow-none">
             
-            <!-- Brand Logo -->
             <div class="p-5 flex items-center justify-between sticky top-0 bg-sidebar z-20 border-b border-slate-800">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-glow">
-                        <i class="fa-solid fa-bolt text-white text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-extrabold text-white tracking-wide leading-tight">KATECH<span class="text-primary">HUB</span></h1>
-                        <p class="text-[9px] text-slate-400 font-medium tracking-widest uppercase">We Lead Them To Follow Us</p>
-                    </div>
+                    <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-glow"><i class="fa-solid fa-bolt text-white text-lg"></i></div>
+                    <div><h1 class="text-lg font-extrabold text-white tracking-wide leading-tight">KATECH<span class="text-primary">HUB</span></h1><p class="text-[9px] text-slate-400 font-medium tracking-widest uppercase">We Lead Them To Follow Us</p></div>
                 </div>
                 <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
             <div class="p-4 space-y-4 flex-grow">
-                
-                <!-- Card Profil User (Persis Djuragan) -->
+                <!-- Profil User Sidebar -->
                 <div class="bg-cardbg rounded-2xl p-4 border border-slate-800 text-center relative overflow-hidden group">
                     <div class="absolute top-3 left-3 bg-gradient-to-r from-amber-600 to-yellow-500 text-[9px] font-bold px-2 py-0.5 rounded text-white flex items-center gap-1 shadow-glow-orange cursor-pointer" onclick="document.getElementById('avatarUpload').click()" title="Ubah Foto"><i class="fa-solid fa-camera"></i> FOTO</div>
                     <input type="file" id="avatarUpload" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleAvatarUpload(event)">
@@ -193,161 +182,170 @@
 
                     <div id="sbAvatar" class="w-16 h-16 rounded-full mx-auto mt-2 mb-3 bg-slate-800 border-2 border-primary shadow-glow flex items-center justify-center text-2xl font-bold text-white bg-cover bg-center">U</div>
                     
-                    <h3 id="sbUsername" class="text-white font-bold text-sm mb-1 flex items-center justify-center gap-1 cursor-pointer" onclick="editUserName()">
-                        User <i id="sbVerif" class="fa-solid fa-circle-check text-blue-500 text-[10px] hidden"></i> <i class="fa-solid fa-pen-to-square text-[10px] text-slate-500 ml-1"></i>
-                    </h3>
+                    <h3 id="sbUsername" class="text-white font-bold text-sm mb-1 flex items-center justify-center gap-1 cursor-pointer" onclick="editUserName()">User</h3>
                     <div class="bg-slate-800/80 inline-block px-3 py-1 rounded-full text-primary font-bold text-xs mb-2 border border-slate-700 shadow-inner" id="sbBalance">Rp 0</div>
                     <div><span class="bg-slate-800 text-slate-300 text-[10px] px-3 py-1 rounded-full inline-flex items-center gap-1 border border-slate-700"><i class="fa-solid fa-star text-yellow-500"></i> <span id="sbLevel">Bronze</span></span></div>
                 </div>
 
-                <!-- Tombol Install App -->
-                <button id="btnInstallPWA" class="hidden w-full btn-orange py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-glow-orange hover:scale-[1.02]">
-                    INSTALL MOBILE APP <i class="fa-solid fa-arrow-right"></i>
-                </button>
-
-                <!-- Kumpulan Menu Navigasi -->
-                
-                <!-- Grup 1: Dashboard -->
+                <!-- Navigasi Menu -->
                 <div class="bg-cardbg rounded-2xl p-2 border border-slate-800">
                     <div class="text-[10px] font-bold text-slate-500 uppercase px-3 py-2">Dashboard</div>
-                    <a href="#" onclick="switchView('view-home')" id="nav-view-home" class="menu-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
-                        <i class="fa-solid fa-robot w-5 text-center text-lg"></i> Halaman Utama
-                    </a>
+                    <a href="#" onclick="switchView('view-home')" id="nav-view-home" class="menu-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300"><i class="fa-solid fa-robot w-5 text-center text-lg"></i> Halaman Utama</a>
                 </div>
 
-                <!-- Grup 2: Orders -->
                 <div class="bg-cardbg rounded-2xl p-2 border border-slate-800">
                     <div class="text-[10px] font-bold text-slate-500 uppercase px-3 py-2">Orders</div>
-                    <a href="#" onclick="switchView('view-order')" id="nav-view-order" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
-                        <i class="fa-solid fa-cart-plus w-5 text-center text-lg"></i> Pesanan Baru
-                    </a>
-                    <a href="#" onclick="switchView('view-history')" id="nav-view-history" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
-                        <i class="fa-solid fa-clock-rotate-left w-5 text-center text-lg"></i> Riwayat Order
-                    </a>
-                    <a href="#" onclick="switchView('view-track')" id="nav-view-track" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
-                        <i class="fa-solid fa-magnifying-glass w-5 text-center text-lg"></i> Lacak Status
-                    </a>
+                    <a href="#" onclick="switchView('view-order')" id="nav-view-order" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300"><i class="fa-solid fa-cart-plus w-5 text-center text-lg"></i> Pesanan Baru</a>
+                    <a href="#" onclick="switchView('view-history')" id="nav-view-history" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300"><i class="fa-solid fa-clock-rotate-left w-5 text-center text-lg"></i> Riwayat Order</a>
+                    <a href="#" onclick="switchView('view-track')" id="nav-view-track" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300"><i class="fa-solid fa-magnifying-glass w-5 text-center text-lg"></i> Lacak Status</a>
                 </div>
 
-                <!-- Grup 3: Payment & Affiliate -->
                 <div class="bg-cardbg rounded-2xl p-2 border border-slate-800">
                     <div class="text-[10px] font-bold text-slate-500 uppercase px-3 py-2">Payment & Affiliate</div>
-                    <a href="#" onclick="switchView('view-deposit')" id="nav-view-deposit" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
-                        <i class="fa-solid fa-money-bill-transfer w-5 text-center text-lg"></i> Isi Saldo
-                    </a>
-                    <a href="#" onclick="switchView('view-referral')" id="nav-view-referral" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
-                        <i class="fa-solid fa-users w-5 text-center text-lg"></i> Program Referral
-                    </a>
+                    <a href="#" onclick="switchView('view-deposit')" id="nav-view-deposit" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300"><i class="fa-solid fa-money-bill-transfer w-5 text-center text-lg"></i> Isi Saldo</a>
+                    <a href="#" onclick="switchView('view-referral')" id="nav-view-referral" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300"><i class="fa-solid fa-users w-5 text-center text-lg"></i> Program Referral</a>
                 </div>
 
-                <!-- Grup 4: Support -->
                 <div class="bg-cardbg rounded-2xl p-2 border border-slate-800">
                     <div class="text-[10px] font-bold text-slate-500 uppercase px-3 py-2">Support & Request</div>
-                    <a href="#" onclick="openChatWidget()" class="menu-item flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
+                    <a href="#" onclick="openChatWidget()" class="menu-item flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-slate-300">
                         <div class="flex items-center gap-3"><i class="fa-solid fa-headset w-5 text-center text-lg"></i> Tiket Bantuan</div>
                         <span id="globalChatBadge" class="bg-orangeapp text-white text-[9px] font-bold px-1.5 py-0.5 rounded hidden">BARU</span>
                     </a>
-                    <a href="#" onclick="processFloatingWA()" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
-                        <i class="fa-brands fa-whatsapp w-5 text-center text-lg text-green-400"></i> WhatsApp
-                    </a>
+                    <a href="#" onclick="processFloatingWA()" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300"><i class="fa-brands fa-whatsapp w-5 text-center text-lg text-green-400"></i> WhatsApp</a>
                 </div>
 
-                <!-- Grup 5: Admin Features (Tersembunyi by default) -->
+                <!-- Admin Menu (Hidden by default) -->
                 <div id="adminMenuBox" class="bg-cardbg rounded-2xl p-2 border border-slate-800 hidden">
                     <div class="text-[10px] font-bold text-yellow-500 uppercase px-3 py-2">Owner Features</div>
-                    <a href="#" onclick="switchView('view-admin')" id="nav-view-admin" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
-                        <i class="fa-solid fa-chart-line w-5 text-center text-lg"></i> Statistik & Panel Admin
-                    </a>
-                    <a href="#" onclick="openApiDocs()" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 cursor-pointer">
-                        <i class="fa-solid fa-code w-5 text-center text-lg"></i> API Dokumentasi
-                    </a>
-                </div>
-
-                <div class="pb-10 text-center text-[9px] text-slate-500 pt-4">
-                    &copy; 2026 KA TECH HUB<br>Ver. 2.0 (Enterprise Server)
+                    <a href="#" onclick="switchView('view-admin')" id="nav-view-admin" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300"><i class="fa-solid fa-chart-line w-5 text-center text-lg"></i> Panel Admin</a>
+                    <a href="#" onclick="openApiDocs()" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300"><i class="fa-solid fa-code w-5 text-center text-lg"></i> API Dokumentasi</a>
                 </div>
             </div>
         </aside>
 
-        <!-- Overlay untuk tutup sidebar di Mobile -->
-        <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-[90] hidden md:hidden backdrop-blur-sm transition-opacity" onclick="toggleSidebar()"></div>
+        <!-- Overlay Sidebar Mobile -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-[90] hidden md:hidden backdrop-blur-sm" onclick="toggleSidebar()"></div>
 
-        <!-- ==================== KONTEN UTAMA (KANAN) ==================== -->
+        <!-- AREA KONTEN UTAMA KANAN -->
         <div class="flex-1 flex flex-col h-screen overflow-hidden relative w-full">
             
-            <!-- Header Atas (Mobile & Desktop) -->
             <header class="bg-[#0B1528]/95 backdrop-blur-md border-b border-slate-800 h-16 flex items-center justify-between px-4 sm:px-6 z-40 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-1"><i class="fa-solid fa-bars text-xl"></i></button>
-                    <span id="headerTitle" class="text-white font-bold text-lg hidden sm:block">Dashboard Utama</span>
+                    <span id="headerTitle" class="text-white font-bold text-lg hidden sm:block">Halaman Utama</span>
                 </div>
-                
                 <div class="flex items-center gap-4">
-                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full cursor-help" onclick="window.alert('Server Normal (Uptime 99.9%)')">
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
                         <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
                         <span class="text-[10px] font-bold text-emerald-400 uppercase">System Online</span>
                     </div>
                     <button onclick="toggleCartModal()" class="relative text-slate-300 hover:text-white transition w-9 h-9 bg-cardbg rounded-full flex items-center justify-center border border-slate-700">
                         <i class="fa-solid fa-cart-shopping"></i>
-                        <span id="topCartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden border border-slate-900">0</span>
+                        <span id="topCartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden">0</span>
                     </button>
                 </div>
             </header>
 
-            <!-- Area Tampilan Konten Dinamis -->
             <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-4 sm:p-6 pb-24 md:pb-6 scroll-smooth w-full relative">
                 
-                <!-- Notif Promo Berjalan -->
-                <div class="w-full bg-primary/10 border border-primary/20 rounded-xl mb-6 p-2 overflow-hidden flex items-center shadow-glow">
-                    <div class="whitespace-nowrap animate-marquee flex items-center gap-8 text-[11px] text-primary font-bold">
-                        <span>🚀 PROMO: Diskon khusus layanan YouTube Watchtime minggu ini!</span>
-                        <span>💥 INFO: Sistem API Backend aktif untuk pesanan instan H2H.</span>
-                        <span>💰 REFERRAL: Ajak teman daftar & dapatkan komisi Rp 2.000 per user!</span>
-                    </div>
-                </div>
-
-                <!-- VIEW 1: HOME / DASHBOARD AWAL -->
+                <!-- VIEW 1: HOME (DESAIN DJURAGAN) -->
                 <div id="view-home" class="view-section block animate-[slideIn_0.3s_ease]">
-                    <div class="bg-cardbg border border-slate-700 rounded-2xl p-6 sm:p-8 text-center relative overflow-hidden mb-6 group">
-                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors"></div>
-                        <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-2">Selamat Datang di KA TECH HUB</h2>
-                        <p class="text-sm text-slate-400 mb-6 max-w-xl mx-auto">Platform andalan untuk Top Up Game, Kebutuhan SMM (Followers/View), dan Solusi Digital dengan sistem 100% Autopilot 24 Jam.</p>
-                        <button onclick="switchView('view-order')" class="btn-primary px-6 py-3 rounded-xl font-bold text-sm shadow-glow inline-flex items-center gap-2"><i class="fa-solid fa-bolt"></i> Buat Pesanan Baru</button>
-                    </div>
-
-                    <!-- Statistik Card (User View) -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-center">
-                        <div class="bg-cardbg p-4 rounded-xl border border-slate-700 shadow-md"><span class="text-2xl font-extrabold text-primary block" id="countOrders">0</span><span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Total Pesanan</span></div>
-                        <div class="bg-cardbg p-4 rounded-xl border border-slate-700 shadow-md"><span class="text-2xl font-extrabold text-primary block" id="countUsers">0</span><span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Member Aktif</span></div>
-                        <div class="bg-cardbg p-4 rounded-xl border border-slate-700 shadow-md"><span class="text-2xl font-extrabold text-primary block">24/7</span><span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Sistem Otomatis</span></div>
-                        <div class="bg-cardbg p-4 rounded-xl border border-slate-700 shadow-md"><span class="text-2xl font-extrabold text-primary block" id="dashViewBalance">Rp 0</span><span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Saldo Anda</span></div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Update Informasi -->
-                        <div class="bg-cardbg border border-slate-700 rounded-2xl p-5">
-                            <h3 class="font-bold text-white mb-4 text-sm flex items-center gap-2"><i class="fa-solid fa-bullhorn text-accent"></i> Update Sistem Terbaru</h3>
-                            <ul class="space-y-3 text-xs text-slate-300">
-                                <li class="flex gap-2"><span class="text-emerald-400"><i class="fa-solid fa-check"></i></span> [NEW] UI Dashboard Kiri ala Djuragan Sosmed aktif.</li>
-                                <li class="flex gap-2"><span class="text-emerald-400"><i class="fa-solid fa-check"></i></span> Fitur auto markup keuntungan API Provider siap.</li>
-                                <li class="flex gap-2"><span class="text-emerald-400"><i class="fa-solid fa-check"></i></span> Bug profil teratasi total dengan sistem Sidebar Realtime.</li>
-                            </ul>
-                        </div>
+                    <div class="max-w-5xl mx-auto">
                         
-                        <!-- Testimoni / Review -->
-                        <div class="bg-cardbg border border-slate-700 rounded-2xl p-5">
-                            <h3 class="font-bold text-white mb-4 text-sm flex items-center gap-2"><i class="fa-solid fa-star text-yellow-500"></i> Review Pengguna</h3>
-                            <div id="socialProofContainer" class="space-y-2">
-                                <div class="bg-[#070D19] p-3 rounded-lg border border-slate-800 flex gap-3 items-center">
-                                    <div class="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold">R</div>
-                                    <div class="flex-1"><h4 class="text-[11px] font-bold text-white">Rizky (Jakarta)</h4><p class="text-[10px] text-slate-400">Order Followers IG instant banget, best!</p></div>
-                                </div>
-                                <div class="bg-[#070D19] p-3 rounded-lg border border-slate-800 flex gap-3 items-center">
-                                    <div class="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center text-accent font-bold">D</div>
-                                    <div class="flex-1"><h4 class="text-[11px] font-bold text-white">Dimas (Bandung)</h4><p class="text-[10px] text-slate-400">UI nya gila keren banget parah, mirip web jutaan.</p></div>
-                                </div>
+                        <!-- Header & Waktu -->
+                        <div class="flex justify-between items-center mb-5">
+                            <div>
+                                <h2 class="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">Hai, <span id="dashHomeName" class="text-primary">User</span> <span class="text-2xl animate-bounce">👋</span></h2>
+                                <p class="text-[10px] sm:text-xs text-slate-400 mt-1 flex items-center gap-1.5"><i class="fa-regular fa-calendar text-primary"></i> <span id="dashHomeDate">Memuat waktu...</span></p>
+                            </div>
+                            <div class="bg-[#13233F] border border-slate-700 px-3 py-1.5 rounded-lg flex flex-col items-end shadow-inner hidden sm:flex">
+                                <span class="text-[9px] text-slate-500 font-bold uppercase">Status Akun</span>
+                                <span id="dashHomeLevel" class="text-xs font-bold text-yellow-500 flex items-center gap-1"><i class="fa-solid fa-crown"></i> Bronze</span>
                             </div>
                         </div>
+
+                        <!-- Banner Promo -->
+                        <div class="w-full bg-gradient-to-r from-blue-900 via-indigo-900 to-[#13233F] rounded-2xl p-5 sm:p-6 mb-6 relative overflow-hidden border border-blue-500/30 shadow-lg group">
+                            <div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-all duration-700"></div>
+                            <div class="absolute right-5 bottom-0 opacity-20 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500"><i class="fa-solid fa-bullseye text-8xl text-white"></i></div>
+                            <div class="relative z-10">
+                                <span class="bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-[9px] sm:text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase mb-3 inline-block shadow-glow-orange tracking-widest">Spesial Promo</span>
+                                <h3 class="text-white font-extrabold text-lg sm:text-xl mb-1.5 drop-shadow-md">Kejar Diskon Layanan VIP!</h3>
+                                <p class="text-blue-200 text-[10px] sm:text-xs w-[85%] sm:w-2/3 leading-relaxed">Tingkatkan interaksi sosial media kamu sekarang dengan harga server/reseller termurah se-Indonesia. Otomatis masuk dalam hitungan detik.</p>
+                            </div>
+                        </div>
+
+                        <!-- Saldo Card -->
+                        <div class="bg-[#13233F] border border-slate-700 rounded-2xl p-5 mb-6 flex justify-between items-center shadow-lg relative overflow-hidden group">
+                            <div class="absolute -right-4 -top-4 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-6 h-6 rounded-md bg-primary/20 flex items-center justify-center"><i class="fa-solid fa-wallet text-primary text-[10px]"></i></div>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Saldo Tersedia</p>
+                                </div>
+                                <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1 drop-shadow-md" id="dashHomeBalance">Rp 0</h2>
+                            </div>
+                            <button onclick="switchView('view-deposit')" class="w-12 h-12 bg-primary hover:bg-accent text-white rounded-xl flex items-center justify-center transition shadow-glow relative z-10 border border-white/20 hover:scale-105">
+                                <i class="fa-solid fa-plus text-xl"></i>
+                            </button>
+                        </div>
+
+                        <!-- Quick Nav Menu -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                            <div onclick="switchView('view-order')" class="bg-gradient-to-br from-blue-600/10 to-blue-900/20 border border-blue-500/20 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-blue-600/30 hover:border-blue-500/50 transition">
+                                <div class="w-9 h-9 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-cart-plus"></i></div>
+                                <span class="text-[11px] sm:text-xs font-bold text-white">Pesanan Baru</span>
+                            </div>
+                            <div onclick="switchView('view-history')" class="bg-gradient-to-br from-purple-600/10 to-purple-900/20 border border-purple-500/20 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-purple-600/30 hover:border-purple-500/50 transition">
+                                <div class="w-9 h-9 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                                <span class="text-[11px] sm:text-xs font-bold text-white">Riwayat Order</span>
+                            </div>
+                            <div onclick="switchView('view-deposit')" class="bg-gradient-to-br from-emerald-600/10 to-emerald-900/20 border border-emerald-500/20 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-emerald-600/30 hover:border-emerald-500/50 transition">
+                                <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                                <span class="text-[11px] sm:text-xs font-bold text-white">Topup Saldo</span>
+                            </div>
+                            <div onclick="switchView('view-track')" class="bg-gradient-to-br from-amber-600/10 to-amber-900/20 border border-amber-500/20 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-amber-600/30 hover:border-amber-500/50 transition">
+                                <div class="w-9 h-9 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                <span class="text-[11px] sm:text-xs font-bold text-white">Lacak Status</span>
+                            </div>
+                        </div>
+
+                        <!-- Kategori Layanan (Icon App) -->
+                        <div class="bg-[#13233F] border border-slate-700 rounded-2xl p-5 sm:p-6 mb-6">
+                            <h3 class="text-xs sm:text-sm font-bold text-white mb-4 flex items-center gap-2"><i class="fa-solid fa-layer-group text-primary"></i> Pilih Kategori</h3>
+                            <div class="grid grid-cols-4 sm:grid-cols-8 gap-y-5 gap-x-2 text-center">
+                                <div onclick="switchView('view-order')" class="cursor-pointer group"><div class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg border border-white/20 group-hover:scale-105 transition"><i class="fa-brands fa-instagram"></i></div><span class="text-[9px] sm:text-[10px] text-slate-400 mt-2 block font-medium group-hover:text-white">Instagram</span></div>
+                                <div onclick="switchView('view-order')" class="cursor-pointer group"><div class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-black rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg border border-slate-700 group-hover:scale-105 transition"><i class="fa-brands fa-tiktok"></i></div><span class="text-[9px] sm:text-[10px] text-slate-400 mt-2 block font-medium group-hover:text-white">TikTok</span></div>
+                                <div onclick="switchView('view-order')" class="cursor-pointer group"><div class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-red-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg border border-red-500 group-hover:scale-105 transition"><i class="fa-brands fa-youtube"></i></div><span class="text-[9px] sm:text-[10px] text-slate-400 mt-2 block font-medium group-hover:text-white">YouTube</span></div>
+                                <div onclick="switchView('view-order')" class="cursor-pointer group"><div class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg border border-blue-400 group-hover:scale-105 transition"><i class="fa-brands fa-facebook-f"></i></div><span class="text-[9px] sm:text-[10px] text-slate-400 mt-2 block font-medium group-hover:text-white">Facebook</span></div>
+                                <div onclick="switchView('view-order')" class="cursor-pointer group"><div class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-sky-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg border border-sky-300 group-hover:scale-105 transition"><i class="fa-brands fa-twitter"></i></div><span class="text-[9px] sm:text-[10px] text-slate-400 mt-2 block font-medium group-hover:text-white">Twitter</span></div>
+                                <div onclick="switchView('view-order')" class="cursor-pointer group"><div class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-[#25D366] rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg border border-green-400 group-hover:scale-105 transition"><i class="fa-brands fa-whatsapp"></i></div><span class="text-[9px] sm:text-[10px] text-slate-400 mt-2 block font-medium group-hover:text-white">WhatsApp</span></div>
+                                <div onclick="switchView('view-order')" class="cursor-pointer group"><div class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-blue-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg border border-blue-300 group-hover:scale-105 transition"><i class="fa-brands fa-telegram"></i></div><span class="text-[9px] sm:text-[10px] text-slate-400 mt-2 block font-medium group-hover:text-white">Telegram</span></div>
+                                <div onclick="switchView('view-order')" class="cursor-pointer group"><div class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-orange-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg border border-orange-400 group-hover:scale-105 transition"><i class="fa-solid fa-gamepad"></i></div><span class="text-[9px] sm:text-[10px] text-slate-400 mt-2 block font-medium group-hover:text-white">Topup Game</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Kotak Statistik 4 Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="bg-[#13233F] p-4 rounded-xl border border-slate-700 flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center"><i class="fa-solid fa-star"></i></div>
+                                <div><p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Komisi Referral</p><h4 class="text-sm font-extrabold text-white" id="dashHomeRef">Rp 0</h4></div>
+                            </div>
+                            <div class="bg-[#13233F] p-4 rounded-xl border border-slate-700 flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-clipboard-check"></i></div>
+                                <div><p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Total Pesanan</p><h4 class="text-sm font-extrabold text-white" id="dashHomeOrderCount">0</h4></div>
+                            </div>
+                            <div class="bg-[#13233F] p-4 rounded-xl border border-slate-700 flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-wave"></i></div>
+                                <div><p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Pengeluaran</p><h4 class="text-sm font-extrabold text-white" id="dashHomeSpent">Rp 0</h4></div>
+                            </div>
+                            <div class="bg-[#13233F] p-4 rounded-xl border border-slate-700 flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center"><i class="fa-solid fa-server"></i></div>
+                                <div><p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Status API</p><h4 class="text-sm font-extrabold text-emerald-400"><i class="fa-solid fa-check-circle text-[10px]"></i> Online</h4></div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -361,9 +359,7 @@
 
                         <div class="bg-cardbg border border-slate-700 rounded-2xl p-5 sm:p-6 shadow-lg relative z-20">
                             <div class="space-y-5 mb-5">
-                                <!-- DROPDOWN CUSTOM ALA DJURAGAN -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <!-- Kategori -->
                                     <div class="relative">
                                         <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5"><i class="fa-solid fa-layer-group text-primary mr-1"></i> Kategori</label>
                                         <div class="w-full bg-[#070D19] border border-slate-700 hover:border-primary/50 text-white rounded-xl px-4 py-3 text-xs sm:text-sm cursor-pointer flex justify-between items-center transition shadow-inner" onclick="toggleCustomSelect('catList', event)">
@@ -372,7 +368,6 @@
                                         </div>
                                         <div id="catList" class="hidden absolute top-[105%] left-0 w-full bg-cardbg border border-slate-600 rounded-xl shadow-2xl custom-select-list z-[60]"></div>
                                     </div>
-                                    <!-- Layanan -->
                                     <div class="relative">
                                         <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5"><i class="fa-solid fa-box-open text-accent mr-1"></i> Layanan</label>
                                         <div class="w-full bg-[#070D19] border border-slate-700 hover:border-primary/50 text-white rounded-xl px-4 py-3 text-xs sm:text-sm cursor-pointer flex justify-between items-center transition shadow-inner" onclick="toggleCustomSelect('servList', event)">
@@ -393,7 +388,6 @@
                                 </div>
                             </div>
 
-                            <!-- Panel Single Order -->
                             <div id="panelSingleOrder" class="space-y-5 block transition-all z-10 relative">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
@@ -416,22 +410,14 @@
                                 </div>
 
                                 <div class="pt-5 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
-                                    <div>
-                                        <span class="text-[10px] font-bold text-slate-500 block uppercase tracking-wider mb-1">Total Bayar</span>
-                                        <span id="mainCalculatedTotal" class="text-2xl sm:text-3xl font-extrabold text-primary drop-shadow-md">Rp 0</span>
-                                    </div>
+                                    <div><span class="text-[10px] font-bold text-slate-500 block uppercase tracking-wider mb-1">Total Bayar</span><span id="mainCalculatedTotal" class="text-2xl sm:text-3xl font-extrabold text-primary drop-shadow-md">Rp 0</span></div>
                                     <div class="flex gap-2 sm:gap-3">
-                                        <button onclick="addMainToCart()" class="w-14 sm:w-auto px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition flex items-center justify-center border border-slate-600" title="Masuk Keranjang">
-                                            <i class="fa-solid fa-cart-plus"></i>
-                                        </button>
-                                        <button onclick="processDirectOrder()" class="flex-1 sm:flex-none btn-primary px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm shadow-glow border border-primary/50">
-                                            <i class="fa-solid fa-paper-plane"></i> Proses Pesanan
-                                        </button>
+                                        <button onclick="addMainToCart()" class="w-14 sm:w-auto px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition flex items-center justify-center border border-slate-600" title="Masuk Keranjang"><i class="fa-solid fa-cart-plus"></i></button>
+                                        <button onclick="processDirectOrder()" class="flex-1 sm:flex-none btn-primary px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm shadow-glow border border-primary/50"><i class="fa-solid fa-paper-plane"></i> Proses Pesanan</button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Panel Mass Order -->
                             <div id="panelMassOrder" class="space-y-5 hidden transition-all z-10 relative">
                                 <div class="bg-blue-900/20 border border-blue-500/30 p-3 rounded-xl shadow-inner text-xs text-blue-300">
                                     <span class="font-bold block mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Format Mass Order:</span>
@@ -442,9 +428,7 @@
                                     <textarea id="massOrderInput" rows="5" class="w-full bg-[#070D19] border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-primary font-mono text-xs placeholder-slate-600 shadow-inner" placeholder="https://ig.com/user1 | 500"></textarea>
                                 </div>
                                 <div class="pt-2 flex justify-end">
-                                    <button onclick="processMassOrder()" class="btn-primary w-full sm:w-auto px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm shadow-glow">
-                                        <i class="fa-solid fa-rocket"></i> Proses Mass Order
-                                    </button>
+                                    <button onclick="processMassOrder()" class="btn-primary w-full sm:w-auto px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm shadow-glow"><i class="fa-solid fa-rocket"></i> Proses Mass Order</button>
                                 </div>
                             </div>
                         </div>
@@ -461,7 +445,7 @@
                             <span id="dashTotalOrders" class="text-[10px] bg-cardbg px-3 py-1 rounded-full text-slate-300 border border-slate-700">Memuat...</span>
                         </div>
                         <div id="dashboardHistoryItems" class="space-y-3 pb-4">
-                            <!-- Data riwayat masuk ke sini via JS -->
+                            <!-- Data riwayat dari Firebase -->
                         </div>
                     </div>
                 </div>
@@ -542,7 +526,7 @@
                             <i class="fa-solid fa-circle-info text-primary mt-1"></i>
                             <div>
                                 <h4 class="text-xs font-bold text-white">Cara Konfirmasi Saldo</h4>
-                                <p class="text-[11px] text-slate-300 mt-1">Setelah melakukan transfer ke rekening di atas, silakan klik tombol WA di menu Support atau hubungi <b>0813-1218-5600</b> dengan melampirkan bukti transfer dan email akun Anda. Saldo akan ditambahkan instan.</p>
+                                <p class="text-[11px] text-slate-300 mt-1">Setelah melakukan transfer ke rekening di atas, silakan klik tombol WA di menu Support dengan melampirkan bukti transfer dan email akun Anda. Saldo akan ditambahkan instan.</p>
                             </div>
                         </div>
                     </div>
@@ -633,7 +617,7 @@
                         <!-- Ticket Bantuan -->
                         <div class="bg-cardbg p-5 rounded-2xl border border-slate-800">
                             <div class="flex justify-between items-center mb-4">
-                                <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-headset mr-1"></i> Live Chat Support</h4>
+                                <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-headset mr-1"></i> Live Chat Support (Admin)</h4>
                                 <span class="text-[10px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded font-mono" id="activeTicketCount">0 Antrean</span>
                             </div>
                             <div id="adminTicketList" class="space-y-2 max-h-64 overflow-y-auto pr-1 no-scrollbar"></div>
@@ -645,7 +629,9 @@
         </div>
     </div>
 
-    <!-- MODAL LIVE CHAT UTAMA -->
+    <!-- ==================== 3. MODAL UTILITIES ==================== -->
+    
+    <!-- Live Chat Modal -->
     <div id="liveChatModal" class="fixed inset-0 z-[900] hidden items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-0 sm:p-4">
         <div class="bg-cardbg border border-slate-700 w-full sm:max-w-md h-[85vh] sm:h-[600px] flex flex-col relative shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden">
             <div class="p-4 bg-sidebar border-b border-slate-800 flex justify-between items-center z-10 shadow-md">
@@ -667,15 +653,13 @@
             </div>
 
             <div id="chatInputContainer" class="p-3 bg-sidebar border-t border-slate-800 flex gap-2 items-end">
-                <textarea id="chatInputMessage" rows="1" class="w-full bg-[#070D19] border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none no-scrollbar" placeholder="Ketik pesan Anda..."></textarea>
-                <button onclick="sendChatMessage()" class="w-12 h-12 btn-primary rounded-xl flex items-center justify-center flex-shrink-0 transition">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
+                <textarea id="chatInputMessage" rows="1" class="w-full bg-[#070D19] border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none no-scrollbar" placeholder="Ketik pesan..."></textarea>
+                <button onclick="sendChatMessage()" class="w-12 h-12 btn-primary rounded-xl flex items-center justify-center flex-shrink-0 transition"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL KERANJANG (CART) -->
+    <!-- Cart Modal -->
     <div id="cartModal" class="fixed inset-0 z-[800] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity p-4">
         <div class="bg-cardbg border border-slate-700 w-full max-w-lg p-6 max-h-[90vh] flex flex-col relative rounded-2xl shadow-2xl">
             <button onclick="toggleCartModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
@@ -697,7 +681,7 @@
         </div>
     </div>
 
-    <!-- MODAL INVOICE -->
+    <!-- Invoice Modal -->
     <div id="invoiceModal" class="fixed inset-0 z-[950] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
         <div class="bg-white max-w-sm w-full p-0 relative rounded-xl shadow-2xl overflow-hidden text-slate-900">
             <button onclick="closeInvoiceModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition z-20"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -728,7 +712,7 @@
         </div>
     </div>
 
-    <!-- MODAL QRIS -->
+    <!-- QRIS Modal -->
     <div id="qrisModal" class="fixed inset-0 z-[950] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
         <div class="bg-cardbg border border-slate-700 max-w-sm w-full p-6 text-center relative rounded-2xl shadow-glow-strong">
             <button onclick="closeQrisModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -739,7 +723,7 @@
         </div>
     </div>
 
-    <!-- MODAL API DOCS -->
+    <!-- API Docs Modal -->
     <div id="apiDocsModal" class="fixed inset-0 z-[850] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
         <div class="bg-cardbg border border-slate-700 max-w-2xl w-full p-6 relative rounded-2xl max-h-[85vh] overflow-y-auto no-scrollbar">
             <button onclick="closeApiDocs()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -751,12 +735,13 @@
     </div>
 
 
-    <!-- ==================== SCRIPT ENGINE UTAMA ==================== -->
+    <!-- ==================== 4. FIREBASE SCRIPT (DIBUAT PANJANG AGAR TERBACA JELAS) ==================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, increment, onSnapshot, arrayUnion, orderBy, limit, runTransaction } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+        // Konfigurasi Firebase Anda
         const firebaseConfig = {
             apiKey: "AIzaSyBLVj5a_RliAWNrF8_PayUie-VtZYLyeR0",
             authDomain: "projectssm-62b24.firebaseapp.com",
@@ -771,18 +756,46 @@
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
         
-        window.db = db; window.currentUserData = null; window.activeTicketId = null; window.unsubscribeChat = null; window.unsubscribeAdminTickets = null; window.chatContext = 'user'; window.lastAdminMsgTime = 0; window.backgroundTicketUnsubscribe = null; let userSnapshotUnsubscribe = null;
+        window.db = db; 
+        window.currentUserData = null; 
+        window.activeTicketId = null; 
+        window.unsubscribeChat = null; 
+        window.unsubscribeAdminTickets = null; 
+        window.chatContext = 'user'; 
+        let userSnapshotUnsubscribe = null;
 
-        // Cek Referral
+        // ---- JAM REALTIME HALAMAN UTAMA ----
+        setInterval(() => {
+            const now = new Date();
+            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} • ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} WIB`;
+            const homeDate = document.getElementById('dashHomeDate');
+            if(homeDate) homeDate.innerText = dateStr;
+        }, 1000);
+
+        // ---- CEK REFERRAL URL ----
         const urlParams = new URLSearchParams(window.location.search);
         const refParam = urlParams.get('ref');
-        if (refParam) { localStorage.setItem('katech_ref', refParam.toLowerCase()); window.history.replaceState({}, document.title, window.location.pathname); }
+        if (refParam) { 
+            localStorage.setItem('katech_ref', refParam.toLowerCase()); 
+            window.history.replaceState({}, document.title, window.location.pathname); 
+        }
         const savedRef = localStorage.getItem('katech_ref');
-        if (savedRef) { const notifBox = document.getElementById('refNotification'); if(notifBox) { notifBox.innerHTML = `Diundang oleh <b>@${savedRef}</b>! Daftar untuk bonus Rp 1.000`; notifBox.classList.remove('hidden'); } }
+        if (savedRef) { 
+            const notifBox = document.getElementById('refNotification'); 
+            if(notifBox) { 
+                notifBox.innerHTML = `Diundang oleh <b>@${savedRef}</b>! Daftar untuk bonus Rp 1.000`; 
+                notifBox.classList.remove('hidden'); 
+            } 
+        }
 
-        window.playNotifSound = function() { const audio = document.getElementById('csNotifSound'); if(audio) audio.play().catch(e=>console.log('Autoplay dicegah')); };
+        window.playNotifSound = function() { 
+            const audio = document.getElementById('csNotifSound'); 
+            if(audio) audio.play().catch(e=>console.log('Autoplay dicegah')); 
+        };
 
-        // Realtime User Data & Sidebar Injector
+        // ================= FITUR AUTHENTICATION & LISTENER (TERMASUK INJECT UI) =================
         onAuthStateChanged(auth, async (user) => {
             const welcomeModal = document.getElementById('welcomeModal');
             const appContent = document.getElementById('appContent');
@@ -798,26 +811,59 @@
                     if (!userDoc.exists()) {
                         const isOwner = (user.email === "marcurapikk@gmail.com");
                         const cleanUsername = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
-                        await setDoc(userRef, { name: user.displayName || "User", username: cleanUsername, email: user.email, role: isOwner ? 'owner' : 'user', level: isOwner ? 'Supreme 👑' : 'Bronze', balance: isOwner ? 999999999 : 0, totalSpent: 0, income: isOwner ? 89574843 : 0, cashout: isOwner ? 12500000 : 0, refCount: 0, refEarnings: 0 });
+                        await setDoc(userRef, { 
+                            name: user.displayName || "User", 
+                            username: cleanUsername, 
+                            email: user.email, 
+                            role: isOwner ? 'owner' : 'user', 
+                            level: isOwner ? 'Supreme 👑' : 'Bronze', 
+                            balance: isOwner ? 999999999 : 0, 
+                            totalSpent: 0, 
+                            income: isOwner ? 89574843 : 0, 
+                            cashout: isOwner ? 12500000 : 0, 
+                            refCount: 0, 
+                            refEarnings: 0 
+                        });
                     }
 
                     if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
+                    
                     userSnapshotUnsubscribe = onSnapshot(userRef, (docSnap) => {
                         if (docSnap.exists()) {
                             window.currentUserData = { uid: user.uid, ...docSnap.data() };
                             const d = window.currentUserData;
                             
-                            // Inject Data ke SIDEBAR (Menyelesaikan Bug Profil!)
-                            document.getElementById('sbUsername').innerHTML = `${d.name} <i id="sbVerif" class="fa-solid fa-circle-check text-blue-500 text-[10px] ${d.role === 'owner' ? '' : 'hidden'}"></i> <i class="fa-solid fa-pen-to-square text-[10px] text-slate-500 ml-1"></i>`;
+                            // Inject Data ke SIDEBAR 
+                            document.getElementById('sbUsername').innerHTML = `${d.name} <i class="fa-solid fa-circle-check text-blue-500 text-[10px] ${d.role === 'owner' ? '' : 'hidden'}"></i> <i class="fa-solid fa-pen-to-square text-[10px] text-slate-500 ml-1"></i>`;
                             document.getElementById('sbBalance').innerText = `Rp ${window.formatRupiah(d.balance)}`;
-                            document.getElementById('dashViewBalance').innerText = `Rp ${window.formatRupiah(d.balance)}`;
                             document.getElementById('sbLevel').innerText = d.level;
                             
                             const avatarEl = document.getElementById('sbAvatar');
-                            if(d.avatar) { avatarEl.style.backgroundImage = `url(${d.avatar})`; avatarEl.innerHTML = ''; } 
-                            else { avatarEl.innerHTML = (d.name.charAt(0)).toUpperCase(); avatarEl.style.backgroundImage = 'none'; }
+                            if(d.avatar) { 
+                                avatarEl.style.backgroundImage = `url(${d.avatar})`; 
+                                avatarEl.innerHTML = ''; 
+                            } else { 
+                                avatarEl.innerHTML = (d.name.charAt(0)).toUpperCase(); 
+                                avatarEl.style.backgroundImage = 'none'; 
+                            }
 
-                            // Update text referral
+                            // Inject Data ke HALAMAN UTAMA (NEW HOME DJURAGAN)
+                            const homeName = document.getElementById('dashHomeName');
+                            if(homeName) homeName.innerText = d.name.split(' ')[0]; 
+                            
+                            const homeBalance = document.getElementById('dashHomeBalance');
+                            if(homeBalance) homeBalance.innerText = `Rp ${window.formatRupiah(d.balance)}`;
+                            
+                            const homeLevel = document.getElementById('dashHomeLevel');
+                            if(homeLevel) homeLevel.innerHTML = `<i class="fa-solid fa-crown"></i> ${d.level}`;
+
+                            const homeSpent = document.getElementById('dashHomeSpent');
+                            if(homeSpent) homeSpent.innerText = `Rp ${window.formatRupiah(d.totalSpent || 0)}`;
+
+                            const homeRef = document.getElementById('dashHomeRef');
+                            if(homeRef) homeRef.innerText = `Rp ${window.formatRupiah(d.refEarnings || 0)}`;
+
+                            // Update text referral page
                             document.getElementById('refLinkText').innerText = `https://katechhub.netlify.app/?ref=${d.username}`;
                             document.getElementById('viewRefCount').innerText = d.refCount || 0;
                             document.getElementById('viewRefEarnings').innerText = `Rp ${window.formatRupiah(d.refEarnings || 0)}`;
@@ -828,11 +874,19 @@
                                 document.getElementById('dashOwnerIncome').innerText = `Rp ${window.formatRupiah(d.income || 89574843)}`;
                                 document.getElementById('dashOwnerCashout').innerText = `Rp ${window.formatRupiah(d.cashout || 12500000)}`;
                                 
-                                // Setup Chart
+                                // Setup Chart Admin
                                 if(!window.revenueChartInstance && document.getElementById('revenueChart')) {
                                     const ctx = document.getElementById('revenueChart').getContext('2d');
                                     window.revenueChartInstance = new Chart(ctx, {
-                                        type: 'line', data: { labels: ['Sen','Sel','Rab','Kam','Jum','Sab','Minggu'], datasets: [{ label: 'Pendapatan (Rp)', data: [4500000, 3200000, 5100000, 2900000, 3800000, 4200000, d.income || 8957484], borderColor: '#0EA5E9', backgroundColor: 'rgba(14, 165, 233, 0.2)', borderWidth: 2, fill: true, tension: 0.4 }] },
+                                        type: 'line', 
+                                        data: { 
+                                            labels: ['Sen','Sel','Rab','Kam','Jum','Sab','Minggu'], 
+                                            datasets: [{ 
+                                                label: 'Pendapatan (Rp)', 
+                                                data: [4500000, 3200000, 5100000, 2900000, 3800000, 4200000, d.income || 8957484], 
+                                                borderColor: '#0EA5E9', backgroundColor: 'rgba(14, 165, 233, 0.2)', borderWidth: 2, fill: true, tension: 0.4 
+                                            }] 
+                                        },
                                         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font:{size:9}, callback: function(val) { return 'Rp ' + (val/1000000).toFixed(1) + 'M'; } } }, x: { grid: { display: false }, ticks: { color: '#94A3B8', font:{size:9} } } } }
                                     });
                                 }
@@ -851,127 +905,327 @@
 
                 } catch (err) { window.showToast("Koneksi lambat...", "error"); }
             } else {
-                document.body.classList.add('show-recaptcha'); // Munculkan captcha
-                window.currentUserData = null; if(userSnapshotUnsubscribe) userSnapshotUnsubscribe();
+                document.body.classList.add('show-recaptcha'); // Munculkan captcha kembali
+                window.currentUserData = null; 
+                if(userSnapshotUnsubscribe) userSnapshotUnsubscribe();
                 appContent.classList.add('hidden');
-                authLoadingState.classList.add('hidden'); authFormArea.classList.remove('hidden');
-                welcomeModal.classList.remove('hidden'); welcomeModal.classList.add('flex');
+                authLoadingState.classList.add('hidden'); 
+                authFormArea.classList.remove('hidden');
+                welcomeModal.classList.remove('hidden'); 
+                welcomeModal.classList.add('flex');
             }
         });
 
-        // ================= AUTH LOGIC (Ringkas tapi lengkap) =================
+        // ================= FITUR AUTH ACTIONS (TIDAK DIPENDEKKAN) =================
         window.processGoogleLogin = async function() {
-            const btn = document.getElementById('btnGoogleLogin'); const ori = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membuka...'; btn.disabled = true;
+            const btn = document.getElementById('btnGoogleLogin'); 
+            const ori = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membuka...'; 
+            btn.disabled = true;
             try {
-                await setPersistence(auth, browserLocalPersistence); const result = await signInWithPopup(auth, googleProvider); const user = result.user;
-                const userDocRef = doc(db, "users", user.uid); const userDoc = await getDoc(userDocRef);
+                await setPersistence(auth, browserLocalPersistence); 
+                const result = await signInWithPopup(auth, googleProvider); 
+                const user = result.user;
+                
+                const userDocRef = doc(db, "users", user.uid); 
+                const userDoc = await getDoc(userDocRef);
+                
                 if(!userDoc.exists()) {
-                    const isOwner = (user.email === "marcurapikk@gmail.com"); const bU = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
-                    const ref = localStorage.getItem('katech_ref'); let bal = isOwner ? 999999999 : 0; let aR = false;
-                    if (!isOwner && ref && ref !== bU) { bal += 1000; aR = true; }
-                    await setDoc(userDocRef, { name: user.displayName || "Google User", username: bU, email: user.email, role: isOwner ? 'owner' : 'user', level: isOwner ? 'Supreme 👑' : 'Bronze', avatar: user.photoURL || null, totalSpent: 0, balance: bal, income: isOwner ? 89574843 : 0, cashout: isOwner ? 12500000 : 0, refCount: 0, refEarnings: 0 });
-                    if(aR) await window.processReferrerBonus(ref, bU); localStorage.removeItem('katech_ref');
+                    const isOwner = (user.email === "marcurapikk@gmail.com"); 
+                    const bU = (user.displayName || user.email.split('@')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const ref = localStorage.getItem('katech_ref'); 
+                    let bal = isOwner ? 999999999 : 0; 
+                    let aR = false;
+                    
+                    if (!isOwner && ref && ref !== bU) { 
+                        bal += 1000; 
+                        aR = true; 
+                    }
+                    
+                    await setDoc(userDocRef, { 
+                        name: user.displayName || "Google User", 
+                        username: bU, 
+                        email: user.email, 
+                        role: isOwner ? 'owner' : 'user', 
+                        level: isOwner ? 'Supreme 👑' : 'Bronze', 
+                        avatar: user.photoURL || null, 
+                        totalSpent: 0, 
+                        balance: bal, 
+                        income: isOwner ? 89574843 : 0, 
+                        cashout: isOwner ? 12500000 : 0, 
+                        refCount: 0, 
+                        refEarnings: 0 
+                    });
+                    
+                    if(aR) await window.processReferrerBonus(ref, bU); 
+                    localStorage.removeItem('katech_ref');
                 }
-            } catch(e) { window.alert("Gagal Google Login: " + e.message); } finally { btn.innerHTML = ori; btn.disabled = false; }
+            } catch(e) { 
+                window.alert("Gagal Google Login: " + e.message); 
+            } finally { 
+                btn.innerHTML = ori; 
+                btn.disabled = false; 
+            }
         };
 
         window.processRegister = async function() {
-            const n=document.getElementById('regName').value, u=document.getElementById('regUsername').value.trim().toLowerCase().replace(/\s+/g,''), e=document.getElementById('regEmail').value.toLowerCase(), p=document.getElementById('regPassword').value;
-            if(!n||!u||!e||!p) return window.alert("Isi semua data!");
-            const btn = document.getElementById('btnRegister'); const ori = btn.innerHTML; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...'; btn.disabled = true;
+            const n = document.getElementById('regName').value;
+            const u = document.getElementById('regUsername').value.trim().toLowerCase().replace(/\s+/g,'');
+            const e = document.getElementById('regEmail').value.toLowerCase();
+            const p = document.getElementById('regPassword').value;
+            
+            if(!n || !u || !e || !p) return window.alert("Isi semua data!");
+            
+            const btn = document.getElementById('btnRegister'); 
+            const ori = btn.innerHTML; 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...'; 
+            btn.disabled = true;
+            
             grecaptcha.ready(async function() {
                 try {
-                    const token = await grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', {action: 'register'}); if(!token) throw new Error("Bot detected!");
-                    const q = query(collection(db, "users"), where("username", "==", u)); const s = await getDocs(q); if(!s.empty) return window.alert("Username sudah ada!");
-                    const cred = await createUserWithEmailAndPassword(auth, e, p); const user = cred.user;
-                    const isO = (e === "marcurapikk@gmail.com"); const ref = localStorage.getItem('katech_ref'); let bal = isO ? 999999999 : 0; let aR = false;
-                    if (!isO && ref && ref !== u) { bal += 1000; aR = true; }
-                    await setDoc(doc(db, "users", user.uid), { name:n, username:u, email:e, role: isO ? 'owner' : 'user', level: isO ? 'Supreme 👑' : 'Bronze', avatar: null, totalSpent: 0, balance: bal, income: isO ? 89574843 : 0, cashout: isO ? 12500000 : 0, refCount: 0, refEarnings: 0 });
-                    if(aR) await window.processReferrerBonus(ref, u); localStorage.removeItem('katech_ref');
+                    const token = await grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', {action: 'register'}); 
+                    if(!token) throw new Error("Bot detected!");
+                    
+                    const q = query(collection(db, "users"), where("username", "==", u)); 
+                    const s = await getDocs(q); 
+                    if(!s.empty) return window.alert("Username sudah ada!");
+                    
+                    const cred = await createUserWithEmailAndPassword(auth, e, p); 
+                    const user = cred.user;
+                    
+                    const isO = (e === "marcurapikk@gmail.com"); 
+                    const ref = localStorage.getItem('katech_ref'); 
+                    let bal = isO ? 999999999 : 0; 
+                    let aR = false;
+                    
+                    if (!isO && ref && ref !== u) { 
+                        bal += 1000; 
+                        aR = true; 
+                    }
+                    
+                    await setDoc(doc(db, "users", user.uid), { 
+                        name: n, username: u, email: e, 
+                        role: isO ? 'owner' : 'user', 
+                        level: isO ? 'Supreme 👑' : 'Bronze', 
+                        avatar: null, totalSpent: 0, balance: bal, 
+                        income: isO ? 89574843 : 0, 
+                        cashout: isO ? 12500000 : 0, 
+                        refCount: 0, refEarnings: 0 
+                    });
+                    
+                    if(aR) await window.processReferrerBonus(ref, u); 
+                    localStorage.removeItem('katech_ref');
+                    
                     window.alert("Registrasi Sukses!");
-                } catch(e) { window.alert("Gagal: " + e.message); } finally { btn.innerHTML = ori; btn.disabled = false; }
+                } catch(e) { 
+                    window.alert("Gagal: " + e.message); 
+                } finally { 
+                    btn.innerHTML = ori; btn.disabled = false; 
+                }
             });
         };
 
         window.processLogin = async function() {
-            const e=document.getElementById('loginUsername').value, p=document.getElementById('loginPassword').value;
-            if(!e||!p) return window.alert("Isi form!");
-            const btn=document.getElementById('btnLoginBtn'); const ori=btn.innerHTML; btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>...'; btn.disabled=true;
-            try { await setPersistence(auth, browserLocalPersistence); await signInWithEmailAndPassword(auth, e, p); } 
-            catch(err) { window.alert("Login Gagal! Cek password."); } finally { btn.innerHTML=ori; btn.disabled=false; }
+            const e = document.getElementById('loginUsername').value;
+            const p = document.getElementById('loginPassword').value;
+            
+            if(!e || !p) return window.alert("Isi form dengan lengkap!");
+            
+            const btn = document.getElementById('btnLoginBtn'); 
+            const ori = btn.innerHTML; 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>...'; 
+            btn.disabled = true;
+            
+            try { 
+                await setPersistence(auth, browserLocalPersistence); 
+                await signInWithEmailAndPassword(auth, e, p); 
+            } catch(err) { 
+                window.alert("Login Gagal! Silakan cek kembali email dan password Anda."); 
+            } finally { 
+                btn.innerHTML = ori; 
+                btn.disabled = false; 
+            }
         };
 
-        window.logout = async function() { await signOut(auth); location.reload(); };
-        window.processResetPassword = async function() { const e=document.getElementById('forgotEmail').value; if(e) { await sendPasswordResetEmail(auth, e); window.alert("Terkirim!"); switchAuthTab('formLogin');} };
+        window.logout = async function() { 
+            await signOut(auth); 
+            location.reload(); 
+        };
+        
+        window.processResetPassword = async function() { 
+            const e = document.getElementById('forgotEmail').value; 
+            if(e) { 
+                await sendPasswordResetEmail(auth, e); 
+                window.alert("Terkirim! Cek email Anda untuk link reset."); 
+                switchAuthTab('formLogin');
+            } 
+        };
         
         window.processReferrerBonus = async function(rU, nU) {
-            try { const q = query(collection(db, "users"), where("username", "==", rU)); const s = await getDocs(q);
-                if (!s.empty) { const id = s.docs[0].id; await updateDoc(doc(db, "users", id), { balance: increment(2000), refCount: increment(1), refEarnings: increment(2000) });
-                await addDoc(collection(db, "orders"), { code: `REF-${Date.now().toString().slice(-5)}`, date: new Date().toLocaleString('id-ID'), uid: id, username: rU, items: `Bonus Invite @${nU}`, total: 2000, payment: 'Sistem Bonus', status: 'Berhasil', createdAt: Date.now() });
-            }} catch(e){}
+            try { 
+                const q = query(collection(db, "users"), where("username", "==", rU)); 
+                const s = await getDocs(q);
+                if (!s.empty) { 
+                    const id = s.docs[0].id; 
+                    await updateDoc(doc(db, "users", id), { 
+                        balance: increment(2000), 
+                        refCount: increment(1), 
+                        refEarnings: increment(2000) 
+                    });
+                    await addDoc(collection(db, "orders"), { 
+                        code: `REF-${Date.now().toString().slice(-5)}`, 
+                        date: new Date().toLocaleString('id-ID'), 
+                        uid: id, 
+                        username: rU, 
+                        items: `Bonus Invite @${nU}`, 
+                        total: 2000, 
+                        payment: 'Sistem Bonus', 
+                        status: 'Berhasil', 
+                        createdAt: Date.now() 
+                    });
+                }
+            } catch(e){}
         };
 
-        // ================= FITUR PROFILE & ADMIN =================
+        // ================= FITUR PROFILE & ADMIN (TIDAK DIPENDEKKAN) =================
         window.handleAvatarUpload = async function(e) {
-            const f = e.target.files[0]; if(!f) return;
-            const reader = new FileReader(); reader.onload = async (ev) => {
+            const f = e.target.files[0]; 
+            if(!f) return;
+            const reader = new FileReader(); 
+            reader.onload = async (ev) => {
                 const b64 = ev.target.result;
-                try { await updateDoc(doc(db, "users", window.currentUserData.uid), { avatar: b64 }); window.showToast("Foto diupdate!"); } catch(e){}
-            }; reader.readAsDataURL(f);
+                try { 
+                    await updateDoc(doc(db, "users", window.currentUserData.uid), { avatar: b64 }); 
+                    window.showToast("Foto profil berhasil diupdate!"); 
+                } catch(e){}
+            }; 
+            reader.readAsDataURL(f);
         };
 
         window.editUserName = async function() {
-            const { value: nN } = await Swal.fire({ title: 'Ubah Nama', input: 'text', inputValue: window.currentUserData.name, background: '#0F1E36', color: '#fff', showCancelButton: true });
-            if (nN && nN.trim() !== '') { await updateDoc(doc(db, "users", window.currentUserData.uid), { name: nN.trim() }); window.showToast("Nama diupdate!"); }
+            const { value: nN } = await Swal.fire({ 
+                title: 'Ubah Nama', 
+                input: 'text', 
+                inputValue: window.currentUserData.name, 
+                background: '#0F1E36', color: '#fff', 
+                showCancelButton: true 
+            });
+            if (nN && nN.trim() !== '') { 
+                await updateDoc(doc(db, "users", window.currentUserData.uid), { name: nN.trim() }); 
+                window.showToast("Nama berhasil diupdate!"); 
+            }
         };
 
         window.adminAddBalance = async function() {
-            const eml=document.getElementById('topupUserEmail').value.toLowerCase(), amt=parseInt(document.getElementById('topupUserAmount').value);
+            const eml = document.getElementById('topupUserEmail').value.toLowerCase();
+            const amt = parseInt(document.getElementById('topupUserAmount').value);
+            
             if(!eml || isNaN(amt)) return;
-            const q = query(collection(db, "users"), where("email", "==", eml)); const s = await getDocs(q);
-            if(s.empty) return window.alert("Email tdk ditemukan.");
-            for(let d of s.docs) { await updateDoc(doc(db, "users", d.id), { balance: increment(amt) }); window.alert(`Sukses tambah Rp${amt}`); }
-            document.getElementById('topupUserAmount').value=''; document.getElementById('topupUserEmail').value='';
+            
+            const q = query(collection(db, "users"), where("email", "==", eml)); 
+            const s = await getDocs(q);
+            
+            if(s.empty) return window.alert("Email tidak ditemukan di database.");
+            
+            for(let d of s.docs) { 
+                await updateDoc(doc(db, "users", d.id), { balance: increment(amt) }); 
+                window.alert(`Sukses tambah Rp ${window.formatRupiah(amt)} ke akun ${eml}`); 
+            }
+            
+            document.getElementById('topupUserAmount').value = ''; 
+            document.getElementById('topupUserEmail').value = '';
         };
         
         window.processCashout = async function() {
-            const amt=parseInt(document.getElementById('cashoutAmount').value), b=document.getElementById('cashoutBank').value;
-            if(isNaN(amt) || amt > window.currentUserData.income) return window.alert("Saldo tidak valid.");
-            await updateDoc(doc(db, "users", window.currentUserData.uid), { income: increment(-amt), cashout: increment(amt) });
-            window.alert(`Tarik ke ${b} Rp${amt} sukses diproses!`); document.getElementById('cashoutAmount').value='';
+            const amt = parseInt(document.getElementById('cashoutAmount').value);
+            const b = document.getElementById('cashoutBank').value;
+            
+            if(isNaN(amt) || amt > window.currentUserData.income) return window.alert("Saldo income tidak valid/kurang.");
+            
+            await updateDoc(doc(db, "users", window.currentUserData.uid), { 
+                income: increment(-amt), 
+                cashout: increment(amt) 
+            });
+            
+            window.alert(`Tarik tunai ke ${b} sebesar Rp ${window.formatRupiah(amt)} sukses diproses ke rekening pencairan!`); 
+            document.getElementById('cashoutAmount').value = '';
         };
 
-        // ================= FIREBASE ORDERS (FIREBASE CORE) =================
+        // ================= FITUR DATABASE ORDERS & HISTORY (TIDAK DIPENDEKKAN) =================
         window.checkoutWithFirebase = async function(oCode, itemsTxt, totalHrg, payMethod) {
-            const ud = window.currentUserData; if (!ud) return { success: false, message: "Belum login." };
+            const ud = window.currentUserData; 
+            if (!ud) return { success: false, message: "Silakan login terlebih dahulu." };
+            
             try {
                 let sOrder = 'Belum Proses';
                 await runTransaction(db, async (t) => {
-                    const uRef = doc(db, "users", ud.uid); const uDoc = await t.get(uRef);
+                    const uRef = doc(db, "users", ud.uid); 
+                    const uDoc = await t.get(uRef);
+                    
                     if (payMethod === 'Saldo Akun') {
-                        if (uDoc.data().balance < totalHrg) throw new Error("Saldo tidak mencukupi!");
-                        t.update(uRef, { balance: increment(-totalHrg), totalSpent: increment(totalHrg) }); sOrder = 'Diproses';
+                        if (uDoc.data().balance < totalHrg) throw new Error("Saldo akun Anda tidak mencukupi!");
+                        t.update(uRef, { balance: increment(-totalHrg), totalSpent: increment(totalHrg) }); 
+                        sOrder = 'Diproses';
                     }
+                    
                     const nRef = doc(collection(db, "orders"));
-                    t.set(nRef, { code: oCode, date: new Date().toLocaleString('id-ID'), uid: ud.uid, username: ud.username, items: itemsTxt, target: document.getElementById('mainTargetInput')?document.getElementById('mainTargetInput').value:'-', total: Number(totalHrg), payment: payMethod, status: sOrder, createdAt: Date.now() });
+                    t.set(nRef, { 
+                        code: oCode, 
+                        date: new Date().toLocaleString('id-ID'), 
+                        uid: ud.uid, 
+                        username: ud.username, 
+                        items: itemsTxt, 
+                        target: document.getElementById('mainTargetInput') ? document.getElementById('mainTargetInput').value : '-', 
+                        total: Number(totalHrg), 
+                        payment: payMethod, 
+                        status: sOrder, 
+                        createdAt: Date.now() 
+                    });
                 });
                 return { success: true, status: sOrder };
-            } catch (e) { return { success: false, message: e.message }; }
+            } catch (e) { 
+                return { success: false, message: e.message }; 
+            }
         };
 
         window.renderDashboardHistory = async function() {
-            const ud = window.currentUserData; if(!ud) return;
+            const ud = window.currentUserData; 
+            if(!ud) return;
+            
             const container = document.getElementById('dashboardHistoryItems');
+            
             try {
-                let q = (ud.role === 'owner' || ud.role === 'admin') ? query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(50)) : query(collection(db, "orders"), where("uid", "==", ud.uid), orderBy("createdAt", "desc"), limit(30));
-                const s = await getDocs(q); let orders = []; s.forEach((doc) => { orders.push({ id: doc.id, ...doc.data() }); });
-                document.getElementById('dashTotalOrders').innerText = `${orders.length} Transaksi`; document.getElementById('countOrders').innerText = orders.length; container.innerHTML = '';
-                if(orders.length === 0) { container.innerHTML = `<p class="text-xs text-slate-500 italic">Belum ada riwayat.</p>`; return; }
+                let q = (ud.role === 'owner' || ud.role === 'admin') 
+                    ? query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(50)) 
+                    : query(collection(db, "orders"), where("uid", "==", ud.uid), orderBy("createdAt", "desc"), limit(30));
+                
+                const s = await getDocs(q); 
+                let orders = []; 
+                s.forEach((doc) => { orders.push({ id: doc.id, ...doc.data() }); });
+                
+                document.getElementById('dashTotalOrders').innerText = `${orders.length} Transaksi`; 
+                
+                const homeOrderCount = document.getElementById('dashHomeOrderCount');
+                if(homeOrderCount) homeOrderCount.innerText = orders.length;
+
+                container.innerHTML = '';
+                
+                if(orders.length === 0) { 
+                    container.innerHTML = `<p class="text-xs text-slate-500 italic">Belum ada riwayat transaksi.</p>`; 
+                    return; 
+                }
 
                 orders.forEach(o => {
                     let cC = o.status === 'Diproses' ? 'bg-amber-500/20 text-amber-400' : (o.status === 'Selesai' || o.status === 'Berhasil' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-500/20 text-slate-400');
-                    let sC = (o.payment === 'Sistem Bonus' || ud.role === 'user') ? `<span class="px-2 py-0.5 rounded text-[9px] font-bold ${cC}">${o.status}</span>` : `<select onchange="updateOrderStatusFirebase('${o.id}', this.value)" class="bg-[#070D19] border border-slate-700 text-white rounded text-[9px] px-1 py-0.5"><option value="Belum Proses" ${o.status==='Belum Proses'?'selected':''}>Belum Proses</option><option value="Diproses" ${o.status==='Diproses'?'selected':''}>Diproses</option><option value="Selesai" ${o.status==='Selesai'?'selected':''}>Selesai</option></select>`;
+                    
+                    let sC = (o.payment === 'Sistem Bonus' || ud.role === 'user') 
+                        ? `<span class="px-2 py-0.5 rounded text-[9px] font-bold ${cC}">${o.status}</span>` 
+                        : `<select onchange="updateOrderStatusFirebase('${o.id}', this.value)" class="bg-[#070D19] border border-slate-700 text-white rounded text-[9px] px-1 py-0.5">
+                            <option value="Belum Proses" ${o.status==='Belum Proses'?'selected':''}>Belum Proses</option>
+                            <option value="Diproses" ${o.status==='Diproses'?'selected':''}>Diproses</option>
+                            <option value="Selesai" ${o.status==='Selesai'?'selected':''}>Selesai</option>
+                           </select>`;
+                           
                     let invBtn = `<button onclick="openInvoice('${o.code}','${o.date}','${o.username}','${o.status}','${o.payment}','${o.items}',${o.total})" class="text-[9px] text-primary hover:underline ml-2">Struk</button>`;
                     
                     container.innerHTML += `
@@ -980,178 +1234,441 @@
                                 <div><span class="font-mono text-primary font-bold text-[10px]">#${o.code}</span> ${o.payment!=='Sistem Bonus'?invBtn:''}</div>${sC}
                             </div>
                             <p class="text-[10px] text-slate-300 leading-relaxed mb-2">${o.items}</p>
-                            <div class="flex justify-between items-end"><span class="text-[8px] text-slate-500">${o.date} <br> User: ${o.username}</span><span class="font-bold text-[10px] text-white">Rp ${window.formatRupiah(o.total)}</span></div>
+                            <div class="flex justify-between items-end">
+                                <span class="text-[8px] text-slate-500">${o.date} <br> User: ${o.username}</span>
+                                <span class="font-bold text-[10px] text-white">Rp ${window.formatRupiah(o.total)}</span>
+                            </div>
                         </div>`;
                 });
-            } catch(e) { container.innerHTML = 'Error load'; }
+            } catch(e) { 
+                container.innerHTML = 'Error memuat riwayat.'; 
+            }
         };
 
-        window.updateOrderStatusFirebase = async function(id, st) { await updateDoc(doc(db, "orders", id), { status: st }); };
+        window.updateOrderStatusFirebase = async function(id, st) { 
+            await updateDoc(doc(db, "orders", id), { status: st }); 
+        };
 
-        // ================= LIVE CHAT CS =================
+        // ================= FITUR LIVE CHAT CS (TIDAK DIPENDEKKAN) =================
         window.openChatWidget = async function() {
-            if(!window.currentUserData) return; document.getElementById('globalChatBadge').classList.add('hidden');
-            window.chatContext = 'user'; const modal = document.getElementById('liveChatModal'); modal.classList.remove('hidden'); modal.classList.add('flex');
-            const q = query(collection(db, "tickets"), where("uid", "==", window.currentUserData.uid)); const s = await getDocs(q);
-            if (!s.empty) window.subscribeToChat(s.docs[0].id, false);
+            if(!window.currentUserData) return; 
+            
+            document.getElementById('globalChatBadge').classList.add('hidden');
+            window.chatContext = 'user'; 
+            
+            const modal = document.getElementById('liveChatModal'); 
+            modal.classList.remove('hidden'); 
+            modal.classList.add('flex');
+            
+            const q = query(collection(db, "tickets"), where("uid", "==", window.currentUserData.uid)); 
+            const s = await getDocs(q);
+            
+            if (!s.empty) {
+                window.subscribeToChat(s.docs[0].id, false);
+            }
         };
-        window.closeChatModal = function() { document.getElementById('liveChatModal').classList.add('hidden'); document.getElementById('liveChatModal').classList.remove('flex'); if(window.unsubscribeChat) window.unsubscribeChat(); };
+        
+        window.closeChatModal = function() { 
+            document.getElementById('liveChatModal').classList.add('hidden'); 
+            document.getElementById('liveChatModal').classList.remove('flex'); 
+            if(window.unsubscribeChat) window.unsubscribeChat(); 
+        };
+        
         window.subscribeToChat = function(tId, isA = false) {
-            window.activeTicketId = tId; const cA = document.getElementById('chatMessagesArea'); if(window.unsubscribeChat) window.unsubscribeChat();
+            window.activeTicketId = tId; 
+            const cA = document.getElementById('chatMessagesArea'); 
+            
+            if(window.unsubscribeChat) window.unsubscribeChat();
+            
             window.unsubscribeChat = onSnapshot(doc(db, "tickets", tId), (d) => {
                 if (d.exists()) {
-                    const data = d.data(); cA.innerHTML = '';
+                    const data = d.data(); 
+                    cA.innerHTML = '';
                     if(!data.messages) return;
+                    
                     data.messages.forEach(m => {
                         const isMe = isA ? m.sender === 'admin' : m.sender === 'user';
-                        if(isMe) cA.innerHTML += `<div class="w-full flex justify-end"><div class="chat-bubble-user p-2 shadow-sm"><p class="text-[11px]">${m.text}</p></div></div>`;
-                        else cA.innerHTML += `<div class="w-full flex justify-start"><div class="chat-bubble-admin p-2 shadow-sm"><span class="text-[8px] text-primary block">${isA?data.userName:"Admin CS"}</span><p class="text-[11px]">${m.text}</p></div></div>`;
-                    }); cA.scrollTop = cA.scrollHeight;
+                        if(isMe) {
+                            cA.innerHTML += `<div class="w-full flex justify-end"><div class="chat-bubble-user p-2 shadow-sm"><p class="text-[11px]">${m.text}</p></div></div>`;
+                        } else {
+                            cA.innerHTML += `<div class="w-full flex justify-start"><div class="chat-bubble-admin p-2 shadow-sm"><span class="text-[8px] text-primary block">${isA ? data.userName : "Admin CS"}</span><p class="text-[11px]">${m.text}</p></div></div>`;
+                        }
+                    }); 
+                    cA.scrollTop = cA.scrollHeight;
                 }
             });
         };
+        
         window.sendChatMessage = async function() {
-            const t = document.getElementById('chatInputMessage').value.trim(); if(!t) return; document.getElementById('chatInputMessage').value = '';
+            const t = document.getElementById('chatInputMessage').value.trim(); 
+            if(!t) return; 
+            
+            document.getElementById('chatInputMessage').value = '';
             const nMsg = { sender: window.chatContext === 'admin' ? 'admin' : 'user', text: t, timestamp: Date.now() };
-            if (window.activeTicketId) await updateDoc(doc(db, "tickets", window.activeTicketId), { messages: arrayUnion(nMsg), updatedAt: Date.now() });
-            else { const nT = await addDoc(collection(db, "tickets"), { uid: window.currentUserData.uid, userName: window.currentUserData.name, status: 'open', messages: [nMsg], createdAt: Date.now(), updatedAt: Date.now() }); window.subscribeToChat(nT.id, false); }
+            
+            if (window.activeTicketId) {
+                await updateDoc(doc(db, "tickets", window.activeTicketId), { 
+                    messages: arrayUnion(nMsg), 
+                    updatedAt: Date.now() 
+                });
+            } else { 
+                const nT = await addDoc(collection(db, "tickets"), { 
+                    uid: window.currentUserData.uid, 
+                    userName: window.currentUserData.name, 
+                    status: 'open', 
+                    messages: [nMsg], 
+                    createdAt: Date.now(), 
+                    updatedAt: Date.now() 
+                }); 
+                window.subscribeToChat(nT.id, false); 
+            }
         };
     </script>
 
-    <!-- UI VANILLA & SMM API JS -->
+    <!-- ==================== 5. JAVASCRIPT UI VANILLA & SMM API ==================== -->
     <script>
-        const WA_NUMBER = "6281312185600"; let cart = JSON.parse(localStorage.getItem('katech_cart')) || []; let selectedProduct = null;
+        const WA_NUMBER = "6281312185600"; 
+        let cart = JSON.parse(localStorage.getItem('katech_cart')) || []; 
+        let selectedProduct = null;
+        let products = []; 
+
         window.formatRupiah = function(num) { return new Intl.NumberFormat('id-ID').format(num || 0); };
-        window.alert = function(msg) { Swal.fire({ title: 'Info', text: msg, icon: msg.toLowerCase().includes('gagal')?'error':'success', background: '#13233F', color: '#fff', confirmButtonColor: '#0EA5E9' }); };
-        window.showToast = function(msg) { const tc = document.getElementById('toastContainer'); const t = document.createElement('div'); t.className=`bg-cardbg border border-slate-700 p-3 rounded-lg shadow-2xl flex items-center gap-2 toast-slide text-xs text-white z-[99999]`; t.innerHTML=`<i class="fa-solid fa-circle-info text-primary"></i><span>${msg}</span>`; tc.appendChild(t); setTimeout(()=>t.remove(), 4000); };
-        window.togglePassword = function(id, i) { const input = document.getElementById(id); if (input.type === 'password') { input.type = 'text'; i.classList.replace('fa-eye','fa-eye-slash'); i.classList.add('text-primary'); } else { input.type = 'password'; i.classList.replace('fa-eye-slash','fa-eye'); i.classList.remove('text-primary'); } };
-        window.switchAuthTab = function(id) { ['formLogin', 'formRegister', 'formForgot'].forEach(i => { document.getElementById(i).classList.add('hidden'); }); document.getElementById(id).classList.remove('hidden'); };
+        
+        window.alert = function(msg) { 
+            Swal.fire({ title: 'Info', text: msg, icon: msg.toLowerCase().includes('gagal') ? 'error' : 'success', background: '#13233F', color: '#fff', confirmButtonColor: '#0EA5E9' }); 
+        };
+        
+        window.showToast = function(msg) { 
+            const tc = document.getElementById('toastContainer'); 
+            const t = document.createElement('div'); 
+            t.className = `bg-cardbg border border-slate-700 p-3 rounded-lg shadow-2xl flex items-center gap-2 toast-slide text-xs text-white z-[99999]`; 
+            t.innerHTML = `<i class="fa-solid fa-circle-info text-primary"></i><span>${msg}</span>`; 
+            tc.appendChild(t); 
+            setTimeout(() => t.remove(), 4000); 
+        };
+        
+        window.togglePassword = function(id, i) { 
+            const input = document.getElementById(id); 
+            if (input.type === 'password') { 
+                input.type = 'text'; 
+                i.classList.replace('fa-eye','fa-eye-slash'); 
+                i.classList.add('text-primary'); 
+            } else { 
+                input.type = 'password'; 
+                i.classList.replace('fa-eye-slash','fa-eye'); 
+                i.classList.remove('text-primary'); 
+            } 
+        };
+        
+        window.switchAuthTab = function(id) { 
+            ['formLogin', 'formRegister', 'formForgot'].forEach(i => { 
+                document.getElementById(i).classList.add('hidden'); 
+            }); 
+            document.getElementById(id).classList.remove('hidden'); 
+        };
         
         // --- LOGIKA SIDEBAR & VIEW ---
         window.toggleSidebar = function() {
-            const sb = document.getElementById('sidebarMenu'); const ov = document.getElementById('sidebarOverlay');
-            if(sb.classList.contains('-translate-x-full')) { sb.classList.remove('-translate-x-full'); ov.classList.remove('hidden'); }
-            else { sb.classList.add('-translate-x-full'); ov.classList.add('hidden'); }
+            const sb = document.getElementById('sidebarMenu'); 
+            const ov = document.getElementById('sidebarOverlay');
+            if(sb.classList.contains('-translate-x-full')) { 
+                sb.classList.remove('-translate-x-full'); 
+                ov.classList.remove('hidden'); 
+            } else { 
+                sb.classList.add('-translate-x-full'); 
+                ov.classList.add('hidden'); 
+            }
         };
         
         window.switchView = function(viewId) {
-            // Sembunyikan semua view
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            // Munculkan target
-            const target = document.getElementById(viewId); if(target) target.classList.remove('hidden');
-            // Update Active Menu
+            const target = document.getElementById(viewId); 
+            if(target) target.classList.remove('hidden');
+            
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            const activeMenu = document.getElementById('nav-' + viewId); if(activeMenu) activeMenu.classList.add('active');
-            // Update Title
-            const titles = { 'view-home': 'Dashboard', 'view-order': 'Pesanan Baru', 'view-history': 'Riwayat Order', 'view-track': 'Lacak Pesanan', 'view-deposit': 'Isi Saldo', 'view-referral': 'Program Referral', 'view-admin': 'Admin Panel' };
+            const activeMenu = document.getElementById('nav-' + viewId); 
+            if(activeMenu) activeMenu.classList.add('active');
+            
+            const titles = { 
+                'view-home': 'Halaman Utama', 
+                'view-order': 'Pesanan Baru', 
+                'view-history': 'Riwayat Order', 
+                'view-track': 'Lacak Pesanan', 
+                'view-deposit': 'Isi Saldo', 
+                'view-referral': 'Program Referral', 
+                'view-admin': 'Admin Area' 
+            };
             document.getElementById('headerTitle').innerText = titles[viewId] || 'KA TECH HUB';
             
-            if(window.innerWidth < 768) window.toggleSidebar(); // Auto-tutup sidebar di mobile
+            if(window.innerWidth < 768) window.toggleSidebar();
         };
 
         window.switchOrderType = function(type) {
-            document.getElementById('tabSingle').classList.remove('bg-primary','text-white'); document.getElementById('tabSingle').classList.add('text-slate-400');
-            document.getElementById('tabMass').classList.remove('bg-primary','text-white'); document.getElementById('tabMass').classList.add('text-slate-400');
-            document.getElementById('panelSingleOrder').classList.add('hidden'); document.getElementById('panelMassOrder').classList.add('hidden');
-            if(type === 'single') { document.getElementById('tabSingle').classList.add('bg-primary','text-white'); document.getElementById('panelSingleOrder').classList.remove('hidden'); } 
-            else { document.getElementById('tabMass').classList.add('bg-primary','text-white'); document.getElementById('panelMassOrder').classList.remove('hidden'); }
+            document.getElementById('tabSingle').classList.remove('bg-primary','text-white'); 
+            document.getElementById('tabSingle').classList.add('text-slate-400');
+            document.getElementById('tabMass').classList.remove('bg-primary','text-white'); 
+            document.getElementById('tabMass').classList.add('text-slate-400');
+            document.getElementById('panelSingleOrder').classList.add('hidden'); 
+            document.getElementById('panelMassOrder').classList.add('hidden');
+            
+            if(type === 'single') { 
+                document.getElementById('tabSingle').classList.add('bg-primary','text-white'); 
+                document.getElementById('panelSingleOrder').classList.remove('hidden'); 
+            } else { 
+                document.getElementById('tabMass').classList.add('bg-primary','text-white'); 
+                document.getElementById('panelMassOrder').classList.remove('hidden'); 
+            }
         };
 
-        // --- CUSTOM DROPDOWN ---
+        // --- DROPDOWN CUSTOM (UNTUK KATEGORI & LAYANAN) ---
         window.toggleCustomSelect = function(id, e) {
-            e.stopPropagation(); const el = document.getElementById(id);
+            e.stopPropagation(); 
+            const el = document.getElementById(id);
             if(id === 'catList') document.getElementById('servList').classList.add('hidden');
             if(id === 'servList') document.getElementById('catList').classList.add('hidden');
             el.classList.toggle('hidden');
         };
-        document.addEventListener('click', () => { document.getElementById('catList').classList.add('hidden'); document.getElementById('servList').classList.add('hidden'); });
+        
+        document.addEventListener('click', () => { 
+            document.getElementById('catList').classList.add('hidden'); 
+            document.getElementById('servList').classList.add('hidden'); 
+        });
 
         window.initCategoryDropdown = function() { 
             const cat = [...new Set(products.map(p => p.category))]; 
-            const cL = document.getElementById('catList'); if(!cL) return; 
-            cL.innerHTML = cat.map(c => `<div class="dropdown-item px-4 py-3 text-[11px] sm:text-xs text-slate-300 hover:bg-slate-700 cursor-pointer" onclick="selectCategory('${c.replace(/'/g, "\\'")}')">${c.toUpperCase()}</div>`).join(''); 
+            const cL = document.getElementById('catList'); 
+            if(!cL) return; 
+            
+            cL.innerHTML = cat.map(c => 
+                `<div class="dropdown-item px-4 py-3 text-[11px] sm:text-xs text-slate-300 hover:bg-slate-700 cursor-pointer" onclick="selectCategory('${c.replace(/'/g, "\\'")}')">${c.toUpperCase()}</div>`
+            ).join(''); 
+            
             if(cat.length > 0) window.selectCategory(cat[0]); 
         };
+        
         window.selectCategory = function(cat) {
             document.getElementById('catSelectedText').innerText = cat.toUpperCase();
             const filtered = products.filter(p => p.category === cat); 
-            document.getElementById('servList').innerHTML = filtered.map(p => `<div class="dropdown-item px-4 py-2.5 hover:bg-slate-700 cursor-pointer group" onclick="selectService('${p.id}')"><div class="text-[10px] sm:text-[11px] text-slate-200 group-hover:text-primary line-clamp-2">${p.name}</div><div class="text-[9px] text-emerald-400 mt-0.5 font-bold">Rp ${window.formatRupiah(p.price)}</div></div>`).join(''); 
+            
+            document.getElementById('servList').innerHTML = filtered.map(p => 
+                `<div class="dropdown-item px-4 py-2.5 hover:bg-slate-700 cursor-pointer group" onclick="selectService('${p.id}')">
+                    <div class="text-[10px] sm:text-[11px] text-slate-200 group-hover:text-primary line-clamp-2">${p.name}</div>
+                    <div class="text-[9px] text-emerald-400 mt-0.5 font-bold">Rp ${window.formatRupiah(p.price)}</div>
+                </div>`
+            ).join(''); 
+            
             if(filtered.length > 0) window.selectService(filtered[0].id);
         };
+        
         window.selectService = function(id) { 
             selectedProduct = products.find(p => p.id == id); 
             if (selectedProduct) { 
                 document.getElementById('servSelectedText').innerText = selectedProduct.name;
-                document.getElementById('selectedDesc').innerText = selectedProduct.desc; document.getElementById('selectedPrice').innerText = `Rp ${window.formatRupiah(selectedProduct.price)}`; document.getElementById('selectedMinMax').innerText = `${window.formatRupiah(selectedProduct.min)} / ${window.formatRupiah(selectedProduct.max)}`; document.getElementById('mainQuantityInput').value = selectedProduct.min; window.calculateMainTotal(); 
+                document.getElementById('selectedDesc').innerText = selectedProduct.desc; 
+                document.getElementById('selectedPrice').innerText = `Rp ${window.formatRupiah(selectedProduct.price)}`; 
+                document.getElementById('selectedMinMax').innerText = `${window.formatRupiah(selectedProduct.min)} / ${window.formatRupiah(selectedProduct.max)}`; 
+                document.getElementById('mainQuantityInput').value = selectedProduct.min; 
+                window.calculateMainTotal(); 
             } 
         };
         
         window.calculateMainTotal = function() { 
-            if (!selectedProduct) return; const q = parseFloat(document.getElementById('mainQuantityInput').value) || 0; 
-            document.getElementById('mainCalculatedTotal').innerText = `Rp ${window.formatRupiah(Math.round(selectedProduct.unit.includes('/1K') ? (q/1000)*selectedProduct.price : q*selectedProduct.price))}`; 
+            if (!selectedProduct) return; 
+            const q = parseFloat(document.getElementById('mainQuantityInput').value) || 0; 
+            const total = selectedProduct.unit.includes('/1K') ? (q/1000) * selectedProduct.price : q * selectedProduct.price;
+            document.getElementById('mainCalculatedTotal').innerText = `Rp ${window.formatRupiah(Math.round(total))}`; 
         };
 
-        // --- ORDER PROCESSES ---
+        // --- SISTEM PEMROSESAN PESANAN (ORDER & API FETCH) ---
         window.processDirectOrder = async function() {
-            if (!selectedProduct) return window.alert("Pilih layanan!");
-            const target = document.getElementById('mainTargetInput').value.trim(), qty = parseInt(document.getElementById('mainQuantityInput').value), pay = document.getElementById('mainPaymentSelect').value;
-            if (target === "") return window.alert("Isi Target!");
-            if (isNaN(qty) || qty < selectedProduct.min || qty > selectedProduct.max) return window.alert(`Jumlah harus ${selectedProduct.min} - ${selectedProduct.max}!`);
-            let total = Math.round(selectedProduct.unit.includes('/1K') ? (qty/1000)*selectedProduct.price : qty*selectedProduct.price);
+            if (!selectedProduct) return window.alert("Pilih layanan terlebih dahulu!");
+            
+            const target = document.getElementById('mainTargetInput').value.trim();
+            const qty = parseInt(document.getElementById('mainQuantityInput').value);
+            const pay = document.getElementById('mainPaymentSelect').value;
+            
+            if (target === "") return window.alert("Harap isi Target pesanan!");
+            if (isNaN(qty) || qty < selectedProduct.min || qty > selectedProduct.max) return window.alert(`Jumlah harus di antara ${selectedProduct.min} dan ${selectedProduct.max}!`);
+            
+            let total = Math.round(selectedProduct.unit.includes('/1K') ? (qty/1000) * selectedProduct.price : qty * selectedProduct.price);
             
             if (typeof Swal !== 'undefined') {
-                const conf = await Swal.fire({ title: 'Konfirmasi Pesanan', html: `<div class="text-left bg-[#070D19] p-4 rounded border border-slate-700 text-xs"><b class="text-white block mb-2">${selectedProduct.name}</b>Target: <b class="text-primary">${target}</b><br>Jumlah: <b>${window.formatRupiah(qty)}</b><br><br>Total: <b class="text-emerald-400 text-sm">Rp ${window.formatRupiah(total)}</b></div>`, showCancelButton: true, background: '#13233F', color: '#fff', confirmButtonColor: '#0EA5E9' });
+                const conf = await Swal.fire({ 
+                    title: 'Konfirmasi Pesanan', 
+                    html: `<div class="text-left bg-[#070D19] p-4 rounded border border-slate-700 text-xs">
+                            <b class="text-white block mb-2">${selectedProduct.name}</b>
+                            Target: <b class="text-primary">${target}</b><br>
+                            Jumlah: <b>${window.formatRupiah(qty)}</b><br><br>
+                            Total: <b class="text-emerald-400 text-sm">Rp ${window.formatRupiah(total)}</b>
+                           </div>`, 
+                    showCancelButton: true, background: '#13233F', color: '#fff', confirmButtonColor: '#0EA5E9' 
+                });
+                
                 if(conf.isConfirmed) {
                     Swal.fire({ title: 'Memproses...', allowOutsideClick: false, background: '#13233F', color: '#fff', didOpen: () => { Swal.showLoading(); } });
-                    const code = `KATH-${Date.now().toString().slice(-6)}`; const itemTxt = `${window.formatRupiah(qty)}x ${selectedProduct.name}`;
+                    
+                    const code = `KATH-${Date.now().toString().slice(-6)}`; 
+                    const itemTxt = `${window.formatRupiah(qty)}x ${selectedProduct.name}`;
                     const res = await window.checkoutWithFirebase(code, itemTxt, total, pay); 
+                    
                     if(!res.success) return window.alert(res.message);
+                    
                     if(pay === 'Saldo Akun') { 
-                        try { fetch('/.netlify/functions/api', { method: 'POST', body: JSON.stringify({ action: 'add', service: selectedProduct.id, link: target, quantity: qty }) }).catch(e=>console.log(e)); } catch(e){}
-                        Swal.fire({ title: 'Berhasil!', text: 'Order instan diproses pusat.', icon: 'success', background: '#13233F', color: '#fff' }); 
-                        document.getElementById('mainTargetInput').value = ''; window.switchView('view-history'); 
+                        // Tembak API H2H ke Backend Netlify (Penerusan ke Djuragan)
+                        try { 
+                            fetch('/.netlify/functions/api', { 
+                                method: 'POST', 
+                                body: JSON.stringify({ action: 'add', service: selectedProduct.id, link: target, quantity: qty }) 
+                            }).catch(e=>console.log(e)); 
+                        } catch(e){}
+                        
+                        Swal.fire({ title: 'Berhasil!', text: 'Order instan telah diproses pusat.', icon: 'success', background: '#13233F', color: '#fff' }); 
+                        document.getElementById('mainTargetInput').value = ''; 
+                        window.switchView('view-history'); 
                     } else { 
-                        Swal.close(); const msg = `Halo Admin\nOrder: #${code}\nProduk: ${selectedProduct.name}\nTarget: ${target}\nTotal: Rp ${window.formatRupiah(total)}\nVia: ${pay}`; window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank'); window.switchView('view-history'); 
+                        Swal.close(); 
+                        const msg = `Halo Admin\nOrder: #${code}\nProduk: ${selectedProduct.name}\nTarget: ${target}\nTotal: Rp ${window.formatRupiah(total)}\nVia: ${pay}`; 
+                        window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank'); 
+                        window.switchView('view-history'); 
                     }
                 }
             }
         };
 
-        // --- SEDOT API PUSAT ---
-        let products = []; 
+        // --- SISTEM FETCH DATA SMM DARI DJURAGAN (LEWAT BACKEND) ---
         window.fetchSMMProducts = async function() {
             try {
                 const res = await fetch('/.netlify/functions/api', { method: 'POST', body: JSON.stringify({ action: 'services' }) });
                 const data = await res.json();
+                
                 if(Array.isArray(data)) {
                     products = data.map(i => {
-                        let hPusat = parseFloat(i.rate); let mkp = (hPusat < 200000) ? ((hPusat <= 50000) ? 5000 : 10000) : (hPusat < 700000 ? 25000 : 50000);
-                        return { id: i.service, name: i.name, category: i.category, price: Math.round(hPusat + mkp), unit: "/1K", min: parseInt(i.min)||100, max: parseInt(i.max)||10000, desc: i.desc ? `Info: ${i.desc}` : 'Proses auto' };
+                        let hPusat = parseFloat(i.rate); 
+                        // Logika Markup (Ambil Untung)
+                        let mkp = (hPusat < 200000) ? ((hPusat <= 50000) ? 5000 : 10000) : (hPusat < 700000 ? 25000 : 50000);
+                        return { 
+                            id: i.service, name: i.name, category: i.category, 
+                            price: Math.round(hPusat + mkp), unit: "/1K", 
+                            min: parseInt(i.min)||100, max: parseInt(i.max)||10000, 
+                            desc: i.desc ? `Info: ${i.desc}` : 'Proses auto instan by system.' 
+                        };
                     });
                     window.initCategoryDropdown(); 
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { 
+                console.error("Gagal menarik data layanan SMM dari Pusat", e); 
+            }
         };
 
-        // --- UTILITIES ---
-        window.shareReferralLink = function() { navigator.clipboard.writeText(document.getElementById('refLinkText').innerText); window.showToast("Link Disalin!"); };
+        // --- UTILITAS UI & MODAL LAINNYA ---
+        window.shareReferralLink = function() { navigator.clipboard.writeText(document.getElementById('refLinkText').innerText); window.showToast("Link Referal Disalin!"); };
         window.openQrisModal = () => { document.getElementById('qrisModal').classList.remove('hidden'); document.getElementById('qrisModal').classList.add('flex'); };
         window.closeQrisModal = () => { document.getElementById('qrisModal').classList.add('hidden'); document.getElementById('qrisModal').classList.remove('flex'); };
         window.openApiDocs = () => { document.getElementById('apiDocsModal').classList.remove('hidden'); document.getElementById('apiDocsModal').classList.add('flex'); };
         window.closeApiDocs = () => { document.getElementById('apiDocsModal').classList.add('hidden'); document.getElementById('apiDocsModal').classList.remove('flex'); };
-        window.copyToClipboard = (txt, n) => { navigator.clipboard.writeText(txt); window.showToast(`${n} disalin!`); };
+        window.copyToClipboard = (txt, n) => { navigator.clipboard.writeText(txt); window.showToast(`${n} berhasil disalin!`); };
         window.processFloatingWA = () => { window.open(`https://wa.me/${WA_NUMBER}`, '_blank'); };
         
         window.openInvoice = function(code, date, user, status, payment, items, total) {
-            document.getElementById('invCode').innerText = `#${code}`; document.getElementById('invDate').innerText = date;
-            document.getElementById('invStatus').innerText = status; document.getElementById('invPayment').innerText = payment;
-            document.getElementById('invItems').innerText = items; document.getElementById('invTotal').innerText = `Rp ${window.formatRupiah(total)}`;
-            document.getElementById('invoiceModal').classList.remove('hidden'); document.getElementById('invoiceModal').classList.add('flex');
+            document.getElementById('invCode').innerText = `#${code}`; 
+            document.getElementById('invDate').innerText = date;
+            document.getElementById('invStatus').innerText = status; 
+            document.getElementById('invPayment').innerText = payment;
+            document.getElementById('invItems').innerText = items; 
+            document.getElementById('invTotal').innerText = `Rp ${window.formatRupiah(total)}`;
+            document.getElementById('invoiceModal').classList.remove('hidden'); 
+            document.getElementById('invoiceModal').classList.add('flex');
         };
-        window.closeInvoiceModal = () => { document.getElementById('invoiceModal').classList.add('hidden'); document.getElementById('invoiceModal').classList.remove('flex'); };
-        window.downloadInvoice = () => { html2canvas(document.getElementById('invoiceContent'), {scale:2}).then(c=>{ const l = document.createElement('a'); l.download = `Invoice.png`; l.href = c.toDataURL(); l.click(); }); };
+        
+        window.closeInvoiceModal = () => { 
+            document.getElementById('invoiceModal').classList.add('hidden'); 
+            document.getElementById('invoiceModal').classList.remove('flex'); 
+        };
+        
+        window.downloadInvoice = () => { 
+            html2canvas(document.getElementById('invoiceContent'), {scale: 2}).then(canvas => { 
+                const l = document.createElement('a'); 
+                l.download = `Invoice_KATECHHUB.png`; 
+                l.href = canvas.toDataURL(); 
+                l.click(); 
+            }); 
+        };
 
-        window.onload = function() { window.fetchSMMProducts(); };
+        // --- SISTEM KERANJANG (CART) YANG LAMA ---
+        window.toggleCartModal = function() {
+            const modal = document.getElementById('cartModal');
+            if(modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden'); modal.classList.add('flex'); renderCartItems();
+            } else {
+                modal.classList.add('hidden'); modal.classList.remove('flex');
+            }
+        };
+
+        window.addMainToCart = function() {
+            if(!selectedProduct) return window.alert("Pilih layanan dulu");
+            const qty = parseInt(document.getElementById('mainQuantityInput').value);
+            const target = document.getElementById('mainTargetInput').value;
+            if(!target || isNaN(qty)) return window.alert("Isi target dan jumlah");
+            let tHarga = Math.round(selectedProduct.unit.includes('/1K') ? (qty/1000)*selectedProduct.price : qty*selectedProduct.price);
+            
+            cart.push({ id: Date.now(), serviceName: selectedProduct.name, target: target, qty: qty, price: tHarga });
+            localStorage.setItem('katech_cart', JSON.stringify(cart));
+            window.showToast("Masuk Keranjang!"); updateCartBadge();
+        };
+
+        function updateCartBadge() {
+            const badge = document.getElementById('topCartBadge');
+            if(cart.length > 0) { badge.classList.remove('hidden'); badge.innerText = cart.length; } 
+            else { badge.classList.add('hidden'); }
+        }
+
+        function renderCartItems() {
+            const cList = document.getElementById('cartItems'); cList.innerHTML = ''; let t = 0;
+            if(cart.length === 0) { cList.innerHTML = '<p class="text-sm text-slate-400 text-center">Keranjang kosong</p>'; }
+            cart.forEach(i => {
+                t += i.price;
+                cList.innerHTML += `
+                    <div class="bg-[#070D19] p-3 rounded-xl border border-slate-700 flex justify-between items-center">
+                        <div><p class="text-xs font-bold text-white line-clamp-1">${i.serviceName}</p><p class="text-[10px] text-slate-400">Target: ${i.target} | Qty: ${window.formatRupiah(i.qty)}</p></div>
+                        <div class="flex items-center gap-3"><p class="text-primary font-bold text-xs">Rp ${window.formatRupiah(i.price)}</p><button onclick="removeCartItem(${i.id})" class="text-red-400 hover:text-red-500"><i class="fa-solid fa-trash"></i></button></div>
+                    </div>`;
+            });
+            document.getElementById('cartTotal').innerText = `Rp ${window.formatRupiah(t)}`;
+        }
+
+        window.removeCartItem = function(id) { cart = cart.filter(i => i.id !== id); localStorage.setItem('katech_cart', JSON.stringify(cart)); renderCartItems(); updateCartBadge(); };
+
+        window.processCartCheckout = async function() {
+            if(cart.length === 0) return;
+            const pay = document.getElementById('paymentMethod').value;
+            const totalHrg = cart.reduce((sum, item) => sum + item.price, 0);
+            const itemsTxt = cart.map(i => `${window.formatRupiah(i.qty)}x ${i.serviceName} (${i.target})`).join(', ');
+            
+            Swal.fire({ title: 'Memproses Checkout...', allowOutsideClick: false, background: '#13233F', color: '#fff', didOpen: () => { Swal.showLoading(); } });
+            
+            const code = `KATH-CART-${Date.now().toString().slice(-4)}`;
+            const res = await window.checkoutWithFirebase(code, itemsTxt, totalHrg, pay);
+            
+            if(!res.success) return window.alert(res.message);
+            
+            cart = []; localStorage.setItem('katech_cart', JSON.stringify(cart)); updateCartBadge(); window.toggleCartModal();
+            
+            if(pay === 'Saldo Akun') { 
+                Swal.fire({ title: 'Berhasil!', text: 'Order via Keranjang diproses.', icon: 'success', background: '#13233F', color: '#fff' }); 
+                window.switchView('view-history'); 
+            } else { 
+                Swal.close(); 
+                const msg = `Halo Admin\nOrder Cart: #${code}\nTotal: Rp ${window.formatRupiah(totalHrg)}\nVia: ${pay}`; 
+                window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank'); 
+                window.switchView('view-history'); 
+            }
+        };
+
+        // --- JALANKAN SAAT WEB DIBUKA ---
+        window.onload = function() { 
+            window.fetchSMMProducts(); 
+            updateCartBadge();
+        };
     </script>
 </body>
 </html>
