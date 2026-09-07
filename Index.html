@@ -57,6 +57,9 @@
         }
     </script>
 
+    <!-- SweetAlert2 CDN untuk Notifikasi Keren -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body { background-color: #070C18; color: #F8FAFC; overflow-x: hidden; font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass-nav { background: rgba(7, 12, 24, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(56, 189, 248, 0.12); }
@@ -939,7 +942,7 @@
             if(window.inactivityTimer) clearTimeout(window.inactivityTimer);
             window.inactivityTimer = setTimeout(() => {
                 if (window.currentUserData && window.currentUserData.role !== 'owner') {
-                    alert("Sesi Anda telah berakhir karena tidak ada aktivitas selama 30 menit. Silakan login kembali.");
+                    window.alert("Sesi Anda telah berakhir karena tidak ada aktivitas selama 30 menit. Silakan login kembali.");
                     window.logout();
                 }
             }, INACTIVITY_LIMIT_MS);
@@ -1105,12 +1108,12 @@
                         await window.processReferrerBonus(refUsername, baseUsername);
                     }
                     localStorage.removeItem('katech_ref'); // Hapus memori referral
-                    window.showToast("Login Google Berhasil! Anda mendapat bonus awal.");
+                    window.alert("Login Google Berhasil! Anda mendapat bonus pendaftaran.");
                 } else {
                     window.showToast("Login Google Berhasil!");
                 }
             } catch(error) {
-                alert("Gagal Login via Google: " + error.message);
+                window.alert("Gagal Login via Google: " + error.message);
                 btnGoogle.innerHTML = originalText;
                 btnGoogle.disabled = false;
                 btnGoogle.classList.remove('opacity-70', 'cursor-not-allowed');
@@ -1124,15 +1127,15 @@
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
 
-            if(!name || !username || !email || !password) return alert("Mohon isi semua bidang!");
-            if(username.length < 3) return alert("Username minimal 3 karakter!");
+            if(!name || !username || !email || !password) return window.alert("Mohon isi semua bidang!");
+            if(username.length < 3) return window.alert("Username minimal 3 karakter!");
 
             try {
                 // CEK DB APAKAH USERNAME SUDAH DIPAKAI
                 const qUsername = query(collection(db, "users"), where("username", "==", username));
                 const snapUsername = await getDocs(qUsername);
                 if(!snapUsername.empty) {
-                    return alert(`Maaf, Username "${username}" sudah dipakai akun lain. Silakan pilih username lain!`);
+                    return window.alert(`Maaf, Username "${username}" sudah dipakai akun lain. Silakan pilih username lain!`);
                 }
 
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -1165,8 +1168,8 @@
                     await window.processReferrerBonus(refUsername, username);
                 }
                 localStorage.removeItem('katech_ref'); // Hapus memori referral
-                window.showToast("Registrasi Berhasil! Anda mendapat bonus awal.");
-            } catch (error) { alert("Gagal Registrasi: " + error.message); }
+                window.alert("Registrasi Berhasil! Anda mendapat bonus pendaftaran awal.");
+            } catch (error) { window.alert("Gagal Registrasi: " + error.message); }
         };
 
         // FUNGSI SHARE LINK
@@ -1174,19 +1177,26 @@
             if(!window.currentUserData) return;
             const refLink = `https://katechhub.netlify.app/?ref=${window.currentUserData.username}`;
             navigator.clipboard.writeText(refLink);
-            window.showToast("Link Referral disalin! Silakan paste & bagikan ke teman.");
+            Swal.fire({
+                title: 'Berhasil Disalin!',
+                text: 'Link Referral Anda siap dibagikan ke teman/grup.',
+                icon: 'success',
+                background: 'rgba(15, 23, 42, 0.95)',
+                color: '#F8FAFC',
+                confirmButtonColor: '#0EA5E9'
+            });
         };
 
         // RESET PASSWORD KE EMAIL USER
         window.processResetPassword = async function() {
             const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
-            if(!email) return alert("Masukkan email Anda terlebih dahulu!");
+            if(!email) return window.alert("Masukkan email Anda terlebih dahulu!");
             try { 
                 await sendPasswordResetEmail(auth, email); 
-                alert(`Link reset password berhasil dikirim ke email ${email}. Silakan cek Inbox atau folder Spam email Anda!`); 
+                window.alert(`Link reset password berhasil dikirim ke email ${email}. Silakan cek Inbox atau folder Spam email Anda!`); 
                 window.switchAuthTab('login'); 
             } catch (error) { 
-                alert("Gagal Kirim Link Reset: " + error.message); 
+                window.alert("Gagal Kirim Link Reset: " + error.message); 
             }
         };
 
@@ -1194,7 +1204,7 @@
         window.handleAvatarUpload = async function(event) {
             const file = event.target.files[0];
             if(!file) return;
-            if(file.size > 2 * 1024 * 1024) return alert("Maaf, ukuran foto maksimal 2MB!");
+            if(file.size > 2 * 1024 * 1024) return window.alert("Maaf, ukuran foto maksimal 2MB!");
             
             window.showToast("Mengunggah foto...", "info");
             const reader = new FileReader();
@@ -1207,7 +1217,7 @@
                     avatarEl.style.backgroundImage = `url(${base64Data})`;
                     avatarEl.innerHTML = '';
                     window.showToast("Foto profil diperbarui!");
-                } catch(err) { alert("Gagal upload foto: " + err.message); }
+                } catch(err) { window.alert("Gagal upload foto: " + err.message); }
             };
             reader.readAsDataURL(file);
         };
@@ -1216,25 +1226,37 @@
         window.editUserName = async function() {
             if(!window.currentUserData) return;
             const currentName = window.currentUserData.name || "";
-            const newName = prompt("Ubah Nama Lengkap Anda:", currentName);
             
-            if (newName === null) return;
-            const trimmedName = newName.trim();
-            if (trimmedName === "") return alert("Nama tidak boleh kosong!");
-            if (trimmedName === currentName) return;
+            const { value: newName } = await Swal.fire({
+                title: 'Ubah Nama Lengkap',
+                input: 'text',
+                inputValue: currentName,
+                showCancelButton: true,
+                background: 'rgba(15, 23, 42, 0.95)',
+                color: '#F8FAFC',
+                confirmButtonColor: '#0EA5E9',
+                cancelButtonColor: '#ef4444',
+                inputValidator: (value) => {
+                    if (!value || value.trim() === '') {
+                        return 'Nama tidak boleh kosong!'
+                    }
+                }
+            });
             
-            try {
-                window.showToast("Menyimpan nama baru...", "info");
-                await updateDoc(doc(db, "users", window.currentUserData.uid), { name: trimmedName });
-                window.currentUserData.name = trimmedName;
-                document.getElementById('dashNameDisplay').innerText = trimmedName;
-                window.showToast("Nama berhasil diperbarui!");
-            } catch (error) { alert("Gagal mengubah nama: " + error.message); }
+            if (newName && newName.trim() !== currentName) {
+                try {
+                    window.showToast("Menyimpan nama baru...", "info");
+                    await updateDoc(doc(db, "users", window.currentUserData.uid), { name: newName.trim() });
+                    window.currentUserData.name = newName.trim();
+                    document.getElementById('dashNameDisplay').innerText = newName.trim();
+                    window.showToast("Nama berhasil diperbarui!");
+                } catch (error) { window.alert("Gagal mengubah nama: " + error.message); }
+            }
         };
 
         // REALTIME CHAT CS SUPPORT SYSTEM
         window.openChatWidget = async function() {
-            if(!window.currentUserData) return alert("Silakan login dulu.");
+            if(!window.currentUserData) return window.alert("Silakan login dulu.");
             window.chatContext = 'user';
             const modal = document.getElementById('liveChatModal');
             modal.classList.remove('hidden');
@@ -1386,19 +1408,35 @@
         };
 
         window.closeAndResolveTicket = async function(ticketId) {
-            if(!confirm("Yakin masalah user ini sudah selesai? Tiket chat akan ditutup dan dihapus secara permanen.")) return;
-            try { await deleteDoc(doc(db, "tickets", ticketId)); window.showToast("Tiket chat diselesaikan!"); } catch(e) { alert("Gagal: " + e.message); }
+            Swal.fire({
+                title: 'Selesaikan Tiket?',
+                text: "Yakin masalah user ini sudah selesai? Tiket chat akan ditutup dan dihapus secara permanen.",
+                icon: 'warning',
+                showCancelButton: true,
+                background: 'rgba(15, 23, 42, 0.95)',
+                color: '#F8FAFC',
+                confirmButtonColor: '#10B981',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Ya, Selesaikan'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try { 
+                        await deleteDoc(doc(db, "tickets", ticketId)); 
+                        window.showToast("Tiket chat diselesaikan!"); 
+                    } catch(e) { window.alert("Gagal: " + e.message); }
+                }
+            });
         };
 
         window.processLogin = async function() {
             const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
             const passIn = document.getElementById('loginPassword').value;
-            if(!emailInput || !passIn) return alert("Isi Email dan Password!");
+            if(!emailInput || !passIn) return window.alert("Isi Email dan Password!");
             try {
                 await setPersistence(auth, browserLocalPersistence);
                 await signInWithEmailAndPassword(auth, emailInput, passIn);
                 window.showToast("Login Berhasil!");
-            } catch (error) { alert("Login Gagal: " + error.message); }
+            } catch (error) { window.alert("Login Gagal: " + error.message); }
         };
 
         window.logout = async function() { await signOut(auth); location.reload(); };
@@ -1406,11 +1444,11 @@
         window.adminAddBalance = async function() {
             const targetEmail = document.getElementById('topupUserEmail').value.trim().toLowerCase();
             const addAmount = parseInt(document.getElementById('topupUserAmount').value);
-            if(!targetEmail || isNaN(addAmount) || addAmount <= 0) return alert("Isi Email & Nominal!");
+            if(!targetEmail || isNaN(addAmount) || addAmount <= 0) return window.alert("Isi Email & Nominal yang valid!");
             try {
                 const q = query(collection(db, "users"), where("email", "==", targetEmail));
                 const querySnapshot = await getDocs(q);
-                if(querySnapshot.empty) return alert("Email tidak ditemukan.");
+                if(querySnapshot.empty) return window.alert("Email tidak ditemukan.");
                 
                 for (const docSnap of querySnapshot.docs) {
                     await updateDoc(doc(db, "users", docSnap.id), { balance: increment(addAmount) });
@@ -1418,32 +1456,32 @@
                         window.currentUserData.balance += addAmount;
                         document.getElementById('dashUserBalance').innerText = `Rp ${window.formatRupiah(window.currentUserData.balance)}`;
                     }
-                    window.showToast(`Tambah Rp ${window.formatRupiah(addAmount)} sukses!`);
+                    window.alert(`Tambah Rp ${window.formatRupiah(addAmount)} sukses!`);
                 }
                 document.getElementById('topupUserAmount').value = ''; document.getElementById('topupUserEmail').value = '';
-            } catch(e) { alert("Error: " + e.message); }
+            } catch(e) { window.alert("Error: " + e.message); }
         };
 
         window.promoteToAdmin = async function(actionRole) {
             const emailInput = document.getElementById('newAdminEmail').value.trim().toLowerCase();
-            if(!emailInput) return alert("Masukkan email!");
+            if(!emailInput) return window.alert("Masukkan email!");
             try {
                 const q = query(collection(db, "users"), where("email", "==", emailInput));
                 const querySnapshot = await getDocs(q);
-                if(querySnapshot.empty) return alert("User tidak ditemukan.");
+                if(querySnapshot.empty) return window.alert("User tidak ditemukan.");
                 for (const docSnap of querySnapshot.docs) {
-                    if(docSnap.data().role === 'owner') return alert("Akses Supreme Owner tidak bisa diubah!");
+                    if(docSnap.data().role === 'owner') return window.alert("Maaf, akses Supreme Owner tidak bisa diubah!");
                     await updateDoc(doc(db, "users", docSnap.id), { 
                         role: actionRole === 'admin' ? 'admin' : 'user', 
                         level: actionRole === 'admin' ? 'Admin Staff 🛡️' : 'Bronze' 
                     });
                     window.showToast(`Role dikemaskini.`);
                 }
-            } catch(e) { alert("Error: " + e.message); }
+            } catch(e) { window.alert("Error: " + e.message); }
         };
 
         window.updateOrderStatusFirebase = async function(docId, newStatus) {
-            try { await updateDoc(doc(db, "orders", docId), { status: newStatus }); window.showToast(`Status diset ke ${newStatus}`); } catch (e) { alert("Gagal: " + e.message); }
+            try { await updateDoc(doc(db, "orders", docId), { status: newStatus }); window.showToast(`Status diset ke ${newStatus}`); } catch (e) { window.alert("Gagal: " + e.message); }
         };
 
         window.checkoutWithFirebase = async function(orderCode, itemsText, totalHarga, paymentMethod) {
@@ -1451,7 +1489,7 @@
             try {
                 let statusOrder = 'Belum Proses';
                 if(paymentMethod === 'Saldo Akun') {
-                    if((userData.balance || 0) < totalHarga) return { success: false, message: `Saldo tidak mencukupi!` };
+                    if((userData.balance || 0) < totalHarga) return { success: false, message: `Maaf, Saldo tidak mencukupi!` };
                     await updateDoc(doc(db, "users", userData.uid), { balance: increment(-totalHarga), totalSpent: increment(totalHarga) });
                     window.currentUserData.balance -= totalHarga; window.currentUserData.totalSpent += totalHarga;
                     statusOrder = 'Diproses';
@@ -1464,7 +1502,7 @@
                 };
                 await addDoc(collection(db, "orders"), orderData);
                 return { success: true, status: statusOrder };
-            } catch (e) { return { success: false, message: "Koneksi terputus." }; }
+            } catch (e) { return { success: false, message: "Koneksi terputus. Gagal memproses." }; }
         };
 
         window.renderDashboardHistory = async function() {
@@ -1538,6 +1576,40 @@
 
         window.formatRupiah = function(num) { return new Intl.NumberFormat('id-ID').format(num); };
         
+        // OVERRIDE ALERT BAWAAN BROWSER JADI POPUP PREMIUM SWEETALERT2
+        window.alert = function(message) {
+            let type = 'warning'; 
+            let title = 'Perhatian';
+
+            const msgLower = message.toLowerCase();
+            if(msgLower.includes('gagal') || msgLower.includes('maaf') || msgLower.includes('salah') || msgLower.includes('tidak boleh') || msgLower.includes('kosong')) {
+                type = 'error'; title = 'Oops! Akses Ditolak';
+            } else if (msgLower.includes('berhasil') || msgLower.includes('sukses')) {
+                type = 'success'; title = 'Berhasil!';
+            } else if (msgLower.includes('mohon') || msgLower.includes('harap') || msgLower.includes('silakan')) {
+                type = 'info'; title = 'Informasi';
+            }
+
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: type,
+                background: 'rgba(15, 23, 42, 0.95)', 
+                color: '#F8FAFC',
+                backdrop: 'rgba(7, 12, 24, 0.85)', 
+                confirmButtonText: '<i class="fa-solid fa-check mr-2"></i>Mengerti',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'border border-primary/30 rounded-2xl shadow-[0_0_40px_rgba(56,189,248,0.2)] backdrop-blur-xl',
+                    title: 'text-xl font-extrabold text-white tracking-tight',
+                    htmlContainer: 'text-sm text-slate-300 font-medium',
+                    confirmButton: 'bg-gradient-to-r from-accent to-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-primary/30 hover:scale-105 transition-transform mt-2'
+                },
+                showClass: { popup: 'animate-slide-in-left' },
+                hideClass: { popup: 'animate-slide-out-left' }
+            });
+        };
+
         window.showToast = function(message, type = 'success') {
             const toastContainer = document.getElementById('toastContainer');
             if(!toastContainer) return;
@@ -1583,7 +1655,7 @@
 
         window.openProfileDashboard = function() {
             const userData = window.currentUserData;
-            if(!userData) return alert("Sistem sedang memuat data profil. Mohon tunggu sebentar...");
+            if(!userData) return window.alert("Sistem sedang memuat data profil. Mohon tunggu sebentar...");
 
             document.getElementById('dashNameDisplay').innerText = userData.name || 'User';
             document.getElementById('dashUsername').innerText = userData.username || 'user';
@@ -1685,11 +1757,11 @@
         window.processCashout = function() {
             let amount = parseInt(document.getElementById('cashoutAmount').value); 
             let bank = document.getElementById('cashoutBank').value;
-            if (!amount || amount <= 0) return alert("Masukkan nominal valid!");
+            if (!amount || amount <= 0) return window.alert("Maaf, Masukkan nominal yang valid!");
             let userData = window.currentUserData; 
             
             if(!userData || userData.role !== 'owner') return;
-            if (amount > userData.income) return alert(`Saldo hanya Rp ${window.formatRupiah(userData.income)}.`);
+            if (amount > userData.income) return window.alert(`Maaf, Saldo pendapatan hanya Rp ${window.formatRupiah(userData.income)}.`);
             
             userData.income -= amount; 
             userData.cashout += amount;
@@ -1795,7 +1867,7 @@
             if (!selectedProduct) return; 
             const target = document.getElementById('mainTargetInput').value.trim(); 
             const quantity = parseInt(document.getElementById('mainQuantityInput').value); 
-            if (target === "") return alert("Mohon isi Target Pesanan!"); 
+            if (target === "") return window.alert("Mohon isi Target Pesanan!"); 
             let calculatedTotal = selectedProduct.unit.includes('/1K') ? Math.round((quantity / 1000) * selectedProduct.price) : Math.round(quantity * selectedProduct.price); 
             cart.push({ 
                 productName: selectedProduct.name, category: selectedProduct.category, price: selectedProduct.price, 
@@ -1855,35 +1927,90 @@
             else { modal.classList.add('hidden'); modal.classList.remove('flex'); } 
         };
 
+        // PESANAN LANGSUNG DENGAN KONFIRMASI SWEETALERT
         window.processDirectOrder = async function() {
-            if (!selectedProduct) return;
+            if (!selectedProduct) return window.alert("Pilih layanan terlebih dahulu!");
             const target = document.getElementById('mainTargetInput').value.trim(); 
             const quantity = parseInt(document.getElementById('mainQuantityInput').value); 
             const paymentMethod = document.getElementById('mainPaymentSelect').value;
-            if (target === "") return alert("Mohon isi Target!");
+            if (target === "") return window.alert("Mohon isi Target Pesanan terlebih dahulu!");
             
             let calculatedTotal = selectedProduct.unit.includes('/1K') ? Math.round((quantity / 1000) * selectedProduct.price) : Math.round(quantity * selectedProduct.price);
-            const orderCode = `KATH-${Date.now().toString().slice(-6)}`; 
-            const itemsText = `${window.formatRupiah(quantity)}x ${selectedProduct.name} (${target})`;
+            
+            // Pop-up Konfirmasi Pesanan Anti Salah
+            const resultConfirm = await Swal.fire({
+                title: 'Konfirmasi Pesanan',
+                html: `
+                    <div class="text-left bg-slate-800/80 p-4 rounded-xl border border-slate-700 mt-2 text-[13px] leading-relaxed">
+                        <span class="block text-slate-400 mb-1">Produk Layanan:</span>
+                        <b class="text-white block mb-3">${selectedProduct.name}</b>
+                        
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div>
+                                <span class="block text-slate-400">Target URL/User:</span>
+                                <b class="text-primary truncate block">${target}</b>
+                            </div>
+                            <div>
+                                <span class="block text-slate-400">Jumlah Beli:</span>
+                                <b class="text-white">${window.formatRupiah(quantity)}</b>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-slate-600 pt-3 flex justify-between items-center">
+                            <span class="text-slate-400">Total Harga:</span>
+                            <b class="text-lg text-emerald-400">Rp ${window.formatRupiah(calculatedTotal)}</b>
+                        </div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-slate-400">Metode Bayar:</span>
+                            <b class="text-white">${paymentMethod.split('(')[0]}</b>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-amber-400 mt-4"><i class="fa-solid fa-circle-exclamation mr-1"></i> Pastikan target tidak salah, pesanan tidak dapat dibatalkan!</p>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                background: 'rgba(15, 23, 42, 0.95)',
+                color: '#F8FAFC',
+                confirmButtonColor: '#0EA5E9',
+                cancelButtonColor: '#334155',
+                confirmButtonText: '<i class="fa-solid fa-bolt mr-1"></i> Ya, Proses!',
+                cancelButtonText: 'Batal',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'border border-primary/30 rounded-2xl backdrop-blur-xl',
+                    confirmButton: 'bg-primary hover:bg-accent text-white px-6 py-2.5 rounded-xl font-bold transition-colors ml-2',
+                    cancelButton: 'bg-slate-700 hover:bg-slate-600 text-white px-6 py-2.5 rounded-xl font-bold transition-colors mr-2'
+                }
+            });
 
-            if(window.checkoutWithFirebase) {
-                const result = await window.checkoutWithFirebase(orderCode, itemsText, calculatedTotal, paymentMethod); 
-                if(!result.success) return window.showToast(result.message, "error");
-                
-                if(paymentMethod === 'Saldo Akun') { 
-                    window.showToast(`✅ Pesanan sukses diproses pakai Saldo!`); 
-                    document.getElementById('mainTargetInput').value = ''; 
-                    window.openProfileDashboard(); 
-                } else { 
-                    const message = `Halo Admin KA TECH HUB 👋\n\nPesanan Baru:\n🆔 *Kode:* #${orderCode}\n📦 *Produk:* ${selectedProduct.name}\n🎯 *Target:* ${target}\n🔢 *Jumlah:* ${window.formatRupiah(quantity)}\n💳 *Total:* Rp ${window.formatRupiah(calculatedTotal)}\n💰 *Via:* ${paymentMethod}`; 
-                    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); 
-                    window.openProfileDashboard(); 
+            if(resultConfirm.isConfirmed) {
+                const orderCode = `KATH-${Date.now().toString().slice(-6)}`; 
+                const itemsText = `${window.formatRupiah(quantity)}x ${selectedProduct.name} (${target})`;
+
+                if(window.checkoutWithFirebase) {
+                    // Loading State
+                    Swal.fire({ title: 'Memproses Pesanan...', allowOutsideClick: false, background: 'rgba(15, 23, 42, 0.95)', color: '#fff', didOpen: () => { Swal.showLoading(); } });
+
+                    const result = await window.checkoutWithFirebase(orderCode, itemsText, calculatedTotal, paymentMethod); 
+                    if(!result.success) return window.alert(result.message);
+                    
+                    if(paymentMethod === 'Saldo Akun') { 
+                        Swal.fire({ title: 'Berhasil!', text: 'Pesanan sukses diproses pakai Saldo!', icon: 'success', background: 'rgba(15, 23, 42, 0.95)', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
+                        document.getElementById('mainTargetInput').value = ''; 
+                        window.openProfileDashboard(); 
+                    } else { 
+                        Swal.close(); // Tutup loading
+                        const message = `Halo Admin KA TECH HUB 👋\n\nPesanan Baru:\n🆔 *Kode:* #${orderCode}\n📦 *Produk:* ${selectedProduct.name}\n🎯 *Target:* ${target}\n🔢 *Jumlah:* ${window.formatRupiah(quantity)}\n💳 *Total:* Rp ${window.formatRupiah(calculatedTotal)}\n💰 *Via:* ${paymentMethod}`; 
+                        window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); 
+                        window.openProfileDashboard(); 
+                    }
                 }
             }
         };
 
+        // KERANJANG CHECKOUT DENGAN KONFIRMASI SWEETALERT
         window.processCartCheckout = async function() {
-            if(cart.length === 0) return alert("Keranjang kosong!");
+            if(cart.length === 0) return window.alert("Maaf, Keranjang masih kosong!");
             const paymentMethod = document.getElementById('paymentMethod').value; 
             const orderCode = `KATH-${Date.now().toString().slice(-6)}`; 
             let grandTotal = 0; let itemSummary = [];
@@ -1894,20 +2021,44 @@
                 return `*${i+1}. ${item.productName}*\n   • T: ${item.target}\n   • Qty: ${window.formatRupiah(item.quantity)}\n   • Rp ${window.formatRupiah(item.total)}`; 
             }).join('\n\n');
             
-            if(window.checkoutWithFirebase) {
-                const result = await window.checkoutWithFirebase(orderCode, itemSummary.join(' | '), grandTotal, paymentMethod); 
-                if(!result.success) return window.showToast(result.message, "error");
-                
-                cart = []; localStorage.setItem('katech_cart', JSON.stringify(cart)); 
-                window.updateCartUI(); window.toggleCartModal();
-                
-                if(paymentMethod === 'Saldo Akun') { 
-                    window.showToast(`✅ Pembayaran Saldo Berhasil!`); 
-                    window.openProfileDashboard(); 
-                } else { 
-                    const message = `Halo Admin KA TECH HUB 👋\n\nCheckout KERANJANG:\n\n🆔 *Pesanan:* #${orderCode}\n\n${orderDetails}\n\n💳 *TOTAL:* Rp ${window.formatRupiah(grandTotal)}\n💰 *VIA:* ${paymentMethod}`; 
-                    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); 
-                    window.openProfileDashboard(); 
+            const resultConfirm = await Swal.fire({
+                title: 'Konfirmasi Keranjang',
+                text: `Anda akan checkout ${cart.length} layanan dengan total Rp ${window.formatRupiah(grandTotal)}. Lanjutkan?`,
+                icon: 'question',
+                showCancelButton: true,
+                background: 'rgba(15, 23, 42, 0.95)',
+                color: '#F8FAFC',
+                confirmButtonColor: '#0EA5E9',
+                cancelButtonColor: '#334155',
+                confirmButtonText: 'Ya, Checkout',
+                cancelButtonText: 'Batal',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'border border-primary/30 rounded-2xl backdrop-blur-xl',
+                    confirmButton: 'bg-primary hover:bg-accent text-white px-6 py-2.5 rounded-xl font-bold transition-colors ml-2',
+                    cancelButton: 'bg-slate-700 hover:bg-slate-600 text-white px-6 py-2.5 rounded-xl font-bold transition-colors mr-2'
+                }
+            });
+
+            if (resultConfirm.isConfirmed) {
+                if(window.checkoutWithFirebase) {
+                    Swal.fire({ title: 'Memproses Checkout...', allowOutsideClick: false, background: 'rgba(15, 23, 42, 0.95)', color: '#fff', didOpen: () => { Swal.showLoading(); } });
+                    
+                    const result = await window.checkoutWithFirebase(orderCode, itemSummary.join(' | '), grandTotal, paymentMethod); 
+                    if(!result.success) return window.alert(result.message);
+                    
+                    cart = []; localStorage.setItem('katech_cart', JSON.stringify(cart)); 
+                    window.updateCartUI(); window.toggleCartModal();
+                    
+                    if(paymentMethod === 'Saldo Akun') { 
+                        Swal.fire({ title: 'Berhasil!', text: 'Pembayaran Keranjang via Saldo sukses!', icon: 'success', background: 'rgba(15, 23, 42, 0.95)', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
+                        window.openProfileDashboard(); 
+                    } else { 
+                        Swal.close();
+                        const message = `Halo Admin KA TECH HUB 👋\n\nCheckout KERANJANG:\n\n🆔 *Pesanan:* #${orderCode}\n\n${orderDetails}\n\n💳 *TOTAL:* Rp ${window.formatRupiah(grandTotal)}\n💰 *VIA:* ${paymentMethod}`; 
+                        window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); 
+                        window.openProfileDashboard(); 
+                    }
                 }
             }
         };
@@ -2025,7 +2176,7 @@
         
         window.trackOrderReal = function() { 
             const val = document.getElementById('trackInput').value.trim(); 
-            if(!val) return alert("Masukkan kode pesanan Anda!"); 
+            if(!val) return window.alert("Masukkan kode pesanan Anda terlebih dahulu!"); 
             
             document.getElementById('trackResult').classList.remove('hidden'); 
             document.getElementById('resCode').innerText = val; 
