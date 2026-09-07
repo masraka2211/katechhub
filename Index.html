@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KA TECH HUB — Premium Digital Services & SMM Panel</title>
     
-    <!-- Meta Tags PWA, SEO & Open Graph (WhatsApp/FB Share) -->
     <meta name="description" content="Pusat layanan digital terpercaya nomor #1 di Indonesia. Menyediakan top up, boost social media, dan solusi teknologi dengan proses instan 24/7.">
     <meta name="keywords" content="SMM Panel, Top Up Game, Digital Services, KA TECH HUB, Tambah Followers, Jam Tayang YouTube">
     <meta name="author" content="KA TECH HUB">
@@ -13,7 +12,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- Open Graph for Social Media Sharing -->
     <meta property="og:title" content="KA TECH HUB — Premium Digital Services">
     <meta property="og:description" content="Pusat layanan digital & SMM Panel terpercaya nomor #1. Proses instan 24 Jam!">
     <meta property="og:image" content="banner.png">
@@ -22,20 +20,14 @@
     <link rel="apple-touch-icon" href="banner.png">
     <link rel="icon" type="image/png" href="banner.png">
     
-    <!-- Manifest PWA -->
     <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"KA TECH HUB","short_name":"KATECH","start_url":"/","display":"standalone","background_color":"#070C18","theme_color":"#0EA5E9","icons":[{"src":"banner.png","sizes":"192x192","type":"image/png"}]}'>
     
-    <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google ReCaptcha v3 (ENTERPRISE SECURITY) -->
     <script src="https://www.google.com/recaptcha/api.js?render=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></script>
-    
-    <!-- Chart.js untuk Analitik Owner -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -61,11 +53,8 @@
         }
     </script>
 
-    <!-- SweetAlert2 & Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-    
-    <!-- html2canvas untuk fitur Download Struk (E-Receipt) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -94,21 +83,17 @@
         .swal2-container { z-index: 999999 !important; }
         .order-tab.active { background-color: #0EA5E9; color: white; font-weight: bold; border-color: #38BDF8; box-shadow: 0 0 15px rgba(14,165,233,0.3); }
         .order-tab { background-color: rgba(15, 23, 42, 0.8); color: #94A3B8; border: 1px solid rgba(51, 65, 85, 0.8); }
-        /* ReCaptcha sekarang ditampilkan agar user tahu sistem aman */
         .grecaptcha-badge { z-index: 100; bottom: 20px !important; right: 20px !important; }
     </style>
 </head>
 <body class="antialiased selection:bg-primary selection:text-white relative bg-[#070C18]">
 
-    <!-- AUDIO NOTIFIKASI -->
     <audio id="csNotifSound" preload="auto">
         <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- TOAST CONTAINER -->
     <div id="toastContainer" class="fixed top-24 right-5 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- AUTHENTICATION GATE (FORCED LOGIN SCREEN) -->
     <div id="welcomeModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-[#070C18] overflow-hidden transition-all duration-500">
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div class="absolute top-[-10%] left-[-10%] w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-primary/20 rounded-full blur-[100px] md:blur-[140px]"></div>
@@ -125,7 +110,6 @@
             <div id="authFormArea" class="hidden relative">
                 <div class="text-center mb-6 mt-2">
                     <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mx-auto mb-4 shadow-glow border border-white/20">
-                        <img src="banner.png" alt="Logo" class="w-full h-full object-cover rounded-2xl hidden" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
                         <i class="fa-solid fa-shield-halved text-white text-3xl"></i>
                     </div>
                     <h2 class="text-2xl font-extrabold text-white tracking-tight">KA TECH HUB</h2>
@@ -133,7 +117,6 @@
                     <p class="text-slate-400 text-[11px] mt-3">Sistem terkunci. Silakan login terlebih dahulu untuk menggunakan layanan kami.</p>
                 </div>
 
-                <!-- FORM LOGIN -->
                 <div id="formLogin" class="block space-y-4 transition-all duration-300 transform opacity-100 translate-y-0">
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">Email Terdaftar</label>
@@ -173,11 +156,8 @@
                     </div>
                 </div>
 
-                <!-- FORM REGISTER -->
                 <div id="formRegister" class="hidden space-y-3.5 transition-all duration-300 transform opacity-0 translate-y-4">
-                    <div id="refNotification" class="hidden bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] p-2 rounded-lg text-center font-bold mb-2">
-                        🎉 Anda diundang! Daftar sekarang dapat bonus Rp 1.000
-                    </div>
+                    <div id="refNotification" class="hidden bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] p-2 rounded-lg text-center font-bold mb-2"></div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">Nama Lengkap</label>
                         <input type="text" id="regName" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm transition">
@@ -210,7 +190,6 @@
                     </div>
                 </div>
 
-                <!-- FORM LUPA PASSWORD -->
                 <div id="formForgot" class="hidden space-y-4 transition-all duration-300 transform opacity-0 translate-y-4">
                     <p class="text-xs text-slate-300 mb-4 text-center">Masukkan Email terdaftar untuk menerima link verifikasi reset password.</p>
                     <div>
@@ -228,10 +207,8 @@
         </div>
     </div>
 
-    <!-- MAIN APPLICATION CONTENT -->
     <div id="appContent" class="hidden opacity-0 transition-opacity duration-700 pb-32 md:pb-12 pt-8 relative w-full min-h-screen">
 
-        <!-- RUNNING TEXT PROMO -->
         <div class="fixed top-0 w-full z-[70] bg-primary text-[#070C18] text-[10px] sm:text-xs font-bold py-1.5 overflow-hidden flex items-center border-b border-white/20 shadow-[0_0_15px_rgba(56,189,248,0.5)]">
             <div class="whitespace-nowrap animate-marquee flex items-center gap-8">
                 <span>🚀 PROMO: Diskon 20% untuk layanan YouTube Watchtime minggu ini!</span>
@@ -243,7 +220,6 @@
 
         <div id="socialProofContainer" class="fixed bottom-24 md:bottom-8 left-4 sm:left-6 z-[150] pointer-events-none flex flex-col gap-3"></div>
 
-        <!-- USER PROFILE DASHBOARD MODAL -->
         <div id="profileDashboardModal" class="fixed inset-0 z-[800] hidden items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 transition-all">
             <div class="glass-card w-full max-w-4xl h-full max-h-[96vh] sm:max-h-[90vh] flex flex-col relative border-slate-700 shadow-2xl overflow-hidden my-auto">
                 <div class="flex-shrink-0 bg-slate-900/50">
@@ -287,7 +263,6 @@
                     </div>
                 </div>
 
-                <!-- BODY SCROLLABLE -->
                 <div class="p-4 sm:p-6 flex-grow overflow-y-auto no-scrollbar space-y-4 bg-slate-900/30">
                     <div class="bg-slate-900/60 border border-slate-700/50 rounded-lg py-2 px-4 flex justify-center sm:justify-start items-center shadow-inner">
                         <span id="profileClock" class="text-[10px] sm:text-xs font-medium text-slate-300 w-full text-center sm:text-left flex flex-col sm:flex-row sm:items-center"></span>
@@ -314,7 +289,6 @@
                             </button>
                         </div>
 
-                        <!-- KOTAK SISTEM REFERRAL (AFILIASI) -->
                         <div class="sm:col-span-3 bg-gradient-to-r from-blue-900/40 to-primary/20 p-3 sm:p-4 rounded-xl border border-primary/30 flex flex-col sm:flex-row justify-between items-center relative overflow-hidden group shadow-glow-strong">
                             <div class="mb-3 sm:mb-0 w-full sm:w-auto relative z-10">
                                 <span class="text-[10px] text-slate-200 font-bold uppercase tracking-wider block mb-1.5"><i class="fa-solid fa-users text-primary mr-1"></i> Program Referral (Ajak Teman)</span>
@@ -331,7 +305,6 @@
                         </div>
                     </div>
 
-                    <!-- AREA KHUSUS OWNER/ADMIN -->
                     <div id="ownerStatsBox" class="grid grid-cols-2 gap-3 sm:gap-4 hidden">
                         <div class="bg-emerald-900/20 p-3 sm:p-4 rounded-xl border border-emerald-500/40 shadow-glow-emerald flex flex-col justify-center relative overflow-hidden group hover:border-emerald-400 transition-colors">
                             <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-4xl sm:text-6xl text-emerald-500/10 group-hover:scale-110 transition-transform duration-500"></i>
@@ -345,7 +318,6 @@
                         </div>
                     </div>
 
-                    <!-- FITUR ENTERPRISE BARU: ANALITIK CHART.JS -->
                     <div id="ownerAnalyticsBox" class="p-3 sm:p-4 bg-slate-900/40 rounded-xl border border-slate-700/80 mt-4 hidden w-full">
                         <h4 class="text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-2"><i class="fa-solid fa-chart-line text-primary mr-1.5"></i>Statistik Pendapatan (7 Hari Terakhir)</h4>
                         <div class="w-full h-40 sm:h-48 relative">
@@ -353,7 +325,6 @@
                         </div>
                     </div>
 
-                    <!-- ADMIN/OWNER: MANAJEMEN TIKET SUPPORT CS -->
                     <div id="adminSupportBox" class="p-3 sm:p-4 bg-sky-900/20 rounded-xl border border-sky-700/50 hidden">
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
@@ -413,7 +384,6 @@
                         <div id="mutasiList" class="space-y-2 bg-slate-900/40 p-2 sm:p-3 rounded-xl border border-slate-700/50 max-h-40 overflow-y-auto no-scrollbar"></div>
                     </div>
 
-                    <!-- AREA HISTORY & REFILL -->
                     <div class="mt-4">
                         <div class="flex justify-between items-center mb-3">
                             <h3 id="dashHistoryTitle" class="text-[10px] sm:text-sm font-bold text-white uppercase tracking-wider">
@@ -424,14 +394,12 @@
                             </div>
                         </div>
                         <div id="dashboardHistoryItems" class="space-y-2 sm:space-y-3 pb-4">
-                            <!-- Skeleton Loaders ditaruh disini via JS -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- MODAL LIVE CHAT TICKET SYSTEM -->
         <div id="liveChatModal" class="fixed inset-0 z-[900] hidden items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-0 sm:p-4">
             <div class="glass-card w-full sm:max-w-md h-[85vh] sm:h-[600px] flex flex-col relative border-slate-700 shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden bg-[#070C18]/95">
                 <div class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center z-10 shadow-md">
@@ -461,12 +429,11 @@
             </div>
         </div>
 
-        <!-- MODAL QRIS -->
         <div id="qrisModal" class="fixed inset-0 z-[280] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
             <div class="glass-card max-w-sm w-full p-6 text-center relative border-primary/40 shadow-glow-strong">
                 <button onclick="closeQrisModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
                 <div class="inline-block p-2 bg-white rounded-2xl mb-4 border-2 border-primary shadow-lg">
-                    <img src="ReactNative-snapshot-image316319566030730119.png" alt="QRIS KA TECH HUB" class="w-64 h-64 rounded-lg mx-auto object-cover">
+                    <img src="ReactNative-snapshot-image316319566030730119.png" alt="QRIS KA TECH HUB" class="w-64 h-64 rounded-lg mx-auto object-cover" onerror="this.src='https://via.placeholder.com/256x256?text=QRIS+Not+Found'">
                 </div>
                 <h3 class="text-lg font-bold text-white mb-1">Scan QRIS All Payment</h3>
                 <p class="text-xs text-slate-400 mb-4">Dukungan: DANA, OVO, GoPay, ShopeePay &amp; Seluruh M-Banking</p>
@@ -477,7 +444,6 @@
             </div>
         </div>
         
-        <!-- MODAL INVOICE E-RECEIPT -->
         <div id="invoiceModal" class="fixed inset-0 z-[950] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
             <div class="glass-card max-w-sm w-full p-0 relative border-primary/40 shadow-glow-strong overflow-hidden bg-white text-slate-900">
                 <button onclick="closeInvoiceModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition z-20"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -520,7 +486,6 @@
             </div>
         </div>
 
-        <!-- HEADER NAVBAR -->
         <header class="fixed top-[28px] sm:top-[30px] w-full z-50 glass-nav transition-all duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-20">
@@ -541,7 +506,6 @@
                         <a href="#layanan" class="text-slate-300 hover:text-white transition font-medium">Layanan</a>
                         <a href="#reviews" class="text-slate-300 hover:text-white transition font-medium">Testimoni</a>
                         
-                        <!-- SERVER STATUS INDICATOR -->
                         <div onclick="window.alert('✅ Server API Normal (Uptime 99.9%)\n✅ Firebase Cloud Terhubung\n✅ SMM System Operasional')" class="cursor-pointer ml-4 flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full hover:bg-emerald-500/20 transition shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                             <span class="relative flex h-2.5 w-2.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -574,7 +538,6 @@
             </div>
         </header>
 
-        <!-- HERO SECTION -->
         <section class="relative pt-40 pb-16 lg:pt-48 lg:pb-24 overflow-hidden min-h-[85vh] flex items-center">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] md:w-[650px] md:h-[650px] bg-accent/20 rounded-full blur-[100px] md:blur-[130px] -z-10"></div>
             
@@ -610,7 +573,6 @@
             </div>
         </section>
 
-        <!-- SECTION LAYANAN & ORDER PANEL (SINGLE & MASS ORDER) -->
         <section id="layanan" class="py-16 relative z-10">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-8">
@@ -619,13 +581,11 @@
                 </div>
 
                 <div class="gradient-border-box p-6 sm:p-8 shadow-glow-strong">
-                    <!-- Tab Switcher (Single / Mass) -->
                     <div class="flex bg-slate-900 p-1 rounded-xl mb-6 shadow-inner border border-slate-700">
                         <button onclick="switchOrderTab('single')" id="tabSingle" class="order-tab active flex-1 py-2.5 rounded-lg text-sm transition text-center"><i class="fa-solid fa-user-plus mr-1"></i> Pesanan Tunggal</button>
                         <button onclick="switchOrderTab('mass')" id="tabMass" class="order-tab flex-1 py-2.5 rounded-lg text-sm transition text-center"><i class="fa-solid fa-users-viewfinder mr-1"></i> Pesanan Massal (Mass Order)</button>
                     </div>
 
-                    <!-- Kategori & Service (Global untuk kedua Tab) -->
                     <div class="space-y-6 mb-6">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -648,7 +608,6 @@
                         </div>
                     </div>
 
-                    <!-- TAB SINGLE ORDER -->
                     <div id="panelSingleOrder" class="space-y-6 block transition-opacity duration-300">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -664,7 +623,7 @@
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Metode Pembayaran</label>
                             <select id="mainPaymentSelect" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary text-sm cursor-pointer shadow-inner">
-                                <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis)</option>
+                                <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis H2H)</option>
                                 <option value="QRIS (Minta via WA)">QRIS (Minta Barcode via WA)</option>
                                 <option value="Bank Mandiri (1290013795022)">Bank Mandiri (1290013795022)</option>
                                 <option value="ShopeePay (081312185600)">ShopeePay (081312185600)</option>
@@ -687,7 +646,6 @@
                         </div>
                     </div>
 
-                    <!-- TAB MASS ORDER -->
                     <div id="panelMassOrder" class="space-y-6 hidden transition-opacity duration-300">
                         <div class="bg-blue-900/20 border border-blue-500/30 p-3 rounded-xl shadow-inner">
                             <span class="text-xs text-blue-300 font-bold block mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Format Mass Order:</span>
@@ -707,7 +665,6 @@
             </div>
         </section>
 
-        <!-- LACAK PESANAN -->
         <section id="lacak" class="py-16 relative z-10 bg-slate-900/30 border-t border-slate-800/60">
             <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <span class="text-xs font-bold px-3 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mb-3 inline-block uppercase">Order Status Checker</span>
@@ -733,7 +690,6 @@
             </div>
         </section>
 
-        <!-- SECTION INFO REKENING & PEMBAYARAN -->
         <section id="pembayaran" class="py-16 relative z-10 bg-slate-900/40 border-y border-slate-800/80">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -774,7 +730,6 @@
             </div>
         </section>
 
-        <!-- CUSTOMER REVIEWS -->
         <section id="reviews" class="py-16 relative z-10 bg-slate-900/50 border-y border-slate-800/80">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -833,7 +788,6 @@
             </div>
         </section>
 
-        <!-- FAQ SECTION -->
         <section id="faq-section" class="py-20 relative z-10 border-b border-slate-800/80">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -867,7 +821,6 @@
             </div>
         </section>
 
-        <!-- FEATURES & STATS -->
         <section id="features" class="py-20 relative z-10 border-b border-slate-800/80">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
@@ -891,7 +844,6 @@
             </div>
         </section>
 
-        <!-- FLOATING ACTION BUTTONS (WA, IG & LIVE CHAT CS) -->
         <div class="fixed bottom-20 md:bottom-8 left-5 z-40 flex flex-col items-start gap-3">
             <button onclick="openChatWidget()" class="w-14 h-14 bg-gradient-to-r from-blue-500 to-primary rounded-full flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/30 hover:scale-110 transition-transform floating-action relative border border-white/20" title="Live CS Support">
                 <i class="fa-solid fa-comments"></i>
@@ -911,7 +863,6 @@
             </button>
         </div>
 
-        <!-- MOBILE NAVIGATION -->
         <nav class="md:hidden fixed bottom-0 w-full glass-nav border-t border-slate-800/80 z-50 px-6 py-3 flex justify-between items-center pb-safe">
             <a href="#" class="flex flex-col items-center text-slate-400 hover:text-white transition gap-1">
                 <i class="fa-solid fa-house text-lg"></i>
@@ -932,7 +883,6 @@
             </button>
         </nav>
 
-        <!-- FOOTER & API INTEGRATION LINK -->
         <footer id="footer" class="border-t border-slate-800 bg-[#040810] pt-16 pb-24 md:pb-8 relative z-10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-center md:text-left">
@@ -969,7 +919,6 @@
             </div>
         </footer>
 
-        <!-- MODAL API DOCS -->
         <div id="apiDocsModal" class="fixed inset-0 z-[850] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 transition-all">
             <div class="glass-card max-w-2xl w-full p-6 relative border-primary/40 shadow-glow-strong max-h-[85vh] overflow-y-auto no-scrollbar">
                 <button onclick="closeApiDocs()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -991,12 +940,11 @@
   "link": "target_url",
   "quantity": 1000
 }</pre>
-                    <p class="text-[10px] text-amber-400 mt-3 italic">* Catatan: Fitur Koneksi API Backend saat ini sedang dalam tahap pengembangan server.</p>
+                    <p class="text-[10px] text-amber-400 mt-3 italic">* Catatan: Fitur Koneksi API Backend aktif via Serverless Functions.</p>
                 </div>
             </div>
         </div>
         
-        <!-- KERANJANG BELANJA MODAL -->
         <div id="cartModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity">
             <div class="glass-card w-full max-w-lg p-6 max-h-[90vh] flex flex-col relative m-4 border-slate-700 shadow-2xl">
                 <button onclick="toggleCartModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
@@ -1005,7 +953,7 @@
                 <div class="border-t border-slate-700/50 pt-5 mb-5">
                     <label class="block text-sm font-medium text-slate-300 mb-2">Metode Pembayaran</label>
                     <select id="paymentMethod" class="w-full bg-slate-800/90 border border-slate-700 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary transition font-medium text-sm shadow-inner">
-                        <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis)</option>
+                        <option value="Saldo Akun">💳 Saldo Akun (Instan Otomatis H2H)</option>
                         <option value="QRIS (Minta via WA)">QRIS (Minta Barcode via WA)</option>
                         <option value="Bank Mandiri (1290013795022)">Bank Mandiri (1290013795022)</option>
                         <option value="ShopeePay (081312185600)">ShopeePay (081312185600)</option>
@@ -1023,7 +971,6 @@
             </div>
         </div>
 
-        <!-- MODAL KEBIJAKAN / POLICIES -->
         <div id="policyModal" class="fixed inset-0 z-[450] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity p-4">
             <div class="glass-card w-full max-w-2xl p-6 max-h-[85vh] flex flex-col relative border-slate-700 shadow-2xl">
                 <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition bg-slate-800 rounded-full w-8 h-8 flex items-center justify-center border border-slate-600">
@@ -1135,7 +1082,6 @@
             });
         };
 
-        // FITUR BARU: REAL-TIME SYNC FIREBASE (ON SNAPSHOT)
         onAuthStateChanged(auth, async (user) => {
             const welcomeModal = document.getElementById('welcomeModal');
             const appContent = document.getElementById('appContent');
@@ -1159,13 +1105,11 @@
                         await setDoc(userRef, fallbackData);
                     }
 
-                    // REAL-TIME LISTENER SALDO & PENDAPATAN
                     if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
                     userSnapshotUnsubscribe = onSnapshot(userRef, (docSnap) => {
                         if (docSnap.exists()) {
                             window.currentUserData = { uid: user.uid, ...docSnap.data() };
                             
-                            // AUTO-UPDATE UI SECARA LANGSUNG
                             const dashBal = document.getElementById('dashUserBalance');
                             if(dashBal) dashBal.innerText = `Rp ${window.formatRupiah(window.currentUserData.balance || 0)}`;
                             
@@ -1175,7 +1119,6 @@
                             const dashOut = document.getElementById('dashOwnerCashout');
                             if(dashOut) dashOut.innerText = `Rp ${window.formatRupiah(window.currentUserData.cashout || 0)}`;
 
-                            // Update Chart jika sedang buka dashboard Owner
                             if(window.revenueChartInstance && window.currentUserData.role === 'owner') {
                                 window.revenueChartInstance.data.datasets[0].data[6] = window.currentUserData.income || 0;
                                 window.revenueChartInstance.update();
@@ -1255,7 +1198,6 @@
             finally { btnGoogle.innerHTML = originalText; btnGoogle.disabled = false; }
         };
 
-        // RECAPTCHA V3 REGISTRATION (Tanpa Blokir)
         window.processRegister = async function() {
             const name = document.getElementById('regName').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase().replace(/\s+/g, '');
@@ -1270,7 +1212,6 @@
             btnReg.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memeriksa Keamanan...';
             btnReg.disabled = true;
 
-            // Memanggil ReCaptcha
             window.showToast("Memverifikasi sistem keamanan (ReCaptcha)...", "info");
             
             grecaptcha.ready(async function() {
@@ -1315,7 +1256,6 @@
             });
         };
 
-        // FITUR BARU: ADVANCED SECURITY DEVICE FINGERPRINTING & LOGIN SAFTY
         window.processLogin = async function() {
             const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
             const passIn = document.getElementById('loginPassword').value;
@@ -1330,13 +1270,11 @@
                 const userCredential = await signInWithEmailAndPassword(auth, emailInput, passIn);
                 const user = userCredential.user;
                 
-                // SISTEM KEAMANAN PELACAKAN PERANGKAT (DEVICE FINGERPRINTING)
                 const currentDevice = navigator.userAgent; 
                 const deviceKey = 'katech_device_' + user.uid;
                 const storedDevice = localStorage.getItem(deviceKey);
 
                 if (!storedDevice) {
-                    // Login dari perangkat yang benar-benar baru
                     localStorage.setItem(deviceKey, currentDevice);
                     Swal.fire({
                         title: 'Aktivitas Login Baru!',
@@ -1345,7 +1283,6 @@
                         confirmButtonColor: '#10B981', cancelButtonColor: '#EF4444', background: '#0F172A', color: '#F8FAFC'
                     }).then((result) => {
                         if (!result.isConfirmed) {
-                            // User bilang "Bukan Saya", kita kirim email ganti password dan keluarkan dari akun
                             sendPasswordResetEmail(auth, user.email).then(() => {
                                 Swal.fire({title: "Keamanan Diaktifkan!", text: "Link ganti password (Reset) telah dikirim ke Email Anda. Segera ubah password Anda demi keamanan.", icon: "success", background: '#0F172A', color: '#F8FAFC'});
                                 signOut(auth);
@@ -1353,7 +1290,6 @@
                         } else { window.showToast("Login Berhasil! Perangkat ditambahkan ke daftar aman."); }
                     });
                 } else if (storedDevice !== currentDevice) {
-                    // Login dari perangkat yang berbeda dari login terakhir
                     localStorage.setItem(deviceKey, currentDevice); 
                     Swal.fire({
                         title: 'Perangkat Berbeda Terdeteksi!',
@@ -1484,7 +1420,7 @@
                 if(!userData.avatar) avatarEl.classList.add('bg-gradient-to-br', 'from-yellow-400', 'via-gold', 'to-amber-600');
                 
                 document.getElementById('ownerStatsBox').classList.remove('hidden'); 
-                document.getElementById('ownerAnalyticsBox').classList.remove('hidden'); // Menampilkan Grafik
+                document.getElementById('ownerAnalyticsBox').classList.remove('hidden');
                 document.getElementById('ownerActionBox').classList.remove('hidden'); 
                 document.getElementById('ownerMutasiBox').classList.remove('hidden'); 
                 document.getElementById('adminManagementBox').classList.remove('hidden'); 
@@ -1494,7 +1430,6 @@
                 document.getElementById('dashOwnerIncome').innerText = `Rp ${window.formatRupiah(userData.income || 89574843)}`;
                 document.getElementById('dashOwnerCashout').innerText = `Rp ${window.formatRupiah(userData.cashout || 12500000)}`;
                 
-                // RENDER CHART.JS ANALYTICS
                 if(!window.revenueChartInstance) {
                     const ctx = document.getElementById('revenueChart').getContext('2d');
                     window.revenueChartInstance = new Chart(ctx, {
@@ -1560,7 +1495,6 @@
             window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
         };
 
-        // PERBAIKAN FITUR CASHOUT (Langsung Tembak ke Database Realtime)
         window.processCashout = async function() {
             let amount = parseInt(document.getElementById('cashoutAmount').value); 
             let bank = document.getElementById('cashoutBank').value;
@@ -1574,12 +1508,8 @@
                 const btn = event.currentTarget; const originalHtml = btn.innerHTML;
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...'; btn.disabled = true;
 
-                // Update data langsung ke Cloud Firebase
-                await updateDoc(doc(db, "users", userData.uid), {
-                    income: increment(-amount), cashout: increment(amount)
-                });
+                await updateDoc(doc(db, "users", userData.uid), { income: increment(-amount), cashout: increment(amount) });
 
-                // Simpan history mutasi lokal
                 let mutasi = JSON.parse(localStorage.getItem('katech_mutasi')) || []; 
                 mutasi.unshift({ date: new Date().toLocaleString('id-ID'), amount: amount, bank: bank, status: "Berhasil" }); 
                 if(mutasi.length > 10) mutasi.pop();
@@ -1815,26 +1745,17 @@
                         if (currentUserBalance < totalHarga) {
                             throw new Error(`Maaf, Saldo tidak mencukupi! (Saldo: Rp ${window.formatRupiah(currentUserBalance)})`);
                         }
-                        transaction.update(userRef, { 
-                            balance: increment(-totalHarga), 
-                            totalSpent: increment(totalHarga) 
-                        });
+                        transaction.update(userRef, { balance: increment(-totalHarga), totalSpent: increment(totalHarga) });
                         statusOrder = 'Diproses';
                     }
 
                     const newOrderRef = doc(collection(db, "orders"));
                     transaction.set(newOrderRef, {
                         code: orderCode || `KATH-${Date.now().toString().slice(-6)}`, 
-                        date: new Date().toLocaleString('id-ID'), 
-                        uid: userData.uid, 
-                        username: userData.username || userData.name || 'User', 
-                        userEmail: userData.email, // Dibutuhkan untuk Auto Email Node.js
-                        items: itemsText || 'Layanan Digital', 
-                        target: document.getElementById('mainTargetInput') ? document.getElementById('mainTargetInput').value : '-',
-                        total: Number(totalHarga) || 0, 
-                        payment: paymentMethod || 'Sistem', 
-                        status: statusOrder, 
-                        createdAt: Date.now() 
+                        date: new Date().toLocaleString('id-ID'), uid: userData.uid, 
+                        username: userData.username || userData.name || 'User', userEmail: userData.email,
+                        items: itemsText || 'Layanan Digital', target: document.getElementById('mainTargetInput') ? document.getElementById('mainTargetInput').value : '-',
+                        total: Number(totalHarga) || 0, payment: paymentMethod || 'Sistem', status: statusOrder, createdAt: Date.now() 
                     });
                 });
 
@@ -2046,31 +1967,6 @@
             });
         };
 
-        const products = [
-            { name: "Instagram Followers Global | Max 50K", category: "Instagram", price: 20000, unit: "/1K", min: 100, max: 50000, desc: "Followers global kualitas stabil dengan proses cepat." },
-            { name: "Instagram Likes Global | Fast", category: "Instagram", price: 12000, unit: "/1K", min: 100, max: 20000, desc: "Likes postingan Instagram instan dan aman." },
-            { name: "TikTok Likes | Mix | Max 1M", category: "TikTok", price: 15000, unit: "/1K", min: 100, max: 1000000, desc: "TikTok likes berkualitas tinggi tanpa refill." },
-            { name: "TikTok Story Likes | Global", category: "TikTok", price: 17000, unit: "/1K", min: 50, max: 30000, desc: "Meningkatkan interaksi pada Story TikTok Anda." },
-            { name: "TikTok Saves | Max 100K", category: "TikTok", price: 11000, unit: "/1K", min: 100, max: 100000, desc: "TikTok saves dengan garansi refill 7 hari." },
-            { name: "TikTok Custom Comment", category: "TikTok", price: 75000, unit: "/1K", min: 10, max: 10000, desc: "Komentar kustom sesuai keinginan pada video TikTok." },
-            { name: "Facebook Followers | BOT HQ", category: "Facebook", price: 17000, unit: "/1K", min: 100, max: 10000, desc: "Pengikut halaman Facebook akun HQ." },
-            { name: "Facebook Shares | Post / Photo", category: "Facebook", price: 29000, unit: "/1K", min: 100, max: 1000000, desc: "Bagikan postingan atau foto Facebook secara massal." },
-            { name: "Facebook Reels Short Video Likes", category: "Facebook", price: 26000, unit: "/1K", min: 100, max: 50000, desc: "Likes cepat untuk video pendek Facebook Reels." },
-            { name: "Facebook Views | Reel / Video", category: "Facebook", price: 12000, unit: "/1K", min: 500, max: 1000000, desc: "Views video dan reel Facebook aman." },
-            { name: "Youtube Subscribers REAL [NON DROP]", category: "YouTube", price: 1045000, unit: "/1K", min: 50, max: 5000, desc: "Subscribers YouTube asli non-drop kualitas terbaik." },
-            { name: "Youtube Watch Time | Durasi ≥1 jam", category: "YouTube", price: 567000, unit: "/1K", min: 100, max: 4000, desc: "Jam tayang YouTube untuk syarat monetisasi." },
-            { name: "YouTube Watchtime [Max 4K Organic]", category: "YouTube", price: 897000, unit: "/1K", min: 100, max: 4000, desc: "Layanan jam tayang 100% organik dan aman." },
-            { name: "Telegram Members [Max 1M] HQ", category: "Telegram", price: 19000, unit: "/1K", min: 100, max: 1000000, desc: "Anggota grup atau channel Telegram akun HQ." },
-            { name: "Shopee Followers Indonesia", category: "Shopee", price: 24000, unit: "/1K", min: 50, max: 10000, desc: "Pengikut toko Shopee akun aktif Indonesia." },
-            { name: "Discord Members | Global | Real", category: "Discord", price: 180000, unit: "/1K", min: 50, max: 20000, desc: "Member server Discord global dan real active." },
-            { name: "Roblox Followers | Refill 30 Days", category: "Roblox", price: 32000, unit: "/1K", min: 50, max: 10000, desc: "Followers profil Roblox dengan garansi refill 30 hari." },
-            { name: "Penggantian LCD iPhone / Android", category: "Tech Service", price: 450000, unit: " /Pcs", min: 1, max: 5, desc: "Layanan perbaikan dan penggantian LCD Original bergaransi." },
-            { name: "Gestun SPayLater (Pencairan Limit)", category: "Gestun Shopee", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan Shopee PayLater. Wajib isi NAMA BANK & NO REKENING di Target." },
-            { name: "Gestun GoPayLater (Pencairan Limit)", category: "Gestun Gojek", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan GoPayLater. Wajib isi NAMA BANK & NO REKENING di Target." },
-            { name: "Gestun Akulaku PayLater (Pencairan Limit)", category: "Gestun Akulaku", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan Akulaku. Tulis NAMA BANK & NO REKENING di Target." },
-            { name: "Gestun Kredivo (Pencairan Limit)", category: "Gestun Kredivo", price: 10000, unit: " /10Rb", min: 1, max: 5000, desc: "Pencairan Kredivo. Tulis NAMA BANK & NO REKENING di Target." }
-        ];
-
         window.switchOrderTab = function(tabName) {
             document.getElementById('tabSingle').classList.remove('active'); document.getElementById('tabMass').classList.remove('active');
             document.getElementById('panelSingleOrder').classList.add('hidden'); document.getElementById('panelMassOrder').classList.add('hidden');
@@ -2081,19 +1977,19 @@
         window.initCategoryDropdown = function() { 
             const catSelect = document.getElementById('mainCategorySelect'); 
             const categories = [...new Set(products.map(p => p.category))]; 
-            catSelect.innerHTML = categories.map(cat => `<option value="${cat}">${cat.toUpperCase()} SERVICES</option>`).join(''); 
+            catSelect.innerHTML = categories.map(cat => `<option value="${cat}">${cat.toUpperCase()}</option>`).join(''); 
             window.onCategoryChange(); 
         };
         
         window.onCategoryChange = function() { 
             const serviceSelect = document.getElementById('mainServiceSelect'); 
             const filtered = products.filter(p => p.category === document.getElementById('mainCategorySelect').value); 
-            serviceSelect.innerHTML = filtered.map(p => `<option value="${p.name}">${p.name}</option>`).join(''); 
+            serviceSelect.innerHTML = filtered.map(p => `<option value="${p.id}">${p.name}</option>`).join(''); 
             window.onServiceChange(); 
         };
         
         window.onServiceChange = function() { 
-            selectedProduct = products.find(p => p.name === document.getElementById('mainServiceSelect').value); 
+            selectedProduct = products.find(p => p.id == document.getElementById('mainServiceSelect').value); 
             if (selectedProduct) { 
                 document.getElementById('selectedDesc').innerText = selectedProduct.desc; 
                 document.getElementById('selectedPrice').innerText = `Rp ${window.formatRupiah(selectedProduct.price)} ${selectedProduct.unit}`; 
@@ -2121,7 +2017,10 @@
             }
 
             let calculatedTotal = selectedProduct.unit.includes('/1K') ? Math.round((quantity / 1000) * selectedProduct.price) : Math.round(quantity * selectedProduct.price); 
-            cart.push({ productName: selectedProduct.name, category: selectedProduct.category, price: selectedProduct.price, quantity: quantity, target: target, total: calculatedTotal, unit: selectedProduct.unit }); 
+            cart.push({ 
+                id: selectedProduct.id, productName: selectedProduct.name, category: selectedProduct.category, 
+                price: selectedProduct.price, quantity: quantity, target: target, total: calculatedTotal, unit: selectedProduct.unit 
+            }); 
             localStorage.setItem('katech_cart', JSON.stringify(cart)); 
             window.updateCartUI(); window.showToast("Masuk keranjang!"); window.toggleCartModal(true); 
         };
@@ -2197,7 +2096,7 @@
 
                 if(resultConfirm.isConfirmed) {
                     Swal.fire({
-                        title: 'Memproses...', text: 'Menyambungkan ke Server...', allowOutsideClick: false,
+                        title: 'Memproses...', text: 'Menyambungkan ke Server H2H...', allowOutsideClick: false,
                         background: '#0F172A', color: '#F8FAFC', didOpen: () => { Swal.showLoading(); }
                     });
 
@@ -2209,7 +2108,16 @@
                         if(!result.success) return window.alert(result.message);
                         
                         if(paymentMethod === 'Saldo Akun') { 
-                            Swal.fire({ title: 'Berhasil!', text: 'Pesanan sukses diproses!', icon: 'success', background: '#0F172A', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
+                            // 🚀 TEMBAK KE SERVER DJURAGAN SOSMED VIA BACKEND
+                            try {
+                                fetch('/.netlify/functions/api', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ action: 'add', service: selectedProduct.id, link: target, quantity: quantity })
+                                }).catch(e => console.error("H2H Error Background", e));
+                            } catch(e) {}
+                            
+                            Swal.fire({ title: 'Berhasil!', text: 'Pesanan H2H sukses diproses sistem!', icon: 'success', background: '#0F172A', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
                             document.getElementById('mainTargetInput').value = ''; window.openProfileDashboard(); 
                         } else { 
                             Swal.close();
@@ -2240,12 +2148,23 @@
                 const result = await window.checkoutWithFirebase(orderCode, itemSummary.join(' | '), grandTotal, paymentMethod); 
                 if(!result.success) return window.alert(result.message);
                 
-                cart = []; localStorage.setItem('katech_cart', JSON.stringify(cart)); window.updateCartUI(); window.toggleCartModal();
-                
                 if(paymentMethod === 'Saldo Akun') { 
-                    Swal.fire({ title: 'Berhasil!', text: 'Pembayaran Keranjang via Saldo sukses!', icon: 'success', background: '#0F172A', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
+                    // 🚀 TEMBAK KE SERVER DJURAGAN SOSMED VIA BACKEND UNTUK SEMUA ITEM
+                    cart.forEach(item => {
+                        try {
+                            fetch('/.netlify/functions/api', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'add', service: item.id, link: item.target, quantity: item.quantity })
+                            }).catch(e => console.log("H2H Cart Item Error"));
+                        } catch (e) {}
+                    });
+
+                    cart = []; localStorage.setItem('katech_cart', JSON.stringify(cart)); window.updateCartUI(); window.toggleCartModal();
+                    Swal.fire({ title: 'Berhasil!', text: 'Pembayaran Keranjang via Saldo sukses diproses sistem!', icon: 'success', background: '#0F172A', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
                     window.openProfileDashboard(); 
                 } else { 
+                    cart = []; localStorage.setItem('katech_cart', JSON.stringify(cart)); window.updateCartUI(); window.toggleCartModal();
                     Swal.close();
                     const message = `Halo Admin KA TECH HUB 👋\n\nCheckout KERANJANG:\n\n🆔 *Pesanan:* #${orderCode}\n\n${orderDetails}\n\n💳 *TOTAL:* Rp ${window.formatRupiah(grandTotal)}\n💰 *VIA:* ${paymentMethod}`; 
                     window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`, '_blank'); window.openProfileDashboard(); 
@@ -2257,7 +2176,6 @@
             const input = document.getElementById('massOrderInput').value.trim();
             if(!input) return window.alert("Silakan masukkan target dan jumlah dengan format yang benar.");
             if(!window.currentUserData) return window.alert("Harap login terlebih dahulu.");
-            
             let lines = input.split('\n');
             Swal.fire({ title: 'Mass Order Diproses', text: `Sistem mendeteksi ${lines.length} baris orderan massal. Fitur API Mass Order sedang dalam integrasi dengan server Backend.`, icon: 'info', background: '#0F172A', color: '#F8FAFC', confirmButtonColor: '#0EA5E9' });
         };
@@ -2282,7 +2200,6 @@
         function animateCounters() { 
             const targets = { orders: 58420, users: 12400, satisfy: 99 }; let c = { orders: 0, users: 0, satisfy: 0 }; 
             const countOrders = document.getElementById('countOrders'); if(!countOrders) return; 
-            
             const t = setInterval(() => { 
                 if(c.orders < targets.orders) c.orders += 1200; if(c.users < targets.users) c.users += 300; if(c.satisfy < targets.satisfy) c.satisfy += 2; 
                 document.getElementById('countOrders').innerText = window.formatRupiah(Math.min(c.orders, targets.orders)); 
@@ -2295,7 +2212,7 @@
         const indoNames = ["Bagas P.", "Nadia Safitri", "Reza Aditya", "Citra K.", "Rizky F.", "Ayu Lestari", "Dimas Anggara", "Putri M."]; 
         const indoCities = ["Jakarta", "Bandung", "Surabaya", "Medan", "Semarang", "Yogyakarta"]; 
         function triggerSocialProof() { 
-            const container = document.getElementById('socialProofContainer'); if(!container) return; 
+            const container = document.getElementById('socialProofContainer'); if(!container || products.length === 0) return; 
             const randomName = indoNames[Math.floor(Math.random() * indoNames.length)]; const randomCity = indoCities[Math.floor(Math.random() * indoCities.length)]; 
             const randomProduct = products[Math.floor(Math.random() * products.length)]; const randomQty = Math.floor(Math.random() * (5000 - 100 + 1) + 100); 
             
@@ -2336,8 +2253,70 @@
             setTimeout(() => { icon.className = originalClass; window.open('https://instagram.com/rakadimas_2211', '_blank'); }, 1200);
         };
 
+        // KODE EMAS: SEDOT API & ATUR KEUNTUNGAN
+        let products = []; 
+
+        window.fetchSMMProducts = async function() {
+            try {
+                const catSelect = document.getElementById('mainCategorySelect');
+                const servSelect = document.getElementById('mainServiceSelect');
+                if(catSelect) catSelect.innerHTML = '<option>Menyedot Layanan dari Cloud...</option>';
+                if(servSelect) servSelect.innerHTML = '<option>Mohon tunggu...</option>';
+
+                // Tembak ke Backend Netlify yang baru dibuat Bosku
+                const res = await fetch('/.netlify/functions/api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'services' }) 
+                });
+                
+                const data = await res.json();
+                
+                if(Array.isArray(data)) {
+                    // Berhasil disedot! Sekarang kita format dan NAIKKAN HARGANYA
+                    products = data.map(item => {
+                        let hargaPusat = parseFloat(item.rate);
+                        let markup = 0;
+                        
+                        // 🔥 SISTEM MARK-UP KEUNTUNGAN (Sesuai Permintaan Bosku)
+                        if (hargaPusat < 200000) {
+                            markup = (hargaPusat <= 50000) ? 5000 : 10000; // Untung 5-10 rb
+                        } else if (hargaPusat >= 200000 && hargaPusat < 700000) {
+                            markup = 25000; // Untung 25 rb
+                        } else if (hargaPusat >= 700000) {
+                            markup = 50000; // Untung 50 rb
+                        }
+                        
+                        let hargaJual = hargaPusat + markup; 
+                        
+                        return {
+                            id: item.service,           // ID Asli dari Djuragan Sosmed
+                            name: item.name,
+                            category: item.category,
+                            price: Math.round(hargaJual), 
+                            unit: "/1K",                
+                            min: parseInt(item.min) || 100,
+                            max: parseInt(item.max) || 10000,
+                            desc: item.desc ? `Info: ${item.desc}` : 'Proses instan & bergaransi dari sistem.'
+                        };
+                    });
+
+                    window.initCategoryDropdown();
+                    console.log(`✅ Berhasil menyedot ${products.length} layanan dari pusat!`);
+                } else {
+                    if(catSelect) catSelect.innerHTML = '<option>Gagal memuat layanan API</option>';
+                    if(servSelect) servSelect.innerHTML = '<option>Error Sinkronisasi API</option>';
+                }
+            } catch(e) {
+                console.error("Gagal nyedot API:", e);
+                window.showToast("Gagal menyinkronkan data server API.", "error");
+            }
+        };
+
         window.onload = function() {
-            window.initCategoryDropdown(); window.updateCartUI(); typeWriter(); animateCounters();
+            window.fetchSMMProducts(); // Jalankan sedot API otomatis
+            
+            window.updateCartUI(); typeWriter(); animateCounters();
             setInterval(triggerSocialProof, 12000); window.updateRealtimeClock(); setInterval(window.updateRealtimeClock, 1000);
         };
     </script>
